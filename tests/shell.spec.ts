@@ -189,9 +189,9 @@ test("Personal calorie goal accepts numeric input and persists across reload", a
   await goal.fill("2100");
   await goal.blur();
   await page.getByRole("button", { name: "إغلاق" }).click();
-  await expect(page.locator(".cal-head")).toContainText("2100");
+  await expect(page.locator(".cal-head")).toContainText("٢٬١٠٠");
   await page.reload();
-  await expect(page.locator(".cal-head")).toContainText("2100");
+  await expect(page.locator(".cal-head")).toContainText("٢٬١٠٠");
   await page.getByRole("button", { name: "الملف الشخصي" }).click();
   await expect(goal).toHaveValue("2100");
 });
