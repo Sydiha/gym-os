@@ -43,6 +43,7 @@ test("meal, macros, favorites, estimates, water, weight and reload", async ({
   await expect(page.getByRole("dialog")).toContainText("تقريبية وغير موثقة");
   await page.getByRole("button", { name: "اختر", exact: true }).first().click();
   await expect(page.locator(".cal-used")).toContainText("٢٬٤٨٠");
+  page.once("dialog", (confirmation) => confirmation.accept());
   await page.getByRole("button", { name: "إضافة لليوم" }).click();
   await expect(page.locator(".cal-used")).toContainText("٢٬٩٨٠");
   await nav(page, "التقدم");
@@ -112,28 +113,30 @@ test("meal edit, delete, favorites removal, duplicate warning, and numeric bound
   await page.getByRole("button", { name: "حفظ التعديل" }).click();
   await expect(page.locator(".cal-used")).toContainText("٢٬٠٢٠");
 
-  const dialog = page.waitForEvent("dialog");
+  let duplicateConfirmMessage = "";
+  page.once("dialog", async (confirmation) => {
+    duplicateConfirmMessage = confirmation.message();
+    await confirmation.accept();
+  });
   await page.getByRole("button", { name: "إضافة لليوم" }).click();
-  const duplicateConfirm = await dialog;
-  expect(duplicateConfirm.message()).toContain("وجبة بالاسم نفسه اليوم");
-  await duplicateConfirm.accept();
-  const removeFavoriteDialog = page.waitForEvent("dialog");
+  expect(duplicateConfirmMessage).toContain("وجبة بالاسم نفسه اليوم");
+  page.once("dialog", (confirmation) => confirmation.accept());
   await page.getByRole("button", { name: "إزالة وجبة إدارة من المفضلة" }).click();
-  (await removeFavoriteDialog).accept();
   await expect(page.getByRole("button", { name: "تعديل وجبة إدارة" })).toHaveCount(2);
   await page.getByRole("button", { name: "سجّل وجبة", exact: true }).click();
   for (const [name, value] of [["name", "وجبة إدارة"], ["calories", "400"], ["protein", "20"], ["carbs", "30"], ["fat", "10"]])
     await page.locator(`[name=${name}]`).fill(value);
-  const duplicateEntryDialog = page.waitForEvent("dialog");
+  let duplicateEntryMessage = "";
+  page.once("dialog", async (confirmation) => {
+    duplicateEntryMessage = confirmation.message();
+    await confirmation.accept();
+  });
   await page.getByRole("button", { name: "حفظ الوجبة" }).click();
-  const duplicateFormConfirm = await duplicateEntryDialog;
-  expect(duplicateFormConfirm.message()).toContain("توجد وجبة بالاسم نفسه");
-  await duplicateFormConfirm.accept();
+  expect(duplicateEntryMessage).toContain("توجد وجبة بالاسم نفسه");
   await expect(page.getByRole("button", { name: "تعديل وجبة إدارة" })).toHaveCount(3);
   for (let i = 0; i < 3; i++) {
-    const removeDialog = page.waitForEvent("dialog");
+    page.once("dialog", (confirmation) => confirmation.accept());
     await page.getByRole("button", { name: "حذف وجبة إدارة" }).first().click();
-    (await removeDialog).accept();
   }
   await expect(page.getByRole("button", { name: "تعديل وجبة إدارة" })).toHaveCount(0);
 
@@ -170,9 +173,8 @@ test("activity time and weight history remain editable and chronological", async
   await page.locator("[name=minutes]").fill("25");
   await page.getByRole("button", { name: "حفظ التعديل" }).click();
   await expect(page.locator(".record").filter({ hasText: "٢٥ دقيقة" })).toContainText("٣٠");
-  const deleteActivityDialog = page.waitForEvent("dialog");
+  page.once("dialog", (confirmation) => confirmation.accept());
   await page.locator(".record").filter({ hasText: "٢٥ دقيقة" }).getByRole("button", { name: "حذف مشي" }).click();
-  (await deleteActivityDialog).accept();
   await expect(page.locator(".record").filter({ hasText: "٢٥ دقيقة" })).toHaveCount(0);
 
   await nav(page, "التقدم");
@@ -195,9 +197,8 @@ test("activity time and weight history remain editable and chronological", async
   }));
   await page.getByRole("button", { name: "حفظ التعديل" }).click();
   await expect(page.locator(".real-weight")).toContainText("٩٨");
-  const deleteWeightDialog = page.waitForEvent("dialog");
+  page.once("dialog", (confirmation) => confirmation.accept());
   await page.locator(".record").filter({ hasText: "٩٨ كجم" }).getByRole("button", { name: "حذف قياس ٩٨ كجم" }).click();
-  (await deleteWeightDialog).accept();
   await expect(page.locator(".real-weight")).toContainText("٩٩");
 });
 test("Plan B timing, rest, disable, decline and combined limitations", async ({
