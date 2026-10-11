@@ -1,0 +1,1025 @@
+[
+  {
+    "width": 375,
+    "height": 812,
+    "name": "home",
+    "differentPixelPercent": 0,
+    "geometry": [
+      [
+        {
+          "class": "",
+          "x": 22,
+          "y": 125,
+          "w": 331,
+          "h": 39.140625
+        },
+        {
+          "class": "cal-head",
+          "x": 22,
+          "y": 235.140625,
+          "w": 331,
+          "h": 29
+        },
+        {
+          "class": "water",
+          "x": 22,
+          "y": 322.140625,
+          "w": 331,
+          "h": 80
+        },
+        {
+          "class": "step",
+          "x": 22,
+          "y": 424.140625,
+          "w": 331,
+          "h": 133
+        },
+        {
+          "class": "step",
+          "x": 22,
+          "y": 557.140625,
+          "w": 331,
+          "h": 293
+        },
+        {
+          "class": "step future",
+          "x": 22,
+          "y": 850.140625,
+          "w": 331,
+          "h": 60
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 731,
+          "w": 375,
+          "h": 81
+        }
+      ],
+      [
+        {
+          "class": "",
+          "x": 22,
+          "y": 125,
+          "w": 331,
+          "h": 39.140625
+        },
+        {
+          "class": "cal-head",
+          "x": 22,
+          "y": 235.140625,
+          "w": 331,
+          "h": 29
+        },
+        {
+          "class": "water",
+          "x": 22,
+          "y": 322.140625,
+          "w": 331,
+          "h": 80
+        },
+        {
+          "class": "step",
+          "x": 22,
+          "y": 424.140625,
+          "w": 331,
+          "h": 133
+        },
+        {
+          "class": "step",
+          "x": 22,
+          "y": 557.140625,
+          "w": 331,
+          "h": 293
+        },
+        {
+          "class": "step future",
+          "x": 22,
+          "y": 850.140625,
+          "w": 331,
+          "h": 60
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 731,
+          "w": 375,
+          "h": 81
+        }
+      ]
+    ]
+  },
+  {
+    "width": 375,
+    "height": 812,
+    "name": "nutrition",
+    "differentPixelPercent": 0,
+    "geometry": [
+      [
+        {
+          "class": "section-title",
+          "x": 22,
+          "y": 132,
+          "w": 331,
+          "h": 42.90625
+        },
+        {
+          "class": "cal-head",
+          "x": 22,
+          "y": 256.5,
+          "w": 331,
+          "h": 29
+        },
+        {
+          "class": "macro-row",
+          "x": 22,
+          "y": 368.5,
+          "w": 331,
+          "h": 91
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 731,
+          "w": 375,
+          "h": 81
+        }
+      ],
+      [
+        {
+          "class": "section-title",
+          "x": 22,
+          "y": 132,
+          "w": 331,
+          "h": 42.90625
+        },
+        {
+          "class": "cal-head",
+          "x": 22,
+          "y": 256.5,
+          "w": 331,
+          "h": 29
+        },
+        {
+          "class": "macro-row",
+          "x": 22,
+          "y": 368.5,
+          "w": 331,
+          "h": 91
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 731,
+          "w": 375,
+          "h": 81
+        }
+      ]
+    ]
+  },
+  {
+    "width": 375,
+    "height": 812,
+    "name": "activity",
+    "differentPixelPercent": 0.00361247947454844,
+    "geometry": [
+      [
+        {
+          "class": "section-title",
+          "x": 22,
+          "y": 132,
+          "w": 331,
+          "h": 42.90625
+        },
+        {
+          "class": "stat",
+          "x": 22,
+          "y": 256.5,
+          "w": 331,
+          "h": 80
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 731,
+          "w": 375,
+          "h": 81
+        }
+      ],
+      [
+        {
+          "class": "section-title",
+          "x": 22,
+          "y": 132,
+          "w": 331,
+          "h": 42.90625
+        },
+        {
+          "class": "stat",
+          "x": 22,
+          "y": 256.5,
+          "w": 331,
+          "h": 80
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 731,
+          "w": 375,
+          "h": 81
+        }
+      ]
+    ]
+  },
+  {
+    "width": 375,
+    "height": 812,
+    "name": "progress",
+    "differentPixelPercent": 0,
+    "geometry": [
+      [
+        {
+          "class": "section-title",
+          "x": 22,
+          "y": 132,
+          "w": 331,
+          "h": 42.90625
+        },
+        {
+          "class": "progress-group",
+          "x": 22,
+          "y": 232.703125,
+          "w": 331,
+          "h": 312
+        },
+        {
+          "class": "progress-group",
+          "x": 22,
+          "y": 544.703125,
+          "w": 331,
+          "h": 236
+        },
+        {
+          "class": "progress-group",
+          "x": 22,
+          "y": 780.703125,
+          "w": 331,
+          "h": 195.1875
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 731,
+          "w": 375,
+          "h": 81
+        }
+      ],
+      [
+        {
+          "class": "section-title",
+          "x": 22,
+          "y": 132,
+          "w": 331,
+          "h": 42.90625
+        },
+        {
+          "class": "progress-group",
+          "x": 22,
+          "y": 232.703125,
+          "w": 331,
+          "h": 312
+        },
+        {
+          "class": "progress-group",
+          "x": 22,
+          "y": 544.703125,
+          "w": 331,
+          "h": 236
+        },
+        {
+          "class": "progress-group",
+          "x": 22,
+          "y": 780.703125,
+          "w": 331,
+          "h": 195.1875
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 731,
+          "w": 375,
+          "h": 81
+        }
+      ]
+    ]
+  },
+  {
+    "width": 375,
+    "height": 812,
+    "name": "plan",
+    "differentPixelPercent": 0.5224958949096881,
+    "geometry": [
+      [
+        {
+          "class": "sheet",
+          "x": 0,
+          "y": 48.734375,
+          "w": 375,
+          "h": 763.265625
+        }
+      ],
+      [
+        {
+          "class": "sheet",
+          "x": 0,
+          "y": 48.734375,
+          "w": 375,
+          "h": 763.265625
+        }
+      ]
+    ],
+    "sheetInteriorDifferentPixelPercent": 0.07732610659439927
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "name": "home",
+    "differentPixelPercent": 0,
+    "geometry": [
+      [
+        {
+          "class": "",
+          "x": 22,
+          "y": 125,
+          "w": 346,
+          "h": 40.703125
+        },
+        {
+          "class": "cal-head",
+          "x": 22,
+          "y": 236.703125,
+          "w": 346,
+          "h": 29
+        },
+        {
+          "class": "water",
+          "x": 22,
+          "y": 323.703125,
+          "w": 346,
+          "h": 80
+        },
+        {
+          "class": "step",
+          "x": 22,
+          "y": 425.703125,
+          "w": 346,
+          "h": 133
+        },
+        {
+          "class": "step",
+          "x": 22,
+          "y": 558.703125,
+          "w": 346,
+          "h": 293
+        },
+        {
+          "class": "step future",
+          "x": 22,
+          "y": 851.703125,
+          "w": 346,
+          "h": 60
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 763,
+          "w": 390,
+          "h": 81
+        }
+      ],
+      [
+        {
+          "class": "",
+          "x": 22,
+          "y": 125,
+          "w": 346,
+          "h": 40.703125
+        },
+        {
+          "class": "cal-head",
+          "x": 22,
+          "y": 236.703125,
+          "w": 346,
+          "h": 29
+        },
+        {
+          "class": "water",
+          "x": 22,
+          "y": 323.703125,
+          "w": 346,
+          "h": 80
+        },
+        {
+          "class": "step",
+          "x": 22,
+          "y": 425.703125,
+          "w": 346,
+          "h": 133
+        },
+        {
+          "class": "step",
+          "x": 22,
+          "y": 558.703125,
+          "w": 346,
+          "h": 293
+        },
+        {
+          "class": "step future",
+          "x": 22,
+          "y": 851.703125,
+          "w": 346,
+          "h": 60
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 763,
+          "w": 390,
+          "h": 81
+        }
+      ]
+    ]
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "name": "nutrition",
+    "differentPixelPercent": 0,
+    "geometry": [
+      [
+        {
+          "class": "section-title",
+          "x": 22,
+          "y": 132,
+          "w": 346,
+          "h": 42.90625
+        },
+        {
+          "class": "cal-head",
+          "x": 22,
+          "y": 256.5,
+          "w": 346,
+          "h": 29
+        },
+        {
+          "class": "macro-row",
+          "x": 22,
+          "y": 368.5,
+          "w": 346,
+          "h": 91
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 763,
+          "w": 390,
+          "h": 81
+        }
+      ],
+      [
+        {
+          "class": "section-title",
+          "x": 22,
+          "y": 132,
+          "w": 346,
+          "h": 42.90625
+        },
+        {
+          "class": "cal-head",
+          "x": 22,
+          "y": 256.5,
+          "w": 346,
+          "h": 29
+        },
+        {
+          "class": "macro-row",
+          "x": 22,
+          "y": 368.5,
+          "w": 346,
+          "h": 91
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 763,
+          "w": 390,
+          "h": 81
+        }
+      ]
+    ]
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "name": "activity",
+    "differentPixelPercent": 0.0030380362133916637,
+    "geometry": [
+      [
+        {
+          "class": "section-title",
+          "x": 22,
+          "y": 132,
+          "w": 346,
+          "h": 42.90625
+        },
+        {
+          "class": "stat",
+          "x": 22,
+          "y": 232.703125,
+          "w": 346,
+          "h": 80
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 763,
+          "w": 390,
+          "h": 81
+        }
+      ],
+      [
+        {
+          "class": "section-title",
+          "x": 22,
+          "y": 132,
+          "w": 346,
+          "h": 42.90625
+        },
+        {
+          "class": "stat",
+          "x": 22,
+          "y": 232.703125,
+          "w": 346,
+          "h": 80
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 763,
+          "w": 390,
+          "h": 81
+        }
+      ]
+    ]
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "name": "progress",
+    "differentPixelPercent": 0,
+    "geometry": [
+      [
+        {
+          "class": "section-title",
+          "x": 22,
+          "y": 132,
+          "w": 346,
+          "h": 42.90625
+        },
+        {
+          "class": "progress-group",
+          "x": 22,
+          "y": 232.703125,
+          "w": 346,
+          "h": 312
+        },
+        {
+          "class": "progress-group",
+          "x": 22,
+          "y": 544.703125,
+          "w": 346,
+          "h": 236
+        },
+        {
+          "class": "progress-group",
+          "x": 22,
+          "y": 780.703125,
+          "w": 346,
+          "h": 195.1875
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 763,
+          "w": 390,
+          "h": 81
+        }
+      ],
+      [
+        {
+          "class": "section-title",
+          "x": 22,
+          "y": 132,
+          "w": 346,
+          "h": 42.90625
+        },
+        {
+          "class": "progress-group",
+          "x": 22,
+          "y": 232.703125,
+          "w": 346,
+          "h": 312
+        },
+        {
+          "class": "progress-group",
+          "x": 22,
+          "y": 544.703125,
+          "w": 346,
+          "h": 236
+        },
+        {
+          "class": "progress-group",
+          "x": 22,
+          "y": 780.703125,
+          "w": 346,
+          "h": 195.1875
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 763,
+          "w": 390,
+          "h": 81
+        }
+      ]
+    ]
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "name": "plan",
+    "differentPixelPercent": 0.42593267711751126,
+    "geometry": [
+      [
+        {
+          "class": "sheet",
+          "x": 0,
+          "y": 50.640625,
+          "w": 390,
+          "h": 793.359375
+        }
+      ],
+      [
+        {
+          "class": "sheet",
+          "x": 0,
+          "y": 50.640625,
+          "w": 390,
+          "h": 793.359375
+        }
+      ]
+    ],
+    "sheetInteriorDifferentPixelPercent": 0.061765491452991456
+  },
+  {
+    "width": 430,
+    "height": 932,
+    "name": "home",
+    "differentPixelPercent": 0,
+    "geometry": [
+      [
+        {
+          "class": "",
+          "x": 22,
+          "y": 125,
+          "w": 386,
+          "h": 44.890625
+        },
+        {
+          "class": "cal-head",
+          "x": 22,
+          "y": 240.890625,
+          "w": 386,
+          "h": 29
+        },
+        {
+          "class": "water",
+          "x": 22,
+          "y": 327.890625,
+          "w": 386,
+          "h": 80
+        },
+        {
+          "class": "step",
+          "x": 22,
+          "y": 429.890625,
+          "w": 386,
+          "h": 133
+        },
+        {
+          "class": "step",
+          "x": 22,
+          "y": 562.890625,
+          "w": 386,
+          "h": 264
+        },
+        {
+          "class": "step future",
+          "x": 22,
+          "y": 826.890625,
+          "w": 386,
+          "h": 60
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 851,
+          "w": 430,
+          "h": 81
+        }
+      ],
+      [
+        {
+          "class": "",
+          "x": 22,
+          "y": 125,
+          "w": 386,
+          "h": 44.890625
+        },
+        {
+          "class": "cal-head",
+          "x": 22,
+          "y": 240.890625,
+          "w": 386,
+          "h": 29
+        },
+        {
+          "class": "water",
+          "x": 22,
+          "y": 327.890625,
+          "w": 386,
+          "h": 80
+        },
+        {
+          "class": "step",
+          "x": 22,
+          "y": 429.890625,
+          "w": 386,
+          "h": 133
+        },
+        {
+          "class": "step",
+          "x": 22,
+          "y": 562.890625,
+          "w": 386,
+          "h": 264
+        },
+        {
+          "class": "step future",
+          "x": 22,
+          "y": 826.890625,
+          "w": 386,
+          "h": 60
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 851,
+          "w": 430,
+          "h": 81
+        }
+      ]
+    ]
+  },
+  {
+    "width": 430,
+    "height": 932,
+    "name": "nutrition",
+    "differentPixelPercent": 0,
+    "geometry": [
+      [
+        {
+          "class": "section-title",
+          "x": 22,
+          "y": 132,
+          "w": 386,
+          "h": 42.90625
+        },
+        {
+          "class": "cal-head",
+          "x": 22,
+          "y": 256.5,
+          "w": 386,
+          "h": 29
+        },
+        {
+          "class": "macro-row",
+          "x": 22,
+          "y": 368.5,
+          "w": 386,
+          "h": 91
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 851,
+          "w": 430,
+          "h": 81
+        }
+      ],
+      [
+        {
+          "class": "section-title",
+          "x": 22,
+          "y": 132,
+          "w": 386,
+          "h": 42.90625
+        },
+        {
+          "class": "cal-head",
+          "x": 22,
+          "y": 256.5,
+          "w": 386,
+          "h": 29
+        },
+        {
+          "class": "macro-row",
+          "x": 22,
+          "y": 368.5,
+          "w": 386,
+          "h": 91
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 851,
+          "w": 430,
+          "h": 81
+        }
+      ]
+    ]
+  },
+  {
+    "width": 430,
+    "height": 932,
+    "name": "activity",
+    "differentPixelPercent": 0.10629803373590178,
+    "geometry": [
+      [
+        {
+          "class": "section-title",
+          "x": 22,
+          "y": 132,
+          "w": 386,
+          "h": 42.90625
+        },
+        {
+          "class": "stat",
+          "x": 22,
+          "y": 232.703125,
+          "w": 386,
+          "h": 80
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 851,
+          "w": 430,
+          "h": 81
+        }
+      ],
+      [
+        {
+          "class": "section-title",
+          "x": 22,
+          "y": 132,
+          "w": 386,
+          "h": 42.90625
+        },
+        {
+          "class": "stat",
+          "x": 22,
+          "y": 232.703125,
+          "w": 386,
+          "h": 80
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 851,
+          "w": 430,
+          "h": 81
+        }
+      ]
+    ]
+  },
+  {
+    "width": 430,
+    "height": 932,
+    "name": "progress",
+    "differentPixelPercent": 0,
+    "geometry": [
+      [
+        {
+          "class": "section-title",
+          "x": 22,
+          "y": 132,
+          "w": 386,
+          "h": 42.90625
+        },
+        {
+          "class": "progress-group",
+          "x": 22,
+          "y": 232.703125,
+          "w": 386,
+          "h": 312
+        },
+        {
+          "class": "progress-group",
+          "x": 22,
+          "y": 544.703125,
+          "w": 386,
+          "h": 236
+        },
+        {
+          "class": "progress-group",
+          "x": 22,
+          "y": 780.703125,
+          "w": 386,
+          "h": 195.1875
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 851,
+          "w": 430,
+          "h": 81
+        }
+      ],
+      [
+        {
+          "class": "section-title",
+          "x": 22,
+          "y": 132,
+          "w": 386,
+          "h": 42.90625
+        },
+        {
+          "class": "progress-group",
+          "x": 22,
+          "y": 232.703125,
+          "w": 386,
+          "h": 312
+        },
+        {
+          "class": "progress-group",
+          "x": 22,
+          "y": 544.703125,
+          "w": 386,
+          "h": 236
+        },
+        {
+          "class": "progress-group",
+          "x": 22,
+          "y": 780.703125,
+          "w": 386,
+          "h": 195.1875
+        },
+        {
+          "class": "bottom",
+          "x": 0,
+          "y": 851,
+          "w": 430,
+          "h": 81
+        }
+      ]
+    ]
+  },
+  {
+    "width": 430,
+    "height": 932,
+    "name": "plan",
+    "differentPixelPercent": 3.651062980337359,
+    "geometry": [
+      [
+        {
+          "class": "sheet",
+          "x": 0,
+          "y": 55.921875,
+          "w": 430,
+          "h": 876.078125
+        }
+      ],
+      [
+        {
+          "class": "sheet",
+          "x": 0,
+          "y": 55.921875,
+          "w": 430,
+          "h": 876.078125
+        }
+      ]
+    ],
+    "sheetInteriorDifferentPixelPercent": 0.05629491979340311
+  }
+]

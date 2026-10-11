@@ -1,6 +1,6 @@
-# GYM OS — V1.4 PWA foundation
+# GYM OS — V1.5 dashboard migration
 
-A minimal React + TypeScript + Vite shell preserving the approved V1.2 Arabic RTL Dark Premium identity. Reference provenance and extracted tokens are documented in [docs/reference.md](docs/reference.md).
+The approved V1.2 interactive demo migrated into the V1.4 React + TypeScript + Vite PWA, preserving its Arabic RTL Dark Premium identity. Reference provenance and extracted tokens are documented in [docs/reference.md](docs/reference.md).
 
 ## Local development
 
@@ -38,6 +38,10 @@ The manifest supports standalone installation with Arabic language/direction, 19
 
 ## Scope
 
-V1.4 includes the responsive shell, design tokens, local icon assets, connectivity status, manifest, offline caching, update handling, unit tests, and production browser smoke tests. It has no meal/water/activity tracking, Plan B, account, application-data storage, backend, cloud database, paid service, or external analytics. There are no remotely hosted runtime fonts, scripts, or assets.
+V1.5 includes Dashboard, Nutrition, Activity, Progress, quick-add, settings, entry dialogs, and optional Smart Plan B. Meals, favorites, water, outdoor activities, weights, and confirmed home sessions persist under the existing `gym-os-v1.2-demo` localStorage key. Reset clears demo records; restoration recreates the sample dataset relative to the browser’s current date. This is an interactive demonstration, not a production personal-data store.
 
-See [docs/validation.md](docs/validation.md) for actual verification results and remaining device checks.
+Feature views live in `src/features`, pure rules and typed records in `src/domain`, demo state and persistence in `src/state`, and reusable dialogs/icons/summaries/PWA status in `src/ui`. No state library or runtime dependency was added. The manifest, installation icons, Workbox configuration, and explicit update handling are retained.
+
+No backend, accounts, external APIs/assets, IndexedDB model, migrations, backup/import/export, analytics, or deployment is included.
+
+See [V1.5 validation](docs/validation-v1.5.md) for executed checks, visual evidence, and remaining device checks. [V1.4 validation](docs/validation.md) remains historical evidence.
