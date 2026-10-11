@@ -76,7 +76,7 @@ function useDemoState(repository: PersonalRepository) {
     const version = generation.current;
     const token = ++operation.current;
     busyRef.current = true; setBusy(true); setNotice("جارٍ حفظ بياناتك…");
-    repository.commitSnapshot(optimistic).then((next) => {
+    repository.commit(change).then((next) => {
       if (generation.current === version && modeRef.current === "personal" && operation.current === token) {
         current.current = next; setData(next); setReadBlocked(false); setNotice(message);
       }
@@ -106,6 +106,10 @@ function useDemoState(repository: PersonalRepository) {
     update((draft) => { Object.assign(draft, structuredClone(next)); }, message);
   }
   function setMode(nextMode: Mode) {
+    if (busyRef.current) {
+      setNotice("انتظر اكتمال حفظ البيانات قبل تبديل الوضع.");
+      return;
+    }
     try { localStorage.setItem(MODE_KEY, nextMode); } catch { /* Mode is session state too. */ }
     generation.current += 1; modeRef.current = nextMode; busyRef.current = false; setBusy(false);
     const nextData = nextMode === "demo" ? loadDemo() : emptyPersonal();

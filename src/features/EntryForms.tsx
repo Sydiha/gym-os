@@ -116,12 +116,17 @@ export function EntryForm(props: Props) {
         </select></label>
       </> : <>
         {kind === "activity" ? <>
+          {editing?.homeSession ? <>
+            <p className="note">هذا سجل جلسة منزلية مكتملة. يمكن تعديل مدتها وتاريخها فقط.</p>
+            <label>المدة (دقيقة)<input name="minutes" type="number" min="1" max="600" step="1" required inputMode="numeric" defaultValue={editing.minutes} /></label>
+          </> : <>
           <label>النشاط<select name="type" defaultValue={(editing as Activity | undefined)?.type ?? "مشي"}>
             {["مشي", "جري", "دراجة", ...((editing && !["مشي", "جري", "دراجة"].includes((editing as Activity).type)) ? [(editing as Activity).type] : [])].map((type) => <option key={type}>{type}</option>)}
           </select></label>
           <label>المدة (دقيقة)<input name="minutes" type="number" min="1" max="600" step="1" required inputMode="numeric" defaultValue={(editing as Activity | undefined)?.minutes} /></label>
           <label>المسافة بالكيلومتر (اختياري)<input name="distance" type="number" min="0" max="500" step="0.1" inputMode="decimal" defaultValue={(editing as Activity | undefined)?.distance ?? ""} /></label>
           <label>وقت بدء النشاط<input lang="ar" name="startTime" type="time" defaultValue={timeDefault} /></label>
+          </>}
         </> : <label>الوزن بالكيلوغرام<input name="kg" type="number" min="20" max="400" step="0.1" inputMode="decimal" required defaultValue={(editing as Weight | undefined)?.kg} /></label>}
         <label>{kind === "activity" ? "تاريخ النشاط" : "تاريخ القياس"}<input lang="ar" name="date" type="date" defaultValue={dateDefault} max={day()} required /></label>
         {editing && <p className="note">التاريخ الحالي: {formatDate(editing.date)}{kind === "activity" ? ` · وقت البدء: ${formatTime((editing as Activity).startTime)}` : ""}</p>}

@@ -107,15 +107,6 @@ export function createPersonalRepository(adapter: PersonalAdapter = { load: load
       committed = structuredClone(next);
       return structuredClone(next);
     }),
-    commitSnapshot: (next: DemoData) => enqueue(async () => {
-      if (!isPersonalData(next)) throw new Error("Invalid personal data");
-      try {
-        await adapter.save(next);
-        committed = structuredClone(next);
-        blocked = false;
-        return structuredClone(next);
-      } catch (error) { blocked = true; throw error; }
-    }),
     restore: (next: DemoData) => enqueue(async () => {
       if (!isPersonalData(next)) throw new Error("Invalid backup data");
       try {

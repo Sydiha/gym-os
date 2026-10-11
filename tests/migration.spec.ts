@@ -201,6 +201,30 @@ test("activity time and weight history remain editable and chronological", async
   await page.locator(".record").filter({ hasText: "٩٨ كجم" }).getByRole("button", { name: "حذف قياس ٩٨ كجم" }).click();
   await expect(page.locator(".real-weight")).toContainText("٩٩");
 });
+
+test("home session editing exposes only fields saved by the home-session model", async ({ page }) => {
+  const source = await records(page);
+  const measurementDate = await page.evaluate(() => {
+    const d = new Date();
+    return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join("-");
+  });
+  source.homeSessions.push({ id: "home-session", date: measurementDate, minutes: 18, planned: 25, skipped: 7 });
+  await page.evaluate((data) => localStorage.setItem("gym-os-v1.2-demo", JSON.stringify(data)), source);
+  await page.reload();
+  await nav(page, "النشاط");
+  const session = page.locator(".record").filter({ hasText: "منزلي" });
+  await session.getByRole("button", { name: "تعديل منزلي" }).click();
+  await expect(page.locator("[name=minutes]")).toHaveValue("18");
+  await expect(page.locator("[name=date]")).toHaveValue(measurementDate);
+  await expect(page.locator("[name=type]")).toHaveCount(0);
+  await expect(page.locator("[name=distance]")).toHaveCount(0);
+  await expect(page.locator("[name=startTime]")).toHaveCount(0);
+  await page.locator("[name=minutes]").fill("20");
+  await page.getByRole("button", { name: "حفظ التعديل" }).click();
+  const saved = await records(page);
+  expect(saved.homeSessions).toEqual([{ id: "home-session", date: measurementDate, minutes: 20, planned: 25, skipped: 7 }]);
+});
+
 test("Plan B timing, rest, disable, decline and combined limitations", async ({
   page,
 }) => {

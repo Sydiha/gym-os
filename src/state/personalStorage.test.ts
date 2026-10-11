@@ -88,18 +88,46 @@ describe("Personal Mode data and backup format", () => {
     expect(backup.data.meals).toEqual([meal]);
     expect(events).toEqual(["start", "commit"]);
   });
-  it("serializes optimistic snapshots without dropping a legacy record or profile setting", async () => {
+  it("serializes overlapping changes against the latest committed snapshot", async () => {
     const state = adapter();
     const repo = createPersonalRepository(state.storage);
     await repo.load();
-    const first = emptyPersonal();
-    first.activities.push({ id: "legacy", type: "مشي", minutes: 20, distance: 0, date: "2026-10-10" });
-    const second = structuredClone(first);
-    second.settings.level = "متقدم";
-    second.settings.knee = true;
-    await Promise.all([repo.commitSnapshot(first), repo.commitSnapshot(second)]);
-    expect(state.read().activities[0]).toEqual(first.activities[0]);
+    const legacy = { id: "legacy", type: "مشي", minutes: 20, distance: 0, date: "2026-10-10" };
+    await Promise.all([
+      repo.commit((draft) => { draft.activities.push(legacy); }),
+      repo.commit((draft) => { draft.settings.level = "متقدم"; }),
+      repo.commit((draft) => { draft.settings.knee = true; }),
+    ]);
+    expect(state.read().activities[0]).toEqual(legacy);
     expect(state.read().settings).toMatchObject({ level: "متقدم", knee: true });
+  });
+
+  it("keeps failed intermediate snapshots out of storage and backup until recovery", async () => {
+    const state = adapter();
+    let writes = 0;
+    const repo = createPersonalRepository({
+      load: state.storage.load,
+      save: async (next) => {
+        writes++;
+        if (writes === 2) throw new Error("quota");
+        state.write(next);
+      },
+    });
+    const initial = await repo.load();
+    const firstWrite = repo.commit((draft) => { draft.water = 1; });
+    const failedWrite = repo.commit((draft) => { draft.goal = 2000; });
+    const queuedWrite = repo.commit((draft) => { draft.settings.knee = true; });
+
+    await firstWrite;
+    await expect(failedWrite).rejects.toThrow("quota");
+    await expect(queuedWrite).rejects.toThrow("recovery");
+    expect(state.read()).toEqual({ ...initial, water: 1 });
+    await expect(repo.exportBackup()).rejects.toThrow("recovery");
+
+    expect(await repo.load()).toEqual({ ...initial, water: 1 });
+    await repo.commit((draft) => { draft.settings.knee = true; });
+    expect(state.read()).toMatchObject({ water: 1, goal: 0, settings: { knee: true } });
+    expect((await repo.exportBackup()).data).toEqual(state.read());
   });
 
   it("keeps recovery locked after a failed write and recovers from a committed read", async () => {
