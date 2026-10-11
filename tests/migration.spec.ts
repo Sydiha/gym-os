@@ -39,7 +39,7 @@ test("meal, macros, favorites, estimates, water, weight and reload", async ({
     .getByRole("button", { name: "حفظ", exact: true })
     .click();
   await page.getByRole("button", { name: "ماذا أطلب اليوم؟" }).click();
-  await expect(page.getByRole("dialog")).toContainText("تقديرية");
+  await expect(page.getByRole("dialog")).toContainText("تقريبية وغير موثقة");
   await page.getByRole("button", { name: "اختر", exact: true }).first().click();
   await expect(page.locator(".cal-used")).toContainText("٢٬٤٨٠");
   await page.getByRole("button", { name: "إضافة لليوم" }).click();
