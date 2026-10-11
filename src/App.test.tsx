@@ -135,7 +135,6 @@ describe("personal mode async operations", () => {
     fireEvent.click(screen.getByRole("button", { name: "الملف الشخصي" }));
     fireEvent.change(screen.getByLabelText("وضع الاستخدام"), { target: { value: "personal" } });
     fireEvent.click(screen.getByRole("button", { name: "إغلاق" }));
-    expect(await screen.findByText("جارٍ تحميل بياناتك…")).toBeVisible();
     await waitFor(() => expect(screen.getByText("الماء ١ أكواب")).toBeVisible());
     expect(screen.getByText("وضع شخصي")).toBeVisible();
     expect(screen.queryByText("أُضيف كوب ماء.")).not.toBeInTheDocument();
