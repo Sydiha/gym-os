@@ -5,6 +5,8 @@ import {
   eligible,
   earnedMinutes,
   latestWeight,
+  formatTime,
+  hasDuplicateMeal,
   moves,
   nutrient,
   weeklyDays,
@@ -91,8 +93,20 @@ describe("V1.2 business rules", () => {
   it("shows the latest recorded weight, with no invented trend", () => {
     const d = seed();
     d.weights.push({ id: "new", kg: 99.4, date: day() });
+    d.weights.push({ id: "backdated", kg: 98, date: day(-1) });
     expect(latestWeight(d)?.kg).toBe(99.4);
     expect(latestWeight(emptyDemo())).toBeUndefined();
+  });
+  it("formats start times in Arabic and identifies missing legacy times", () => {
+    expect(formatTime("08:30")).toContain("٣٠");
+    expect(formatTime()).toBe("غير محدد");
+  });
+  it("detects same-day duplicate meals without blocking deliberate repeats", () => {
+    const d = emptyDemo();
+    d.meals.push({ id: "m", name: "غداء", calories: 0, protein: 0, carbs: 0, fat: 0, source: "تقدير", date: day() });
+    expect(hasDuplicateMeal(d, " غداء ", day())).toBe(true);
+    expect(hasDuplicateMeal(d, "غداء", day(), "m")).toBe(false);
+    expect(hasDuplicateMeal(d, "غداء", day(-1))).toBe(false);
   });
 });
 describe("demo persistence boundary", () => {

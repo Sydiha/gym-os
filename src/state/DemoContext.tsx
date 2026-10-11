@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import type { DemoData, Page, Sheet } from "../domain/types";
+import type { Activity, Meal, Weight } from "../domain/types";
 import { loadDemo, saveDemo } from "./persistence";
 import { createPersonalRepository, type PersonalBackup } from "./personalStorage";
 import { emptyPersonal } from "../domain/fixtures";
@@ -18,6 +19,10 @@ function initialMode(): Mode {
   catch { return "personal"; }
 }
 type PersonalRepository = ReturnType<typeof createPersonalRepository>;
+type EditableRecord =
+  | { kind: "meal"; record: Meal }
+  | { kind: "activity"; record: Activity & { homeSession?: boolean } }
+  | { kind: "weight"; record: Weight };
 function useDemoState(repository: PersonalRepository) {
   const [mode, setModeState] = useState<Mode>(initialMode);
   const [data, setData] = useState(() => mode === "demo" ? loadDemo() : emptyPersonal());
@@ -31,6 +36,7 @@ function useDemoState(repository: PersonalRepository) {
   const operation = useRef(0);
   const [page, setPage] = useState<Page>("الرئيسية");
   const [sheet, setSheet] = useState<Sheet | null>(null);
+  const [editing, setEditing] = useState<EditableRecord | null>(null);
   const [notice, setNotice] = useState("");
   useEffect(() => {
     let live = true;
@@ -60,21 +66,34 @@ function useDemoState(repository: PersonalRepository) {
   function update(change: (draft: DemoData) => void, message = "") {
     if (!ready) { setNotice("انتظر حتى تكتمل قراءة البيانات قبل تعديلها."); return; }
     if (mode === "personal" && readBlocked) { setNotice("تعذر تعديل البيانات قبل نجاح قراءتها من مساحة التخزين."); return; }
-    if (busyRef.current) { setNotice("جارٍ حفظ التغيير السابق. انتظر حتى يكتمل."); return; }
     if (mode === "demo") {
       const next = structuredClone(current.current); change(next); current.current = next; setData(next); persistDemo(next, message); return;
     }
+    const optimistic = structuredClone(current.current);
+    change(optimistic);
+    current.current = optimistic;
+    setData(optimistic);
     const version = generation.current;
     const token = ++operation.current;
     busyRef.current = true; setBusy(true); setNotice("جارٍ حفظ بياناتك…");
-    repository.commit(change).then((next) => {
+    repository.commitSnapshot(optimistic).then((next) => {
       if (generation.current === version && modeRef.current === "personal" && operation.current === token) {
         current.current = next; setData(next); setReadBlocked(false); setNotice(message);
       }
     }).catch(() => {
       if (generation.current === version && modeRef.current === "personal" && operation.current === token) {
-        setReadBlocked(repository.isBlocked());
-        setNotice("تعذر حفظ بياناتك. بقيت آخر نسخة محفوظة، وأوقفنا التعديلات حتى تعيد التحميل أو تستعيد نسخة احتياطية.");
+        setReadBlocked(true);
+        void repository.load().then((saved) => {
+          if (generation.current === version && operation.current === token) {
+            current.current = saved; setData(saved); setReadBlocked(false);
+            setNotice("تعذر حفظ التغيير؛ أعدنا عرض آخر بيانات محفوظة.");
+          }
+        }).catch(() => {
+          if (generation.current === version && operation.current === token) {
+            setReadBlocked(true);
+            setNotice("تعذر حفظ بياناتك أو قراءة النسخة المحفوظة. أعد تحميل التطبيق أو استعد نسخة احتياطية.");
+          }
+        });
       }
     }).finally(() => {
       if (generation.current === version && operation.current === token) { busyRef.current = false; setBusy(false); }
@@ -146,7 +165,21 @@ function useDemoState(repository: PersonalRepository) {
           ? document.activeElement
           : null;
     setNotice("");
+    setEditing(null);
     setSheet(next);
+  }
+  function openEdit(next: EditableRecord) {
+    if (!sheet)
+      opener.current = document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    setNotice("");
+    setEditing(next);
+    setSheet(next.kind);
+  }
+  function closeSheet() {
+    setSheet(null);
+    setEditing(null);
   }
   function navigate(next: Page) {
     setPage(next);
@@ -169,6 +202,9 @@ function useDemoState(repository: PersonalRepository) {
     navigate,
     sheet,
     setSheet,
+    closeSheet,
+    editing,
+    openEdit,
     open,
     notice,
     time,

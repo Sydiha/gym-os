@@ -25,12 +25,37 @@ export const weeklyMinutes = (data: DemoData) =>
   weekly(data).reduce((n, a) => n + a.minutes, 0);
 export const todayMeals = (data: DemoData) =>
   data.meals.filter((m) => m.date === day());
+export function hasDuplicateMeal(data: DemoData, name: string, date: string, excludeId?: string) {
+  const normalized = name.trim().toLocaleLowerCase();
+  return data.meals.some((meal) => meal.id !== excludeId && meal.date === date &&
+    meal.name.trim().toLocaleLowerCase() === normalized);
+}
 export const nutrient = (data: DemoData, key: Nutrient) =>
   todayMeals(data).reduce((n, m) => n + m[key], 0);
 export const latestWeight = (data: DemoData) =>
   [...data.weights].sort(
     (a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id),
   )[0];
+export const localTime = (date = new Date()) =>
+  `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+export function formatTime(value?: string) {
+  if (!value || !/^([01]\d|2[0-3]):[0-5]\d$/.test(value)) return "غير محدد";
+  const [hours, minutes] = value.split(":").map(Number);
+  return new Intl.DateTimeFormat("ar-SA", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(new Date(2000, 0, 1, hours, minutes));
+}
+export function formatDate(value: string) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return value;
+  return new Intl.DateTimeFormat("ar-SA", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
+}
 const minutes = (s: string) => Number(s.slice(0, 2)) * 60 + Number(s.slice(3));
 export function eligible(data: DemoData, time: string) {
   if (

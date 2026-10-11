@@ -19,6 +19,7 @@ test("meal, macros, favorites, estimates, water, weight and reload", async ({
   await page.getByRole("button", { name: "+ كوب", exact: true }).click();
   await expect(page.locator(".water")).toContainText("٤");
   await page.getByRole("button", { name: "سجّل وجبة", exact: true }).click();
+  await expect(page.locator(".sheet form>.wide")).toHaveCSS("position", "sticky");
   for (const [name, value] of [
     ["name", "غداء"],
     ["calories", "500"],
@@ -93,6 +94,111 @@ test("walking, running, past cycling and weekly summaries", async ({
   await expect(
     page.getByRole("button", { name: "جرب تمرين منزلي" }),
   ).toHaveCount(0);
+});
+
+test("meal edit, delete, favorites removal, duplicate warning, and numeric boundaries", async ({ page }) => {
+  await nav(page, "التغذية");
+  await page.getByRole("button", { name: "سجّل وجبة", exact: true }).click();
+  for (const [name, value] of [["name", "وجبة إدارة"], ["calories", "400"], ["protein", "20"], ["carbs", "30"], ["fat", "10"]])
+    await page.locator(`[name=${name}]`).fill(value);
+  await page.getByRole("button", { name: "حفظ الوجبة" }).click();
+  await expect(page.locator(".cal-used")).toContainText("١٬٨٢٠");
+  const meal = page.locator(".record").filter({ hasText: "وجبة إدارة" }).first();
+  await meal.getByRole("button", { name: "حفظ", exact: true }).click();
+  await expect(page.getByRole("button", { name: "محفوظة" })).toHaveCount(1);
+  await meal.getByRole("button", { name: "تعديل وجبة إدارة" }).click();
+  await page.locator("[name=calories]").fill("600");
+  await page.locator("[name=protein]").fill("25");
+  await page.getByRole("button", { name: "حفظ التعديل" }).click();
+  await expect(page.locator(".cal-used")).toContainText("٢٬٠٢٠");
+
+  const dialog = page.waitForEvent("dialog");
+  await page.getByRole("button", { name: "إضافة لليوم" }).click();
+  const duplicateConfirm = await dialog;
+  expect(duplicateConfirm.message()).toContain("وجبة بالاسم نفسه اليوم");
+  await duplicateConfirm.accept();
+  const removeFavoriteDialog = page.waitForEvent("dialog");
+  await page.getByRole("button", { name: "إزالة وجبة إدارة من المفضلة" }).click();
+  (await removeFavoriteDialog).accept();
+  await expect(page.getByRole("button", { name: "تعديل وجبة إدارة" })).toHaveCount(2);
+  await page.getByRole("button", { name: "سجّل وجبة", exact: true }).click();
+  for (const [name, value] of [["name", "وجبة إدارة"], ["calories", "400"], ["protein", "20"], ["carbs", "30"], ["fat", "10"]])
+    await page.locator(`[name=${name}]`).fill(value);
+  const duplicateEntryDialog = page.waitForEvent("dialog");
+  await page.getByRole("button", { name: "حفظ الوجبة" }).click();
+  const duplicateFormConfirm = await duplicateEntryDialog;
+  expect(duplicateFormConfirm.message()).toContain("توجد وجبة بالاسم نفسه");
+  await duplicateFormConfirm.accept();
+  await expect(page.getByRole("button", { name: "تعديل وجبة إدارة" })).toHaveCount(3);
+  for (let i = 0; i < 3; i++) {
+    const removeDialog = page.waitForEvent("dialog");
+    await page.getByRole("button", { name: "حذف وجبة إدارة" }).first().click();
+    (await removeDialog).accept();
+  }
+  await expect(page.getByRole("button", { name: "تعديل وجبة إدارة" })).toHaveCount(0);
+
+  await page.getByRole("button", { name: "سجّل وجبة", exact: true }).click();
+  await page.locator("[name=name]").fill("وجبة سالبة");
+  await page.locator("[name=calories]").fill("-5");
+  await page.getByRole("button", { name: "حفظ الوجبة" }).click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(page.locator(".record").filter({ hasText: "وجبة سالبة" })).toHaveCount(0);
+  await page.locator("[name=name]").fill("وجبة صفرية");
+  await page.locator("[name=calories]").fill("0");
+  await page.getByRole("button", { name: "حفظ الوجبة" }).click();
+  await expect(page.locator(".record").filter({ hasText: "وجبة صفرية" })).toContainText("٠ سعرة: قيمة صفرية مدخلة");
+});
+
+test("activity time and weight history remain editable and chronological", async ({ page }) => {
+  await nav(page, "النشاط");
+  await page.getByRole("button", { name: "تسجيل نشاط خارجي", exact: true }).click();
+  await expect(page.locator("[name=startTime]")).not.toHaveValue("");
+  await page.locator("[name=minutes]").fill("0");
+  await page.getByRole("button", { name: "حفظ النشاط" }).click();
+  await expect(page.locator("[name=minutes]")).toHaveJSProperty("validationMessage", "أدخل مدة صحيحة أكبر من صفر وحتى ٦٠٠ دقيقة.");
+  await page.locator("[name=minutes]").fill("20");
+  await page.locator("[name=distance]").fill("0");
+  await page.locator("[name=startTime]").fill("08:30");
+  await page.locator("[name=date]").fill(await page.evaluate(() => {
+    const d = new Date(); return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join("-");
+  }));
+  await page.getByRole("button", { name: "حفظ النشاط" }).click();
+  const activity = page.locator(".record").filter({ hasText: "٠ كم" });
+  await expect(activity).toContainText("٣٠");
+  expect((await records(page)).activities.some((item: { distance: number; startTime?: string }) => item.distance === 0 && item.startTime === "08:30")).toBe(true);
+  await activity.getByRole("button", { name: "تعديل مشي" }).click();
+  await page.locator("[name=minutes]").fill("25");
+  await page.getByRole("button", { name: "حفظ التعديل" }).click();
+  await expect(page.locator(".record").filter({ hasText: "٢٥ دقيقة" })).toContainText("٣٠");
+  const deleteActivityDialog = page.waitForEvent("dialog");
+  await page.locator(".record").filter({ hasText: "٢٥ دقيقة" }).getByRole("button", { name: "حذف مشي" }).click();
+  (await deleteActivityDialog).accept();
+  await expect(page.locator(".record").filter({ hasText: "٢٥ دقيقة" })).toHaveCount(0);
+
+  await nav(page, "التقدم");
+  async function addWeight(kg: string, offset: number) {
+    await page.getByRole("button", { name: "سجّل الوزن" }).click();
+    await page.locator("[name=kg]").fill(kg);
+    await page.locator("[name=date]").fill(await page.evaluate((n) => {
+      const d = new Date(); d.setDate(d.getDate() + n);
+      return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join("-");
+    }, offset));
+    await page.getByRole("button", { name: "حفظ الوزن" }).click();
+  }
+  await addWeight("99", -1);
+  await addWeight("98", -3);
+  await expect(page.locator(".real-weight")).toContainText("٩٩");
+  const oldWeight = page.locator(".record").filter({ hasText: "٩٨ كجم" });
+  await oldWeight.getByRole("button", { name: "تعديل قياس ٩٨ كجم" }).click();
+  await page.locator("[name=date]").fill(await page.evaluate(() => {
+    const d = new Date(); return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join("-");
+  }));
+  await page.getByRole("button", { name: "حفظ التعديل" }).click();
+  await expect(page.locator(".real-weight")).toContainText("٩٨");
+  const deleteWeightDialog = page.waitForEvent("dialog");
+  await page.locator(".record").filter({ hasText: "٩٨ كجم" }).getByRole("button", { name: "حذف قياس ٩٨ كجم" }).click();
+  (await deleteWeightDialog).accept();
+  await expect(page.locator(".real-weight")).toContainText("٩٩");
 });
 test("Plan B timing, rest, disable, decline and combined limitations", async ({
   page,

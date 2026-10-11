@@ -5,12 +5,16 @@ import { Restaurant } from "./Nutrition";
 import { Profile } from "./Settings";
 import { PlanB } from "./PlanB";
 export function Dialogs() {
-  const { sheet, setSheet, opener, open, water } = useDemo();
+  const { sheet, closeSheet, opener, open, water, editing } = useDemo();
   if (!sheet) return null;
   return (
-    <Dialog close={() => setSheet(null)} opener={opener} stage={sheet}>
-      {sheet === "meal" || sheet === "activity" || sheet === "weight" ? (
-        <EntryForm key={sheet} kind={sheet} />
+    <Dialog close={closeSheet} opener={opener} stage={sheet}>
+      {sheet === "meal" ? (
+        <EntryForm key={`meal-${editing?.record.id ?? "new"}`} kind="meal" editing={editing?.kind === "meal" ? editing.record : undefined} />
+      ) : sheet === "activity" ? (
+        <EntryForm key={`activity-${editing?.record.id ?? "new"}`} kind="activity" editing={editing?.kind === "activity" ? editing.record : undefined} />
+      ) : sheet === "weight" ? (
+        <EntryForm key={`weight-${editing?.record.id ?? "new"}`} kind="weight" editing={editing?.kind === "weight" ? editing.record : undefined} />
       ) : sheet === "restaurant" ? (
         <Restaurant />
       ) : sheet === "profile" ? (
