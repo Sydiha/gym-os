@@ -1,6 +1,7 @@
 import { useDemo } from "../state/DemoContext";
 import { emptyDemo, seed } from "../domain/fixtures";
 import type { Settings } from "../domain/types";
+import { makeBackup, parseBackup } from "../state/personalStorage";
 export function Constraints({ prefix }: { prefix: string }) {
   const { data, update } = useDemo();
   return (
@@ -101,14 +102,35 @@ export function DemoControls() {
   );
 }
 export function Profile() {
-  const { data, update } = useDemo();
+  const { data, update, mode, setMode, restorePersonal, readBlocked, ready } = useDemo();
+  async function importFile(file?: File) {
+    if (!file) return;
+    try {
+      const backup = parseBackup(JSON.parse(await file.text()));
+      const count = backup.data.meals.length + backup.data.activities.length + backup.data.weights.length + backup.data.homeSessions.length;
+      if (!window.confirm(`ستُستبدل السجلات الشخصية الحالية. تحتوي النسخة على ${count} سجلًا و${backup.data.favorites.length} وجبة مفضلة. هل تريد المتابعة؟`)) return;
+      await restorePersonal(backup.data);
+    } catch (error) { alert(error instanceof Error ? error.message : "تعذر قراءة ملف النسخة الاحتياطية."); }
+  }
+  function exportFile() {
+    const blob = new Blob([JSON.stringify(makeBackup(data), null, 2)], { type: "application/json" });
+    const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "gym-os-backup.json"; link.click(); URL.revokeObjectURL(link.href);
+  }
   return (
     <>
       <h2>الملف والإعدادات</h2>
+      <label>وضع الاستخدام
+        <select value={mode} onChange={(e) => setMode(e.target.value as "personal" | "demo")}>
+          <option value="personal">الوضع الشخصي — بياناتي</option><option value="demo">العرض التجريبي — بيانات نموذجية</option>
+        </select>
+      </label>
       <p>
-        مستوى هذا الحساب التجريبي مستقل عن بيانات الأصدقاء. اختيار المستوى يغيّر
+        {mode === "demo" ? "بيانات العرض التجريبي مستقلة عن بياناتك الشخصية. " : "بياناتك محفوظة على هذا الجهاز في المتصفح. "}اختيار المستوى يغيّر
         صياغة الواجهة؛ قيود الركبة والكتف تضبط بديل المنزل.
       </p>
+      {mode === "personal" && <label>هدف السعرات اليومي (اختياري)
+        <input type="number" min="0" max="10000" step="50" value={data.goal || ""} placeholder="لم يُحدّد" onChange={(e) => update((d) => { d.goal = Number(e.target.value); })} />
+      </label>}
       <label>
         المستوى
         <select
@@ -125,6 +147,12 @@ export function Profile() {
         </select>
       </label>
       <Constraints prefix="profile" />
+      {mode === "personal" && <>
+        <h3>النسخ الاحتياطي والاستعادة</h3>
+        <p className="note">قد تُمسح مساحة تخزين المتصفح عند حذف بياناته أو تغيير الجهاز. احتفظ بنسخة احتياطية في مكان آمن؛ لا يرسلها التطبيق إلى أي جهة.</p>
+        <button className="outline" disabled={!ready || readBlocked} onClick={exportFile}>تصدير نسخة احتياطية</button>
+        <label>استعادة نسخة JSON احتياطية<input type="file" accept="application/json,.json" disabled={!ready} onChange={(e) => void importFile(e.target.files?.[0])} /></label>
+      </>}
       <p className="note">لا توجد حسابات حقيقية أو تسجيل دخول في هذه النسخة.</p>
     </>
   );

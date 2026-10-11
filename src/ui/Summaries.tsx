@@ -12,6 +12,8 @@ export function Calories() {
   const { data } = useDemo();
   const used = nutrient(data, "calories"),
     left = data.goal - used;
+  if (!data.goal)
+    return <div className="cal-head"><span>لم تحدد هدفًا يوميًا للسعرات</span><span className="muted">{fmt(used)} مسجلة اليوم</span></div>;
   return (
     <>
       <div className="cal-head">

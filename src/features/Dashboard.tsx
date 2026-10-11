@@ -4,7 +4,7 @@ import { Calories, ActivityBars, WeightVisual } from "../ui/Summaries";
 import { Icon } from "../ui/Icon";
 import { DemoControls } from "./Settings";
 export function Dashboard() {
-  const { data, time, open, update, water } = useDemo();
+  const { data, time, open, update, water, mode } = useDemo();
   const rest = data.settings.dayType === "rest",
     done = data.homeSessions.some((s) => s.date === day()),
     weight = latestWeight(data);
@@ -124,7 +124,7 @@ export function Dashboard() {
         </div>
         <div className="chart-foot">من بيانات Demo المسجلة</div>
       </section>
-      <DemoControls />
+      {mode === "demo" && <DemoControls />}
     </>
   );
 }

@@ -21,6 +21,8 @@ vi.mock("virtual:pwa-register/react", () => ({
 
 beforeEach(() => {
   localStorage.clear();
+  // Keep the V1.5 shell regression checks on their original demo fixtures.
+  localStorage.setItem("gym-os-mode", "demo");
   sw.offlineReady = false;
   sw.needRefresh = false;
   Object.defineProperty(navigator, "onLine", {

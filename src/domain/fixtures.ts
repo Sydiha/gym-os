@@ -46,6 +46,14 @@ export function emptyDemo(): DemoData {
     homeSessions: [],
   };
 }
+export function emptyPersonal(): DemoData {
+  const data = emptyDemo();
+  return {
+    ...data,
+    goal: 0,
+    settings: { ...data.settings, expected: "none", dayType: "activity" },
+  };
+}
 export const restaurantOptions = [
   {
     name: "ساندويتش دجاج مشوي مع سلطة",
