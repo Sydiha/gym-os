@@ -203,7 +203,12 @@ test("activity time and weight history remain editable and chronological", async
 });
 
 test("home session editing exposes only fields saved by the home-session model", async ({ page }) => {
-  const source = await records(page);
+  const source = {
+    goal: 2100, water: 0, meals: [], favorites: [], activities: [], weights: [],
+    homeSessions: [],
+    settings: { homeSuggestions: true, knee: false, shoulder: false, level: "مبتدئ", expected: "18:00", dayType: "activity" },
+    declinedDate: null,
+  };
   const measurementDate = await page.evaluate(() => {
     const d = new Date();
     return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join("-");
