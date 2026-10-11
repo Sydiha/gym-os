@@ -36,12 +36,14 @@ Service workers are disabled during `npm run dev`. They require HTTPS or localho
 
 The manifest supports standalone installation with Arabic language/direction, 192px and 512px icons, a maskable icon, and an Apple touch icon. Installation is managed by the browser; no custom install prompt is provided. New builds wait for the user to choose **تحديث الآن** before activating and reloading; normal service-worker registration checks for updates on app load. Registration failures leave the shell available with an explanatory status. Browser-controlled cache eviction can remove offline availability.
 
+See [V1.6.1 pilot readiness](docs/validation-v1.6.1.md) for a static hosting recommendation, production bundle audit, and manual iPhone Safari acceptance checklist.
+
 ## Scope
 
-V1.5 includes Dashboard, Nutrition, Activity, Progress, quick-add, settings, entry dialogs, and optional Smart Plan B. Meals, favorites, water, outdoor activities, weights, and confirmed home sessions persist under the existing `gym-os-v1.2-demo` localStorage key. Reset clears demo records; restoration recreates the sample dataset relative to the browser’s current date. This is an interactive demonstration, not a production personal-data store.
+V1.5 includes Dashboard, Nutrition, Activity, Progress, quick-add, settings, entry dialogs, and optional Smart Plan B. Demo meals, favorites, water, outdoor activities, weights, and confirmed home sessions persist under the existing `gym-os-v1.2-demo` localStorage key. Reset clears demo records; restoration recreates the sample dataset relative to the browser’s current date. Demo mode is an interactive demonstration. Personal mode stores records locally on the device; it is not cloud-synced or guaranteed durable, so users should keep an external backup.
 
-Feature views live in `src/features`, pure rules and typed records in `src/domain`, demo state and persistence in `src/state`, and reusable dialogs/icons/summaries/PWA status in `src/ui`. No state library or runtime dependency was added. The manifest, installation icons, Workbox configuration, and explicit update handling are retained.
+Feature views live in `src/features`, pure rules and typed records in `src/domain`, demo state and persistence in `src/state`, and reusable dialogs/icons/summaries/PWA status in `src/ui`. Personal records use device-local IndexedDB with manual JSON backup/restore; Demo records remain isolated in a separate localStorage key. Neither is synced to a backend. No state library or runtime dependency was added. The manifest, installation icons, Workbox configuration, and explicit update handling are retained.
 
-No backend, accounts, external APIs/assets, IndexedDB model, migrations, backup/import/export, analytics, or deployment is included.
+No backend, accounts, external APIs/assets, analytics, or deployment is included.
 
 See [V1.5 validation](docs/validation-v1.5.md) for executed checks, visual evidence, and remaining device checks. [V1.4 validation](docs/validation.md) remains historical evidence.
