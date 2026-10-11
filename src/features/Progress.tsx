@@ -1,6 +1,7 @@
 import { useDemo } from "../state/DemoContext";
 import {
   fmt,
+  formatDate,
   latestWeight,
   week,
   weeklyDays,
@@ -8,8 +9,13 @@ import {
 } from "../domain/rules";
 import { ActivityBars, WeightVisual } from "../ui/Summaries";
 export function Progress() {
-  const { data, open } = useDemo();
+  const { data, open, openEdit, update } = useDemo();
   const meals = data.meals.filter((m) => week().includes(m.date));
+  const weights = [...data.weights].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+  function removeWeight(id: string) {
+    if (!window.confirm("هل تريد حذف قياس الوزن هذا؟ ستبقى بقية القياسات محفوظة.")) return;
+    update((draft) => { draft.weights = draft.weights.filter((weight) => weight.id !== id); }, "حُذف قياس الوزن وتحدّث القياس الأحدث.");
+  }
   return (
     <>
       <h1 className="section-title">التقدم</h1>
@@ -32,6 +38,16 @@ export function Progress() {
         <button className="pill" onClick={() => open("weight")}>
           سجّل الوزن
         </button>
+        {weights.length > 0 && <>
+          <h3>سجل قياسات الوزن</h3>
+          {weights.map((weight) => <div className="record" key={weight.id}>
+            <span>{fmt(weight.kg)} كجم<small>{formatDate(weight.date)}</small></span>
+            <div className="record-actions">
+              <button className="small-btn" aria-label={`تعديل قياس ${fmt(weight.kg)} كجم`} onClick={() => openEdit({ kind: "weight", record: weight })}>تعديل</button>
+              <button className="small-btn" aria-label={`حذف قياس ${fmt(weight.kg)} كجم`} onClick={() => removeWeight(weight.id)}>حذف</button>
+            </div>
+          </div>)}
+        </>}
       </div>
       <div className="progress-group">
         <h2>التغذية · آخر ٧ أيام</h2>

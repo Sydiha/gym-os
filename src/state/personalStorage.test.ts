@@ -37,6 +37,22 @@ describe("Personal Mode data and backup format", () => {
     expect(parseBackup(JSON.parse(JSON.stringify(backup))).data).toEqual(source);
     expect(Number.isFinite(Date.parse(backup.exportedAt))).toBe(true);
   });
+  it("accepts legacy activity records without start time and keeps new times optional", () => {
+    const source = emptyPersonal();
+    source.activities.push({ id: "legacy-activity", type: "مشي", minutes: 20, distance: 0, date: "2026-10-10" });
+    const legacy = makeBackup(source);
+    expect(parseBackup(JSON.parse(JSON.stringify(legacy))).data.activities[0]).toEqual(source.activities[0]);
+    source.activities[0].startTime = "08:30";
+    expect(parseBackup(JSON.parse(JSON.stringify(makeBackup(source)))).data.activities[0].startTime).toBe("08:30");
+  });
+  it("keeps valid zero nutrition values and rejects negative or non-finite values", () => {
+    const source = emptyPersonal();
+    source.meals.push({ id: "zero-meal", name: "صفر", calories: 0, protein: 0, carbs: 0, fat: 0, source: "تقدير", date: "2026-10-11" });
+    expect(parseBackup(makeBackup(source)).data.meals[0].calories).toBe(0);
+    expect(() => parseBackup(makeBackup({ ...source, meals: [{ ...source.meals[0], calories: -1 }] }))).toThrow();
+    expect(() => parseBackup(makeBackup({ ...source, meals: [{ ...source.meals[0], calories: Number.NaN }] }))).toThrow();
+    expect(() => parseBackup(makeBackup({ ...source, meals: [{ ...source.meals[0], calories: Number.POSITIVE_INFINITY }] }))).toThrow();
+  });
   it("rejects unsupported versions and malformed records", () => {
     const backup = makeBackup(emptyPersonal());
     expect(() => parseBackup({ ...backup, schemaVersion: 2 })).toThrow();
@@ -71,6 +87,47 @@ describe("Personal Mode data and backup format", () => {
     const backup = await backupPromise;
     expect(backup.data.meals).toEqual([meal]);
     expect(events).toEqual(["start", "commit"]);
+  });
+  it("serializes overlapping changes against the latest committed snapshot", async () => {
+    const state = adapter();
+    const repo = createPersonalRepository(state.storage);
+    await repo.load();
+    const legacy = { id: "legacy", type: "مشي", minutes: 20, distance: 0, date: "2026-10-10" };
+    await Promise.all([
+      repo.commit((draft) => { draft.activities.push(legacy); }),
+      repo.commit((draft) => { draft.settings.level = "متقدم"; }),
+      repo.commit((draft) => { draft.settings.knee = true; }),
+    ]);
+    expect(state.read().activities[0]).toEqual(legacy);
+    expect(state.read().settings).toMatchObject({ level: "متقدم", knee: true });
+  });
+
+  it("keeps failed intermediate snapshots out of storage and backup until recovery", async () => {
+    const state = adapter();
+    let writes = 0;
+    const repo = createPersonalRepository({
+      load: state.storage.load,
+      save: async (next) => {
+        writes++;
+        if (writes === 2) throw new Error("quota");
+        state.write(next);
+      },
+    });
+    const initial = await repo.load();
+    const firstWrite = repo.commit((draft) => { draft.water = 1; });
+    const failedWrite = repo.commit((draft) => { draft.goal = 2000; });
+    const queuedWrite = repo.commit((draft) => { draft.settings.knee = true; });
+
+    await firstWrite;
+    await expect(failedWrite).rejects.toThrow("quota");
+    await expect(queuedWrite).rejects.toThrow("recovery");
+    expect(state.read()).toEqual({ ...initial, water: 1 });
+    await expect(repo.exportBackup()).rejects.toThrow("recovery");
+
+    expect(await repo.load()).toEqual({ ...initial, water: 1 });
+    await repo.commit((draft) => { draft.settings.knee = true; });
+    expect(state.read()).toMatchObject({ water: 1, goal: 0, settings: { knee: true } });
+    expect((await repo.exportBackup()).data).toEqual(state.read());
   });
 
   it("keeps recovery locked after a failed write and recovers from a committed read", async () => {

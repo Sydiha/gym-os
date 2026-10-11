@@ -37,7 +37,9 @@ export function isDemoData(v: unknown): v is DemoData {
         record(a) &&
         typeof a.type === "string" &&
         number(a.minutes) &&
-        (a.distance === null || number(a.distance)),
+        (a.distance === null || number(a.distance)) &&
+        (a.startTime === undefined ||
+          (typeof a.startTime === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(a.startTime))),
     ) &&
     list("weights", (w) => object(w) && record(w) && number(w.kg)) &&
     list(

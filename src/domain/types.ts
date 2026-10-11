@@ -14,6 +14,8 @@ export interface Activity {
   minutes: number;
   distance: number | null;
   date: string;
+  /** Optional for records created before start-time tracking was introduced. */
+  startTime?: string;
 }
 export interface Weight {
   id: string;

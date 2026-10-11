@@ -19,11 +19,10 @@ export function Constraints({ prefix }: { prefix: string }) {
             id={`${prefix}-${key}`}
             type="checkbox"
             checked={data.settings[key]}
-            onChange={(e) =>
-              update((d) => {
-                d.settings[key] = e.target.checked;
-              })
-            }
+            onChange={(e) => {
+              const checked = e.currentTarget.checked;
+              update((d) => { d.settings[key] = checked; });
+            }}
           />
           {text}
         </label>
@@ -55,11 +54,10 @@ export function DemoControls() {
         <select
           id="expected"
           value={data.settings.expected}
-          onChange={(e) =>
-            update((d) => {
-              d.settings.expected = e.target.value as Settings["expected"];
-            })
-          }
+          onChange={(e) => {
+            const value = e.currentTarget.value as Settings["expected"];
+            update((d) => { d.settings.expected = value; });
+          }}
         >
           <option value="18:00">٦ مساءً</option>
           <option value="none">لا يوجد موعد محدد</option>
@@ -70,11 +68,10 @@ export function DemoControls() {
         <select
           id="dayType"
           value={data.settings.dayType}
-          onChange={(e) =>
-            update((d) => {
-              d.settings.dayType = e.target.value as Settings["dayType"];
-            })
-          }
+          onChange={(e) => {
+            const value = e.currentTarget.value as Settings["dayType"];
+            update((d) => { d.settings.dayType = value; });
+          }}
         >
           <option value="activity">يوم نشاط</option>
           <option value="rest">يوم راحة</option>
@@ -137,11 +134,10 @@ export function Profile() {
         المستوى
         <select
           value={data.settings.level}
-          onChange={(e) =>
-            update((d) => {
-              d.settings.level = e.target.value as Settings["level"];
-            })
-          }
+          onChange={(e) => {
+            const value = e.currentTarget.value as Settings["level"];
+            update((d) => { d.settings.level = value; });
+          }}
         >
           {["مبتدئ", "متوسط", "متقدم"].map((x) => (
             <option key={x}>{x}</option>
@@ -153,7 +149,7 @@ export function Profile() {
         <h3>النسخ الاحتياطي والاستعادة</h3>
         <p className="note">قد تُمسح مساحة تخزين المتصفح عند حذف بياناته أو تغيير الجهاز. احتفظ بنسخة احتياطية في مكان آمن؛ لا يرسلها التطبيق إلى أي جهة.</p>
         <button className="outline" disabled={!ready || readBlocked} onClick={exportFile}>تصدير نسخة احتياطية</button>
-        <label>استعادة نسخة JSON احتياطية<input type="file" accept="application/json,.json" disabled={!ready} onChange={(e) => void importFile(e.target.files?.[0])} /></label>
+        <label lang="ar" dir="rtl">استعادة نسخة JSON احتياطية<input lang="ar" dir="rtl" type="file" accept="application/json,.json" disabled={!ready} onChange={(e) => void importFile(e.target.files?.[0])} /></label>
       </>}
       <p className="note">لا توجد حسابات حقيقية أو تسجيل دخول في هذه النسخة.</p>
     </>

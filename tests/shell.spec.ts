@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 
 test("Personal and Demo modes stay isolated and Personal starts empty", async ({ page }) => {
   await page.goto("/");
@@ -19,6 +20,56 @@ test("Personal and Demo modes stay isolated and Personal starts empty", async ({
   await expect(page.locator(".demo-label")).toHaveText("وضع شخصي");
   await page.getByRole("navigation").getByRole("button", { name: "التغذية", exact: true }).click();
   await expect(page.locator(".empty").first()).toContainText("لم تسجّل وجبة اليوم");
+});
+
+test("Personal profile settings persist after a reload", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByText("جارٍ تحميل بياناتك…")).toHaveCount(0);
+  await page.getByRole("button", { name: "الملف الشخصي" }).click();
+  await page.getByLabel("المستوى").selectOption("متقدم");
+  await page.locator("#profile-homeSuggestions").check();
+  await page.locator("#profile-knee").check();
+  await page.locator("#profile-shoulder").check();
+  await page.getByRole("button", { name: "إغلاق" }).click();
+  await page.reload();
+  await page.getByRole("button", { name: "الملف الشخصي" }).click();
+  await expect(page.getByLabel("المستوى")).toHaveValue("متقدم");
+  await expect(page.locator("#profile-homeSuggestions")).toBeChecked();
+  await expect(page.locator("#profile-knee")).toBeChecked();
+  await expect(page.locator("#profile-shoulder")).toBeChecked();
+});
+
+test("legacy JSON backup imports and exports in an isolated browser profile", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByText("جارٍ تحميل بياناتك…")).toHaveCount(0);
+  const backup = {
+    schemaVersion: 1,
+    exportedAt: new Date().toISOString(),
+    data: {
+      goal: 0, water: 0, meals: [], favorites: [],
+      activities: [{ id: "legacy", type: "مشي", minutes: 20, distance: 0, date: "2026-10-10" }],
+      weights: [], homeSessions: [],
+      settings: { homeSuggestions: false, knee: false, shoulder: false, level: "مبتدئ", expected: "18:00", dayType: "activity" },
+      declinedDate: null,
+    },
+  };
+  await page.getByRole("button", { name: "الملف الشخصي" }).click();
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.locator('input[type="file"]').setInputFiles({
+    name: "fixture-legacy-backup.json", mimeType: "application/json",
+    buffer: Buffer.from(JSON.stringify(backup)),
+  });
+  await expect(page.locator(".toast")).toContainText("استُعيدت النسخة الاحتياطية بنجاح");
+  await page.getByRole("button", { name: "إغلاق" }).click();
+  await page.getByRole("navigation").getByRole("button", { name: "النشاط", exact: true }).click();
+  await expect(page.locator(".record").filter({ hasText: "٢٠ دقيقة" })).toContainText("غير محدد");
+  await page.getByRole("button", { name: "الملف الشخصي" }).click();
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "تصدير نسخة احتياطية" }).click();
+  const download = await downloadPromise;
+  const exported = JSON.parse(await readFile((await download.path())!, "utf8"));
+  expect(exported.schemaVersion).toBe(1);
+  expect(exported.data.activities[0]).toEqual(backup.data.activities[0]);
 });
 
 for (const width of [320, 375, 390, 430, 1280]) {
@@ -132,6 +183,7 @@ test("installed service worker serves the shell and assets while offline", async
   await expect(page.locator(".icon svg").first()).toBeVisible();
   await page.getByRole("button", { name: "+ كوب", exact: true }).click();
   await expect(page.locator(".toast")).toContainText("أُضيف كوب ماء.");
+  await expect(page.locator(".toast")).toHaveCSS("position", "static");
   await page.reload();
   await expect(page.locator(".water")).toContainText("١");
   for (const name of ["التغذية", "النشاط", "التقدم", "الرئيسية"]) {

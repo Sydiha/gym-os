@@ -52,6 +52,7 @@ function Interface() {
             <Icon name="person" />
           </button>
         </header>
+        {notice && <div className="toast" role="status" aria-live="polite">{notice}</div>}
         {readBlocked && <p role="alert" className="nav-message">تعذر فتح بياناتك الشخصية. لم نغيّر السجلات المحفوظة؛ أعد تحميل التطبيق أو استعد نسخة احتياطية.</p>}
         {!ready ? <p role="status">جارٍ تحميل بياناتك…</p> : page === "التغذية" ? (
           <Nutrition />
@@ -76,11 +77,6 @@ function Interface() {
         {pages.slice(2).map(nav)}
       </nav>
       <Dialogs />
-      {notice && (
-        <div className="toast" role="status">
-          {notice}
-        </div>
-      )}
     </>
   );
 }
