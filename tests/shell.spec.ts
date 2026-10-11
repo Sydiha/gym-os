@@ -177,3 +177,21 @@ test("reduced motion preference and disabled JavaScript fallback", async ({
   );
   await context.close();
 });
+
+
+test("Personal calorie goal accepts numeric input and persists across reload", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await expect(page.locator(".demo-label")).toHaveText("وضع شخصي");
+  await page.getByRole("button", { name: "الملف الشخصي" }).click();
+  const goal = page.getByRole("spinbutton", { name: "هدف السعرات اليومي (اختياري)" });
+  await expect(goal).toHaveAttribute("inputmode", "numeric");
+  await goal.fill("2100");
+  await goal.blur();
+  await page.getByRole("button", { name: "إغلاق" }).click();
+  await expect(page.locator(".cal-head")).toContainText("2100");
+  await page.reload();
+  await expect(page.locator(".cal-head")).toContainText("2100");
+  await page.getByRole("button", { name: "الملف الشخصي" }).click();
+  await expect(goal).toHaveValue("2100");
+});

@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { useDemo } from "../state/DemoContext";
 import { emptyDemo, seed } from "../domain/fixtures";
-import type { Settings } from "../domain/types";
+import type { DemoData, Settings } from "../domain/types";
 import { parseBackup } from "../state/personalStorage";
 export function Constraints({ prefix }: { prefix: string }) {
   const { data, update } = useDemo();
@@ -131,9 +132,7 @@ export function Profile() {
         {mode === "demo" ? "بيانات العرض التجريبي مستقلة عن بياناتك الشخصية. " : "بياناتك محفوظة على هذا الجهاز في المتصفح. "}اختيار المستوى يغيّر
         صياغة الواجهة؛ قيود الركبة والكتف تضبط بديل المنزل.
       </p>
-      {mode === "personal" && <label>هدف السعرات اليومي (اختياري)
-        <input type="number" min="0" max="10000" step="50" value={data.goal || ""} placeholder="لم يُحدّد" onChange={(e) => update((d) => { d.goal = Number(e.target.value); })} />
-      </label>}
+      {mode === "personal" && <CalorieGoal value={data.goal} update={update} />}
       <label>
         المستوى
         <select
@@ -158,5 +157,32 @@ export function Profile() {
       </>}
       <p className="note">لا توجد حسابات حقيقية أو تسجيل دخول في هذه النسخة.</p>
     </>
+  );
+}
+
+
+function CalorieGoal({ value, update }: { value: number; update: (change: (draft: DemoData) => void, message?: string) => void }) {
+  const [input, setInput] = useState(String(value || ""));
+  function save() {
+    const goal = input.trim() === "" ? 0 : Number(input);
+    if (Number.isInteger(goal) && goal >= 0 && goal <= 10000) {
+      if (goal !== value) update((data) => { data.goal = goal; });
+    } else setInput(String(value || ""));
+  }
+  return (
+    <label>هدف السعرات اليومي (اختياري)
+      <input
+        type="number"
+        inputMode="numeric"
+        min="0"
+        max="10000"
+        step="1"
+        value={input}
+        placeholder="لم يُحدّد"
+        onChange={(e) => setInput(e.currentTarget.value)}
+        onBlur={save}
+        onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); save(); } }}
+      />
+    </label>
   );
 }
