@@ -17,7 +17,8 @@ function initialMode(): Mode {
   try { return localStorage.getItem(MODE_KEY) === "demo" ? "demo" : "personal"; }
   catch { return "personal"; }
 }
-function useDemoState() {
+type PersonalRepository = ReturnType<typeof createPersonalRepository>;
+function useDemoState(repository: PersonalRepository) {
   const [mode, setModeState] = useState<Mode>(initialMode);
   const [data, setData] = useState(() => mode === "demo" ? loadDemo() : emptyPersonal());
   const current = useRef(data);
@@ -38,7 +39,7 @@ function useDemoState() {
     if (mode === "demo") {
       const next = loadDemo(); current.current = next; setData(next); setReady(true);
     } else {
-      personalRepository.load().then((next) => {
+      repository.load().then((next) => {
         if (live && generation.current === version && modeRef.current === "personal") {
           current.current = next; setData(next); setReadBlocked(false); setReady(true);
         }
@@ -49,7 +50,7 @@ function useDemoState() {
       });
     }
     return () => { live = false; };
-  }, [mode]);
+  }, [mode, repository]);
   function persistDemo(next: DemoData, message: string) {
     setNotice(saveDemo(next) ? message : "تعذر حفظ بيانات Demo في هذا المتصفح.");
   }
@@ -66,13 +67,13 @@ function useDemoState() {
     const version = generation.current;
     const token = ++operation.current;
     busyRef.current = true; setBusy(true); setNotice("جارٍ حفظ بياناتك…");
-    personalRepository.commit(change).then((next) => {
+    repository.commit(change).then((next) => {
       if (generation.current === version && modeRef.current === "personal" && operation.current === token) {
         current.current = next; setData(next); setReadBlocked(false); setNotice(message);
       }
     }).catch(() => {
       if (generation.current === version && modeRef.current === "personal" && operation.current === token) {
-        setReadBlocked(personalRepository.isBlocked());
+        setReadBlocked(repository.isBlocked());
         setNotice("تعذر حفظ بياناتك. بقيت آخر نسخة محفوظة، وأوقفنا التعديلات حتى تعيد التحميل أو تستعيد نسخة احتياطية.");
       }
     }).finally(() => {
@@ -94,19 +95,19 @@ function useDemoState() {
   }
   async function restorePersonal(next: DemoData) {
     if (modeRef.current !== "personal" || !ready) { setNotice("انتظر حتى تكون في الوضع الشخصي وتكتمل قراءة البيانات قبل الاستعادة."); return false; }
+    if (busyRef.current) { setNotice("هناك عملية حفظ جارية. انتظر اكتمالها قبل الاستعادة."); return false; }
     const version = generation.current;
     const token = ++operation.current;
     busyRef.current = true; setBusy(true); setNotice("جارٍ حفظ النسخة الاحتياطية…");
     try {
-      const committed = await personalRepository.restore(next);
-      if (generation.current === version && modeRef.current === "personal" && operation.current === token) {
-        current.current = committed; setData(committed); setReadBlocked(false); setNotice("استُعيدت النسخة الاحتياطية بنجاح.");
-      }
+      const committed = await repository.restore(next);
+      if (generation.current !== version || modeRef.current !== "personal" || operation.current !== token) return false;
+      current.current = committed; setData(committed); setReadBlocked(false); setNotice("استُعيدت النسخة الاحتياطية بنجاح.");
       return true;
     } catch {
       if (generation.current === version && modeRef.current === "personal" && operation.current === token) {
         try {
-          const latest = await personalRepository.load();
+          const latest = await repository.load();
           if (generation.current === version && modeRef.current === "personal" && operation.current === token) {
             current.current = latest; setData(latest); setReadBlocked(false);
             setNotice("تعذرت الاستعادة؛ بقيت آخر نسخة محفوظة كما هي.");
@@ -124,9 +125,14 @@ function useDemoState() {
   }
   async function exportPersonalBackup(): Promise<PersonalBackup> {
     if (modeRef.current !== "personal") throw new Error("التصدير متاح في الوضع الشخصي فقط.");
-    try { return await personalRepository.exportBackup(); }
+    const version = generation.current;
+    try {
+      const backup = await repository.exportBackup();
+      if (generation.current !== version || modeRef.current !== "personal") throw new Error("Export is no longer active");
+      return backup;
+    }
     catch {
-      if (modeRef.current === "personal" && personalRepository.isBlocked()) {
+      if (generation.current === version && modeRef.current === "personal" && repository.isBlocked()) {
         setReadBlocked(true); setNotice("تعذر تصدير النسخة لأن آخر تغيير لم يُحفظ. استعد نسخة احتياطية أو أعد تحميل البيانات أولًا.");
       }
       throw new Error("تعذر تصدير النسخة الاحتياطية.");
@@ -174,8 +180,8 @@ function useDemoState() {
   };
 }
 const Context = createContext<ReturnType<typeof useDemoState> | null>(null);
-export function DemoProvider({ children }: { children: ReactNode }) {
-  const state = useDemoState();
+export function DemoProvider({ children, repository = personalRepository }: { children: ReactNode; repository?: PersonalRepository }) {
+  const state = useDemoState(repository);
   return <Context.Provider value={state}>{children}</Context.Provider>;
 }
 export function useDemo() {

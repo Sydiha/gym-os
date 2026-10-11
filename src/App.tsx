@@ -1,4 +1,5 @@
 import { DemoProvider, useDemo } from "./state/DemoContext";
+import { createPersonalRepository } from "./state/personalStorage";
 import { Dashboard } from "./features/Dashboard";
 import { Nutrition } from "./features/Nutrition";
 import { Activity } from "./features/Activity";
@@ -83,9 +84,9 @@ function Interface() {
     </>
   );
 }
-export function App() {
+export function App({ personalRepository }: { personalRepository?: ReturnType<typeof createPersonalRepository> } = {}) {
   return (
-    <DemoProvider>
+    <DemoProvider repository={personalRepository}>
       <Interface />
     </DemoProvider>
   );
