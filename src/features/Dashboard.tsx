@@ -48,10 +48,13 @@ export function Dashboard() {
             <p className="hint">
               نشاط خارجي يناسب يومك · لا توجد قراءة تلقائية للخطوات
             </p>
-            <div className="weather">
+            {mode === "demo" ? <div className="weather">
               الطقس: مثال توضيحي · ٢٤°
               <small>وقت أنسب للمشي — بيانات توضيحية</small>
-            </div>
+            </div> : <div className="weather">
+              راجع ظروف الطقس المحلية قبل الخروج
+              <small>لا يعرض التطبيق بيانات طقس مباشرة</small>
+            </div>}
             <button className="outline" onClick={() => open("activity")}>
               سجّل نشاطًا خارجيًا
             </button>
@@ -122,7 +125,7 @@ export function Dashboard() {
             <WeightVisual />
           </div>
         </div>
-        <div className="chart-foot">من بيانات Demo المسجلة</div>
+        <div className="chart-foot">{mode === "demo" ? "من بيانات Demo المسجلة" : "من سجلاتك المسجلة"}</div>
       </section>
       {mode === "demo" && <DemoControls />}
     </>

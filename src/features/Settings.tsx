@@ -1,7 +1,7 @@
 import { useDemo } from "../state/DemoContext";
 import { emptyDemo, seed } from "../domain/fixtures";
 import type { Settings } from "../domain/types";
-import { makeBackup, parseBackup } from "../state/personalStorage";
+import { parseBackup } from "../state/personalStorage";
 export function Constraints({ prefix }: { prefix: string }) {
   const { data, update } = useDemo();
   return (
@@ -102,7 +102,7 @@ export function DemoControls() {
   );
 }
 export function Profile() {
-  const { data, update, mode, setMode, restorePersonal, readBlocked, ready } = useDemo();
+  const { data, update, mode, setMode, restorePersonal, exportPersonalBackup, report, readBlocked, ready } = useDemo();
   async function importFile(file?: File) {
     if (!file) return;
     try {
@@ -112,9 +112,12 @@ export function Profile() {
       await restorePersonal(backup.data);
     } catch (error) { alert(error instanceof Error ? error.message : "تعذر قراءة ملف النسخة الاحتياطية."); }
   }
-  function exportFile() {
-    const blob = new Blob([JSON.stringify(makeBackup(data), null, 2)], { type: "application/json" });
-    const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "gym-os-backup.json"; link.click(); URL.revokeObjectURL(link.href);
+  async function exportFile() {
+    try {
+      const backup = await exportPersonalBackup();
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+      const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "gym-os-backup.json"; link.click(); URL.revokeObjectURL(link.href);
+    } catch { report("تعذر تصدير النسخة الاحتياطية. لم يُنزّل ملف؛ تحقّق من التخزين وحاول الاستعادة أو التحميل مجددًا."); }
   }
   return (
     <>

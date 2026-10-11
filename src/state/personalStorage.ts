@@ -66,3 +66,64 @@ export function parseBackup(value: unknown): PersonalBackup {
     throw new Error("تعذر التحقق من بيانات الملف؛ لم تُستبدل بياناتك.");
   return b as PersonalBackup;
 }
+
+export interface PersonalAdapter {
+  load(): Promise<DemoData>;
+  save(value: DemoData): Promise<void>;
+}
+
+/** Serializes every personal snapshot operation and only exposes committed data. */
+export function createPersonalRepository(adapter: PersonalAdapter = { load: loadPersonal, save: savePersonal }) {
+  let tail: Promise<void> = Promise.resolve();
+  let committed: DemoData | null = null;
+  let blocked = false;
+  function enqueue<T>(job: () => Promise<T>): Promise<T> {
+    const result = tail.then(job);
+    tail = result.then(() => undefined, () => undefined);
+    return result;
+  }
+  async function readCommitted() {
+    const value = await adapter.load();
+    if (!isPersonalData(value)) throw new Error("Stored personal data is malformed");
+    committed = structuredClone(value);
+    blocked = false;
+    return structuredClone(committed);
+  }
+  return {
+    load: () => enqueue(async () => {
+      try { return await readCommitted(); }
+      catch (error) { blocked = true; throw error; }
+    }),
+    commit: (change: (draft: DemoData) => void) => enqueue(async () => {
+      if (blocked) throw new Error("Personal storage requires recovery");
+      let base: DemoData;
+      try { base = committed ?? await readCommitted(); }
+      catch (error) { blocked = true; throw error; }
+      const next = structuredClone(base);
+      change(next);
+      if (!isPersonalData(next)) throw new Error("Invalid personal data");
+      try { await adapter.save(next); }
+      catch (error) { blocked = true; throw error; }
+      committed = structuredClone(next);
+      return structuredClone(next);
+    }),
+    restore: (next: DemoData) => enqueue(async () => {
+      if (!isPersonalData(next)) throw new Error("Invalid backup data");
+      try {
+        await adapter.save(next);
+        committed = structuredClone(next);
+        blocked = false;
+        return structuredClone(next);
+      } catch (error) { blocked = true; throw error; }
+    }),
+    exportBackup: () => enqueue(async () => {
+      if (blocked) throw new Error("Personal storage requires recovery before export");
+      if (committed === null) {
+        try { await readCommitted(); }
+        catch (error) { blocked = true; throw error; }
+      }
+      return makeBackup(committed!);
+    }),
+    isBlocked: () => blocked,
+  };
+}

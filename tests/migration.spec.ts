@@ -9,6 +9,9 @@ const records = (p: Page) =>
   p.evaluate(() => JSON.parse(localStorage.getItem("gym-os-v1.2-demo")!));
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
+  await page.getByRole("button", { name: "الملف الشخصي" }).click();
+  await page.getByLabel("وضع الاستخدام").selectOption("demo");
+  await page.getByRole("button", { name: "إغلاق" }).click();
 });
 test("meal, macros, favorites, estimates, water, weight and reload", async ({
   page,

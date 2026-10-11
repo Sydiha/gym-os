@@ -8,10 +8,11 @@ import {
 } from "react";
 import type { DemoData, Page, Sheet } from "../domain/types";
 import { loadDemo, saveDemo } from "./persistence";
-import { loadPersonal, savePersonal } from "./personalStorage";
+import { createPersonalRepository, type PersonalBackup } from "./personalStorage";
 import { emptyPersonal } from "../domain/fixtures";
 type Mode = "personal" | "demo";
 const MODE_KEY = "gym-os-mode";
+const personalRepository = createPersonalRepository();
 function initialMode(): Mode {
   try { return localStorage.getItem(MODE_KEY) === "demo" ? "demo" : "personal"; }
   catch { return "personal"; }
@@ -22,27 +23,35 @@ function useDemoState() {
   const current = useRef(data);
   const [ready, setReady] = useState(mode === "demo");
   const [readBlocked, setReadBlocked] = useState(false);
-  const writes = useRef(Promise.resolve());
+  const [busy, setBusy] = useState(false);
+  const busyRef = useRef(false);
+  const modeRef = useRef(mode);
+  const generation = useRef(0);
+  const operation = useRef(0);
   const [page, setPage] = useState<Page>("الرئيسية");
   const [sheet, setSheet] = useState<Sheet | null>(null);
   const [notice, setNotice] = useState("");
   useEffect(() => {
     let live = true;
+    const version = generation.current;
     setReady(mode === "demo");
     if (mode === "demo") {
       const next = loadDemo(); current.current = next; setData(next); setReady(true);
     } else {
-      loadPersonal().then((next) => { if (live) { current.current = next; setData(next); setReadBlocked(false); setReady(true); } })
-        .catch(() => { if (live) { setReadBlocked(true); setNotice("تعذر قراءة بياناتك الشخصية. لن تُجرَ تعديلات حتى يمكن استرجاعها بأمان."); setReady(true); } });
+      personalRepository.load().then((next) => {
+        if (live && generation.current === version && modeRef.current === "personal") {
+          current.current = next; setData(next); setReadBlocked(false); setReady(true);
+        }
+      }).catch(() => {
+        if (live && generation.current === version && modeRef.current === "personal") {
+          setReadBlocked(true); setNotice("تعذر قراءة بياناتك الشخصية. لن تُجرَ تعديلات حتى يمكن استرجاعها بأمان."); setReady(true);
+        }
+      });
     }
     return () => { live = false; };
   }, [mode]);
-  function persist(next: DemoData, message: string) {
-    if (mode === "demo") setNotice(saveDemo(next) ? message : "تعذر حفظ بيانات Demo في هذا المتصفح.");
-    else {
-      writes.current = writes.current.catch(() => undefined).then(() => savePersonal(next));
-      writes.current.then(() => setNotice(message)).catch(() => setNotice("تعذر حفظ بياناتك الشخصية. تحقّق من مساحة التخزين وصدّر نسخة احتياطية عند الإمكان."));
-    }
+  function persistDemo(next: DemoData, message: string) {
+    setNotice(saveDemo(next) ? message : "تعذر حفظ بيانات Demo في هذا المتصفح.");
   }
   const [time, setTime] = useState(() => new Date().toTimeString().slice(0, 5));
   const [demoOpen, setDemoOpen] = useState(false);
@@ -50,31 +59,80 @@ function useDemoState() {
   function update(change: (draft: DemoData) => void, message = "") {
     if (!ready) { setNotice("انتظر حتى تكتمل قراءة البيانات قبل تعديلها."); return; }
     if (mode === "personal" && readBlocked) { setNotice("تعذر تعديل البيانات قبل نجاح قراءتها من مساحة التخزين."); return; }
-    const next = structuredClone(current.current);
-    change(next);
-    current.current = next;
-    setData(next);
-    persist(next, message);
+    if (busyRef.current) { setNotice("جارٍ حفظ التغيير السابق. انتظر حتى يكتمل."); return; }
+    if (mode === "demo") {
+      const next = structuredClone(current.current); change(next); current.current = next; setData(next); persistDemo(next, message); return;
+    }
+    const version = generation.current;
+    const token = ++operation.current;
+    busyRef.current = true; setBusy(true); setNotice("جارٍ حفظ بياناتك…");
+    personalRepository.commit(change).then((next) => {
+      if (generation.current === version && modeRef.current === "personal" && operation.current === token) {
+        current.current = next; setData(next); setReadBlocked(false); setNotice(message);
+      }
+    }).catch(() => {
+      if (generation.current === version && modeRef.current === "personal" && operation.current === token) {
+        setReadBlocked(personalRepository.isBlocked());
+        setNotice("تعذر حفظ بياناتك. بقيت آخر نسخة محفوظة، وأوقفنا التعديلات حتى تعيد التحميل أو تستعيد نسخة احتياطية.");
+      }
+    }).finally(() => {
+      if (generation.current === version && operation.current === token) { busyRef.current = false; setBusy(false); }
+    });
   }
   function replace(next: DemoData, message: string) {
     if (!ready) { setNotice("انتظر حتى تكتمل قراءة البيانات قبل تعديلها."); return; }
     if (mode === "personal" && readBlocked) { setNotice("تعذر تعديل البيانات قبل نجاح قراءتها من مساحة التخزين."); return; }
-    current.current = next;
-    setData(next);
-    persist(next, message);
+    if (mode === "demo") { current.current = next; setData(next); persistDemo(next, message); return; }
+    update((draft) => { Object.assign(draft, structuredClone(next)); }, message);
   }
   function setMode(nextMode: Mode) {
     try { localStorage.setItem(MODE_KEY, nextMode); } catch { /* Mode is session state too. */ }
+    generation.current += 1; modeRef.current = nextMode; busyRef.current = false; setBusy(false);
     const nextData = nextMode === "demo" ? loadDemo() : emptyPersonal();
     current.current = nextData; setData(nextData);
     setReady(false); setReadBlocked(false); setNotice(""); setModeState(nextMode);
   }
   async function restorePersonal(next: DemoData) {
-    if (!ready) { setNotice("انتظر حتى تكتمل قراءة البيانات قبل الاستعادة."); return false; }
-    try { await savePersonal(next); if (mode === "personal") { current.current = next; setData(next); setReadBlocked(false); }
-      setNotice("استُعيدت النسخة الاحتياطية بنجاح."); return true;
-    } catch { setNotice("تعذر استعادة النسخة؛ بقيت بياناتك الحالية كما هي."); return false; }
+    if (modeRef.current !== "personal" || !ready) { setNotice("انتظر حتى تكون في الوضع الشخصي وتكتمل قراءة البيانات قبل الاستعادة."); return false; }
+    const version = generation.current;
+    const token = ++operation.current;
+    busyRef.current = true; setBusy(true); setNotice("جارٍ حفظ النسخة الاحتياطية…");
+    try {
+      const committed = await personalRepository.restore(next);
+      if (generation.current === version && modeRef.current === "personal" && operation.current === token) {
+        current.current = committed; setData(committed); setReadBlocked(false); setNotice("استُعيدت النسخة الاحتياطية بنجاح.");
+      }
+      return true;
+    } catch {
+      if (generation.current === version && modeRef.current === "personal" && operation.current === token) {
+        try {
+          const latest = await personalRepository.load();
+          if (generation.current === version && modeRef.current === "personal" && operation.current === token) {
+            current.current = latest; setData(latest); setReadBlocked(false);
+            setNotice("تعذرت الاستعادة؛ بقيت آخر نسخة محفوظة كما هي.");
+          }
+        } catch {
+          if (generation.current === version && modeRef.current === "personal" && operation.current === token) {
+            setReadBlocked(true); setNotice("تعذرت الاستعادة وقراءة البيانات الحالية. أعد تحميلها أو استعد نسخة احتياطية.");
+          }
+        }
+      }
+      return false;
+    } finally {
+      if (generation.current === version && operation.current === token) { busyRef.current = false; setBusy(false); }
+    }
   }
+  async function exportPersonalBackup(): Promise<PersonalBackup> {
+    if (modeRef.current !== "personal") throw new Error("التصدير متاح في الوضع الشخصي فقط.");
+    try { return await personalRepository.exportBackup(); }
+    catch {
+      if (modeRef.current === "personal" && personalRepository.isBlocked()) {
+        setReadBlocked(true); setNotice("تعذر تصدير النسخة لأن آخر تغيير لم يُحفظ. استعد نسخة احتياطية أو أعد تحميل البيانات أولًا.");
+      }
+      throw new Error("تعذر تصدير النسخة الاحتياطية.");
+    }
+  }
+  function report(message: string) { setNotice(message); }
   function open(next: Sheet) {
     if (!sheet)
       opener.current =
@@ -98,7 +156,7 @@ function useDemoState() {
   }
   return {
     data,
-    mode, setMode, ready, readBlocked, restorePersonal,
+    mode, setMode, ready, readBlocked, busy, restorePersonal, exportPersonalBackup, report,
     update,
     replace,
     page,
