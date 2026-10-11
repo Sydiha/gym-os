@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import type { DemoData } from "../src/domain/types";
 const nav = (p: Page, name: string) =>
   p.getByRole("navigation").getByRole("button", { name, exact: true }).click();
 const settings = async (p: Page) => {
@@ -203,7 +204,7 @@ test("activity time and weight history remain editable and chronological", async
 });
 
 test("home session editing exposes only fields saved by the home-session model", async ({ page }) => {
-  const source = {
+  const source: DemoData = {
     goal: 2100, water: 0, meals: [], favorites: [], activities: [], weights: [],
     homeSessions: [],
     settings: { homeSuggestions: true, knee: false, shoulder: false, level: "مبتدئ", expected: "18:00", dayType: "activity" },
