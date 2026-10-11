@@ -450,5 +450,5 @@ test("320px RTL meal sheet keeps inputs readable and within viewport on focus", 
   await expect(sheet.getByRole("button", { name: "حفظ الوجبة" })).toBeInViewport();
   await page.keyboard.press("Escape");
   await expect(sheet).toHaveCount(0);
-  await assertNoOverflow();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
