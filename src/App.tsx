@@ -1,50 +1,91 @@
-import { useState } from 'react';
-import { useRegisterSW } from 'virtual:pwa-register/react';
-import { useOnline } from './useOnline';
-
-export function App() {
-  const online = useOnline();
-  const [cacheError, setCacheError] = useState(false);
-  const { offlineReady: [offlineReady], needRefresh: [needRefresh], updateServiceWorker } = useRegisterSW({
-    onRegisterError() { setCacheError(true); },
-  });
-
+import { DemoProvider, useDemo } from "./state/DemoContext";
+import { Dashboard } from "./features/Dashboard";
+import { Nutrition } from "./features/Nutrition";
+import { Activity } from "./features/Activity";
+import { Progress } from "./features/Progress";
+import { Dialogs } from "./features/Dialogs";
+import { Icon, type IconName } from "./ui/Icon";
+import { PwaStatus } from "./ui/PwaStatus";
+import type { Page } from "./domain/types";
+const pages: { page: Page; icon: IconName }[] = [
+  { page: "الرئيسية", icon: "home" },
+  { page: "التغذية", icon: "meal" },
+  { page: "النشاط", icon: "walk" },
+  { page: "التقدم", icon: "progress" },
+];
+function Interface() {
+  const { page, navigate, sheet, open, notice } = useDemo();
+  const nav = (item: (typeof pages)[number]) => (
+    <button
+      key={item.page}
+      onClick={() => navigate(item.page)}
+      className={page === item.page ? "active" : ""}
+      aria-label={item.page}
+      aria-current={page === item.page ? "page" : undefined}
+    >
+      <Icon name={item.icon} />
+      {item.page}
+    </button>
+  );
   return (
-    <div className="shell">
-      <a className="skip-link" href="#main">انتقل إلى المحتوى</a>
-      <header className="topline">
-        <div>
-          <div className="brand" dir="ltr">GYM <span>OS</span></div>
-          <p className="tagline">صحتك... بأسلوب حياتك</p>
-        </div>
-        <span className="version" dir="ltr">V1.4</span>
-      </header>
-      <main id="main" tabIndex={-1}>
-        <h1>اليوم يكفي أن <span className="underline">تبدأ</span></h1>
-        <p className="lead">خطوتك الأولى نحو حياة أكثر نشاطًا.</p>
-        <section className="welcome" aria-labelledby="welcome-title">
-          <span className="icon"><img src="/icons/gym.svg" alt="" width="25" height="25" /></span>
-          <h2 id="welcome-title">مرحبًا بك في GYM OS</h2>
-          <p>هذه نسخة أولية. ستتوفر أدوات التغذية والنشاط والتقدم في إصدارات قادمة.</p>
-        </section>
-        <div className="connection" role="status" aria-live="polite">
-          <p>{online ? 'أنت متصل بالإنترنت' : 'أنت غير متصل بالإنترنت'}</p>
-          <p className="note">{cacheError
-            ? 'تعذر تجهيز النسخة للاستخدام دون اتصال. أعد المحاولة عند فتح التطبيق مجددًا.'
-            : offlineReady
-              ? 'يمكنك فتح هذه الصفحة دون اتصال.'
-              : 'تتوفر الصفحة دون اتصال بعد اكتمال تحميلها لأول مرة.'}</p>
-        </div>
-        {needRefresh && (
-          <section className="update" aria-label="تحديث التطبيق">
-            <p>يتوفر تحديث جديد.</p>
-            <button className="primary" onClick={() => {
-              void updateServiceWorker(true).catch(() => setCacheError(true));
-            }}>تحديث الآن</button>
-          </section>
+    <>
+      <a className="skip-link" href="#main" inert={!!sheet}>
+        انتقل إلى المحتوى
+      </a>
+      <main id="main" className="shell" tabIndex={-1} inert={!!sheet}>
+        <header className="topline">
+          <div>
+            <div className="brand">
+              GYM <span>OS</span>
+            </div>
+            <div className="tagline">
+              صحتك... بأسلوب حياتك{" "}
+              <span className="demo-label">نموذج تجريبي</span>
+            </div>
+          </div>
+          <button
+            className="avatar"
+            onClick={() => open("profile")}
+            aria-label="الملف الشخصي"
+          >
+            <Icon name="person" />
+          </button>
+        </header>
+        {page === "التغذية" ? (
+          <Nutrition />
+        ) : page === "النشاط" ? (
+          <Activity />
+        ) : page === "التقدم" ? (
+          <Progress />
+        ) : (
+          <Dashboard />
         )}
+        <PwaStatus />
       </main>
-      <footer>نسخة أولية <span aria-hidden="true">·</span> <bdi>GYM OS</bdi></footer>
-    </div>
+      <nav className="bottom" aria-label="التنقل الرئيسي" inert={!!sheet}>
+        {pages.slice(0, 2).map(nav)}
+        <button
+          className="plus"
+          onClick={() => open("quick")}
+          aria-label="إضافة سريعة"
+        >
+          +
+        </button>
+        {pages.slice(2).map(nav)}
+      </nav>
+      <Dialogs />
+      {notice && (
+        <div className="toast" role="status">
+          {notice}
+        </div>
+      )}
+    </>
+  );
+}
+export function App() {
+  return (
+    <DemoProvider>
+      <Interface />
+    </DemoProvider>
   );
 }
