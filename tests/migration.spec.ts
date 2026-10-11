@@ -9,6 +9,9 @@ const records = (p: Page) =>
   p.evaluate(() => JSON.parse(localStorage.getItem("gym-os-v1.2-demo")!));
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
+  await page.getByRole("button", { name: "الملف الشخصي" }).click();
+  await page.getByLabel("وضع الاستخدام").selectOption("demo");
+  await page.getByRole("button", { name: "إغلاق" }).click();
 });
 test("meal, macros, favorites, estimates, water, weight and reload", async ({
   page,
@@ -36,7 +39,7 @@ test("meal, macros, favorites, estimates, water, weight and reload", async ({
     .getByRole("button", { name: "حفظ", exact: true })
     .click();
   await page.getByRole("button", { name: "ماذا أطلب اليوم؟" }).click();
-  await expect(page.getByRole("dialog")).toContainText("تقديرية");
+  await expect(page.getByRole("dialog")).toContainText("تقريبية وغير موثقة");
   await page.getByRole("button", { name: "اختر", exact: true }).first().click();
   await expect(page.locator(".cal-used")).toContainText("٢٬٤٨٠");
   await page.getByRole("button", { name: "إضافة لليوم" }).click();

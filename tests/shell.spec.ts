@@ -1,5 +1,26 @@
 import { expect, test } from "@playwright/test";
 
+test("Personal and Demo modes stay isolated and Personal starts empty", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator(".demo-label")).toHaveText("وضع شخصي");
+  await expect(page.locator(".water")).toContainText("٠");
+  await expect(page.locator(".chart-foot")).toHaveText("من سجلاتك المسجلة");
+  await page.getByRole("navigation").getByRole("button", { name: "التغذية", exact: true }).click();
+  await expect(page.locator(".empty").first()).toContainText("لم تسجّل وجبة اليوم");
+  await page.getByRole("button", { name: "الملف الشخصي" }).click();
+  await page.getByLabel("وضع الاستخدام").selectOption("demo");
+  await page.getByRole("button", { name: "إغلاق" }).click();
+  await expect(page.locator(".demo-label")).toHaveText("نموذج تجريبي");
+  await page.getByRole("navigation").getByRole("button", { name: "التغذية", exact: true }).click();
+  await expect(page.locator(".record").first()).toContainText("وجبة تجريبية أولية");
+  await page.getByRole("button", { name: "الملف الشخصي" }).click();
+  await page.getByLabel("وضع الاستخدام").selectOption("personal");
+  await page.getByRole("button", { name: "إغلاق" }).click();
+  await expect(page.locator(".demo-label")).toHaveText("وضع شخصي");
+  await page.getByRole("navigation").getByRole("button", { name: "التغذية", exact: true }).click();
+  await expect(page.locator(".empty").first()).toContainText("لم تسجّل وجبة اليوم");
+});
+
 for (const width of [320, 375, 390, 430, 1280]) {
   test(`Arabic RTL shell at ${width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 844 });
@@ -110,8 +131,9 @@ test("installed service worker serves the shell and assets while offline", async
   );
   await expect(page.locator(".icon svg").first()).toBeVisible();
   await page.getByRole("button", { name: "+ كوب", exact: true }).click();
+  await expect(page.locator(".toast")).toContainText("أُضيف كوب ماء.");
   await page.reload();
-  await expect(page.locator(".water")).toContainText("٤");
+  await expect(page.locator(".water")).toContainText("١");
   for (const name of ["التغذية", "النشاط", "التقدم", "الرئيسية"]) {
     await page
       .getByRole("navigation")
@@ -134,6 +156,9 @@ test("reduced motion preference and disabled JavaScript fallback", async ({
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
+  await page.getByRole("button", { name: "الملف الشخصي" }).click();
+  await page.getByLabel("وضع الاستخدام").selectOption("demo");
+  await page.getByRole("button", { name: "إغلاق" }).click();
   expect(
     await page.evaluate(
       () => matchMedia("(prefers-reduced-motion: reduce)").matches,

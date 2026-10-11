@@ -14,7 +14,6 @@ export function isDemoData(v: unknown): v is DemoData {
   if (
     !object(v) ||
     !number(v.goal) ||
-    v.goal === 0 ||
     !number(v.water) ||
     !object(v.settings)
   )

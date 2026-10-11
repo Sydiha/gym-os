@@ -1,6 +1,8 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App";
+import { emptyPersonal } from "./domain/fixtures";
+import { createPersonalRepository, type PersonalAdapter } from "./state/personalStorage";
 
 const sw = vi.hoisted(() => ({
   offlineReady: false,
@@ -21,6 +23,8 @@ vi.mock("virtual:pwa-register/react", () => ({
 
 beforeEach(() => {
   localStorage.clear();
+  // Keep the V1.5 shell regression checks on their original demo fixtures.
+  localStorage.setItem("gym-os-mode", "demo");
   sw.offlineReady = false;
   sw.needRefresh = false;
   Object.defineProperty(navigator, "onLine", {
@@ -84,5 +88,49 @@ describe("foundation shell", () => {
     act(() => sw.onError?.());
     expect(screen.getByRole("status")).toHaveTextContent("تعذر تجهيز النسخة");
     expect(screen.getByRole("main")).toBeVisible();
+  });
+});
+
+describe("personal mode async operations", () => {
+  it("keeps a pending personal write out of Demo and reloads its durable snapshot on return", async () => {
+    localStorage.setItem("gym-os-mode", "personal");
+    let durable = emptyPersonal();
+    let releaseSave!: () => void;
+    let markSaveStarted!: () => void;
+    const saveStarted = new Promise<void>((resolve) => { markSaveStarted = resolve; });
+    const saveGate = new Promise<void>((resolve) => { releaseSave = resolve; });
+    const adapter: PersonalAdapter = {
+      load: async () => structuredClone(durable),
+      save: async (snapshot) => {
+        markSaveStarted();
+        await saveGate;
+        durable = structuredClone(snapshot);
+      },
+    };
+    const personalRepository = createPersonalRepository(adapter);
+    render(<App personalRepository={personalRepository} />);
+    await screen.findByText("الماء ٠ أكواب");
+
+    fireEvent.click(screen.getByRole("button", { name: "+ كوب" }));
+    expect(screen.getByText("جارٍ حفظ بياناتك…")).toBeVisible();
+    await act(async () => { await saveStarted; });
+
+    fireEvent.click(screen.getByRole("button", { name: "الملف الشخصي" }));
+    fireEvent.change(screen.getByLabelText("وضع الاستخدام"), { target: { value: "demo" } });
+    fireEvent.click(screen.getByRole("button", { name: "إغلاق" }));
+    expect(screen.getByText("نموذج تجريبي")).toBeVisible();
+
+    expect(screen.getByText("نموذج تجريبي")).toBeVisible();
+    expect(screen.queryByText("أُضيف كوب ماء.")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "الملف الشخصي" }));
+    fireEvent.change(screen.getByLabelText("وضع الاستخدام"), { target: { value: "personal" } });
+    fireEvent.click(screen.getByRole("button", { name: "إغلاق" }));
+    expect(await screen.findByText("جارٍ تحميل بياناتك…")).toBeVisible();
+    await act(async () => { releaseSave(); await saveGate; });
+    await waitFor(() => expect(durable.water).toBe(1));
+    await waitFor(() => expect(screen.getByText("الماء ١ أكواب")).toBeVisible());
+    expect(screen.getByText("وضع شخصي")).toBeVisible();
+    expect(screen.queryByText("أُضيف كوب ماء.")).not.toBeInTheDocument();
   });
 });

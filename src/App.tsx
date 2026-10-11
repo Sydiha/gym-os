@@ -1,4 +1,5 @@
 import { DemoProvider, useDemo } from "./state/DemoContext";
+import { createPersonalRepository } from "./state/personalStorage";
 import { Dashboard } from "./features/Dashboard";
 import { Nutrition } from "./features/Nutrition";
 import { Activity } from "./features/Activity";
@@ -14,7 +15,7 @@ const pages: { page: Page; icon: IconName }[] = [
   { page: "التقدم", icon: "progress" },
 ];
 function Interface() {
-  const { page, navigate, sheet, open, notice } = useDemo();
+  const { page, navigate, sheet, open, notice, mode, ready, readBlocked } = useDemo();
   const nav = (item: (typeof pages)[number]) => (
     <button
       key={item.page}
@@ -40,7 +41,7 @@ function Interface() {
             </div>
             <div className="tagline">
               صحتك... بأسلوب حياتك{" "}
-              <span className="demo-label">نموذج تجريبي</span>
+              <span className="demo-label">{mode === "demo" ? "نموذج تجريبي" : "وضع شخصي"}</span>
             </div>
           </div>
           <button
@@ -51,7 +52,8 @@ function Interface() {
             <Icon name="person" />
           </button>
         </header>
-        {page === "التغذية" ? (
+        {readBlocked && <p role="alert" className="nav-message">تعذر فتح بياناتك الشخصية. لم نغيّر السجلات المحفوظة؛ أعد تحميل التطبيق أو استعد نسخة احتياطية.</p>}
+        {!ready ? <p role="status">جارٍ تحميل بياناتك…</p> : page === "التغذية" ? (
           <Nutrition />
         ) : page === "النشاط" ? (
           <Activity />
@@ -82,9 +84,9 @@ function Interface() {
     </>
   );
 }
-export function App() {
+export function App({ personalRepository }: { personalRepository?: ReturnType<typeof createPersonalRepository> } = {}) {
   return (
-    <DemoProvider>
+    <DemoProvider repository={personalRepository}>
       <Interface />
     </DemoProvider>
   );

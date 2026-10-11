@@ -98,8 +98,8 @@ export function Restaurant() {
     <>
       <h2>ماذا أطلب اليوم؟</h2>
       <p>
-        أمثلة عامة للمقارنة. الأرقام تقديرية لأغراض Demo، وليست قيماً موثقة لأي
-        مطعم؛ تختلف بالحجم والإضافات وطريقة التحضير.
+        أمثلة عامة للمقارنة. الأرقام تقريبية وغير موثقة لأي مطعم؛ تختلف بالحجم
+        والإضافات وطريقة التحضير.
       </p>
       {restaurantOptions.map((m) => (
         <div className="record restaurant" key={m.name}>
@@ -109,7 +109,7 @@ export function Restaurant() {
               حوالي {fmt(m.calories)} سعرة · بروتين {fmt(m.protein)}غ · كارب{" "}
               {fmt(m.carbs)}غ · دهون {fmt(m.fat)}غ
             </small>
-            <small>المصدر: تقدير تجريبي غير موثق</small>
+            <small>المصدر: تقدير تقريبي غير موثق</small>
           </span>
           <button
             className="small-btn"
@@ -120,7 +120,7 @@ export function Restaurant() {
                   ...m,
                   id: uid(),
                   date: day(),
-                  source: "تقدير تجريبي غير موثق؛ ليس من بيانات مطعم",
+                  source: "تقدير تقريبي غير موثق؛ ليس من بيانات مطعم",
                 });
               }, "أُضيفت الوجبة بقيم تقديرية قابلة للمراجعة.");
               setSheet(null);
