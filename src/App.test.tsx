@@ -117,18 +117,25 @@ describe("personal mode async operations", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "الملف الشخصي" }));
     fireEvent.change(screen.getByLabelText("وضع الاستخدام"), { target: { value: "demo" } });
+    expect(screen.getByLabelText("وضع الاستخدام")).toHaveValue("personal");
+    fireEvent.click(screen.getByRole("button", { name: "إغلاق" }));
+    expect(screen.queryByText("نموذج تجريبي")).not.toBeInTheDocument();
+    expect(screen.getByText("انتظر اكتمال حفظ البيانات قبل تبديل الوضع.")).toBeVisible();
+    expect(screen.queryByText("أُضيف كوب ماء.")).not.toBeInTheDocument();
+
+    await act(async () => { releaseSave(); await saveGate; });
+    await waitFor(() => expect(durable.water).toBe(1));
+    await waitFor(() => expect(screen.getByText("أُضيف كوب ماء.")).toBeVisible());
+
+    fireEvent.click(screen.getByRole("button", { name: "الملف الشخصي" }));
+    fireEvent.change(screen.getByLabelText("وضع الاستخدام"), { target: { value: "demo" } });
     fireEvent.click(screen.getByRole("button", { name: "إغلاق" }));
     expect(screen.getByText("نموذج تجريبي")).toBeVisible();
-
-    expect(screen.getByText("نموذج تجريبي")).toBeVisible();
-    expect(screen.queryByText("أُضيف كوب ماء.")).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "الملف الشخصي" }));
     fireEvent.change(screen.getByLabelText("وضع الاستخدام"), { target: { value: "personal" } });
     fireEvent.click(screen.getByRole("button", { name: "إغلاق" }));
     expect(await screen.findByText("جارٍ تحميل بياناتك…")).toBeVisible();
-    await act(async () => { releaseSave(); await saveGate; });
-    await waitFor(() => expect(durable.water).toBe(1));
     await waitFor(() => expect(screen.getByText("الماء ١ أكواب")).toBeVisible());
     expect(screen.getByText("وضع شخصي")).toBeVisible();
     expect(screen.queryByText("أُضيف كوب ماء.")).not.toBeInTheDocument();
