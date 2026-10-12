@@ -111,7 +111,9 @@ export function Training() {
     <h2>مكتبة التمارين ({EXERCISES.length})</h2>
     {EXERCISES.filter(e => place === "both" || e.place === place).map(e =>
       <article key={e.id} className="training-exercise">
+        <img className="training-illustration" src={`/exercises/${e.id}.svg`} alt={`رسم تخطيطي مبسط: ${e.nameAr}`} loading="lazy" decoding="async" width="320" height="220" />
         <h3>{e.nameAr}</h3>
+        <p className="training-illustration-note">رسم رمزي للتعرّف على التمرين، وليس مرجعًا دقيقًا لوضعية الجسم.</p>
         <p className="training-meta">{e.place === "gym" ? "النادي" : "المنزل"} · {e.equipmentAr}</p>
         <p className="training-meta">العضلات: {e.primaryMusclesAr.join("، ")}</p>
         {e.restrictions.some(r => caution[r]) && <p role="note">تنبيه: هذا التمرين قد لا يناسب قيود المفاصل المحددة.</p>}
