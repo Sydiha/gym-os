@@ -20,3 +20,33 @@
 .sheet input[type=file]{direction:rtl}.sheet input[type=file]::file-selector-button{font:inherit;color:#f2a775;background:#302936;border:1px solid #845b4a;border-radius:8px;padding:8px 12px;margin-inline-end:8px;min-height:40px}
 .skip-link{position:fixed;top:8px;inset-inline-start:8px;transform:translateY(-200%);padding:12px;background:#211c25;color:#f8f4f4;z-index:20;min-height:44px}.skip-link:focus{transform:translateY(0)}
 .pwa-status{font-size:12px;color:#aaa4b6;margin-top:24px;line-height:1.6}.pwa-status p{margin:6px 0}.pwa-update{margin-top:12px}.sheet{overscroll-behavior:contain}.record span{overflow-wrap:anywhere}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+
+/* V1.6 Training mobile UI: scoped to prevent regressions in other screens. */
+.training-page{padding-bottom:20px;direction:rtl}
+.training-page h1{margin:28px 0 10px;font-size:clamp(32px,8vw,42px)}
+.training-lead{color:#c6bbc9;font-size:14px;line-height:1.75;margin:0 0 14px}
+.training-safety{font-size:12px;line-height:1.8;color:#e6c7b4;background:#2b2329;border-right:3px solid #f1a66f;padding:12px;border-radius:10px;margin:0 0 20px}
+.training-panel,.training-exercise{background:linear-gradient(155deg,#28212b,#211c25);border:1px solid #443744;border-radius:16px;padding:16px;margin:0 0 12px;box-shadow:inset 0 1px #ffffff08}
+.training-page .training-panel h2,.training-page>h2{font-size:20px;margin:4px 0 16px}
+.training-page .training-exercise h3{font-size:17px;line-height:1.5;margin:0 0 7px;color:#fff4ed}
+.training-meta{font-size:12px;line-height:1.65;color:#bcb0c0;margin:4px 0}
+.training-page label{display:block;font-size:13px;color:#d5c9d5;margin:12px 0 5px}
+.training-page select,.training-page input{display:block;appearance:none;-webkit-appearance:none;width:100%;min-width:0;min-height:48px;border-radius:11px;border:1px solid #5c4959;background:#302736;color:#f9f1f7;font:inherit;font-size:16px;padding:10px 13px;direction:rtl}
+.training-page select{appearance:auto;-webkit-appearance:menulist}
+.training-page button{border:1px solid #b9805e;background:#332934;color:#ffbd8c;border-radius:12px;padding:10px 14px;min-height:44px;font:inherit;font-size:13px;font-weight:700;max-width:100%}
+.training-page button:hover{border-color:#f5ac76}
+.training-panel>button:last-child,.training-page .training-panel>button:first-of-type{background:linear-gradient(125deg,#e99159,#ffba85);color:#291d1b;border:0;min-height:48px;width:100%;margin:10px 0;font-weight:800}
+.training-page .training-panel>p{font-size:12px;line-height:1.7;color:#bcb0c0}
+.training-day{border-top:1px solid #483b48;padding:13px 0;margin-top:12px}
+.training-day strong{font-size:14px;line-height:1.6}
+.training-day p{font-size:12px;color:#bcb0c0;line-height:1.7;margin:7px 0}
+.training-day button{margin:5px 0}
+.training-exercise>button{margin-top:12px}
+.training-details{margin-top:14px;padding-top:12px;border-top:1px solid #493b49;font-size:13px;line-height:1.8}
+.training-details h4{font-size:14px;color:#f1b083;margin:12px 0 6px}
+.training-details ol,.training-details ul{padding-inline-start:23px;margin:0 0 10px}
+.training-details li{padding:3px 0}
+.training-page button:focus-visible,.training-page input:focus-visible,.training-page select:focus-visible{outline:2px solid #ffb47c;outline-offset:2px}
+@media(max-width:375px){.training-panel,.training-exercise{padding:13px}.training-page h1{font-size:32px}}
+@media(prefers-reduced-motion:reduce){.training-page *{scroll-behavior:auto!important}}
