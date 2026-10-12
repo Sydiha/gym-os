@@ -73,6 +73,58 @@ test("legacy JSON backup imports and exports in an isolated browser profile", as
   expect(exported.data.training).toEqual({ preferences: null, plans: [], sessions: [] });
 });
 
+
+test("real IndexedDB preserves legacy snapshot through upgrade and backup export", async ({ page }) => {
+  await page.goto("/");
+  const legacy = {
+    goal: 2150, water: 4,
+    meals: [{ id: "old-meal", name: "وجبة محفوظة", calories: 450, protein: 30, carbs: 40, fat: 12, source: "إدخال المستخدم", date: "2026-10-10" }],
+    favorites: [], activities: [{ id: "old-walk", type: "مشي", minutes: 22, distance: null, date: "2026-10-10" }],
+    weights: [{ id: "old-weight", kg: 99, date: "2026-10-10" }],
+    homeSessions: [{ id: "old-home", date: "2026-10-10", minutes: 10, planned: 10, skipped: 0 }],
+    settings: { homeSuggestions: true, knee: false, shoulder: true, level: "مبتدئ", expected: "18:00", dayType: "activity" },
+    declinedDate: null,
+  };
+  await page.evaluate(async (data) => {
+    await new Promise<void>((resolve, reject) => {
+      const request = indexedDB.open("gym-os-personal", 1);
+      request.onupgradeneeded = () => {
+        if (!request.result.objectStoreNames.contains("snapshot")) request.result.createObjectStore("snapshot");
+      };
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        const db = request.result;
+        const tx = db.transaction("snapshot", "readwrite");
+        tx.objectStore("snapshot").put(data, "data");
+        tx.oncomplete = () => { db.close(); resolve(); };
+        tx.onerror = () => { db.close(); reject(tx.error); };
+      };
+    });
+  }, legacy);
+  await page.reload();
+  await expect(page.getByText("جارٍ تحميل بياناتك…")).toHaveCount(0);
+  await expect(page.locator(".demo-label")).toHaveText("وضع شخصي");
+  const durable = await page.evaluate(async () => new Promise<unknown>((resolve, reject) => {
+    const req = indexedDB.open("gym-os-personal", 1);
+    req.onerror = () => reject(req.error);
+    req.onsuccess = () => {
+      const db = req.result;
+      const get = db.transaction("snapshot", "readonly").objectStore("snapshot").get("data");
+      get.onsuccess = () => { db.close(); resolve(get.result); };
+      get.onerror = () => { db.close(); reject(get.error); };
+    };
+  }));
+  expect(durable).toEqual(legacy);
+  await page.getByRole("button", { name: "الملف الشخصي" }).click();
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "تصدير نسخة احتياطية" }).click();
+  const download = await downloadPromise;
+  const exported = JSON.parse(await readFile((await download.path())!, "utf8"));
+  expect(exported.schemaVersion).toBe(2);
+  for (const key of Object.keys(legacy)) expect(exported.data[key]).toEqual(legacy[key as keyof typeof legacy]);
+  expect(exported.data.training).toEqual({ preferences: null, plans: [], sessions: [] });
+});
+
 for (const width of [320, 375, 390, 430, 1280]) {
   test(`Arabic RTL shell at ${width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 844 });
