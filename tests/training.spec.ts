@@ -9,7 +9,10 @@ test("training library is visible and workout survives reload", async ({ page })
   await expect(page.getByText("الجدول المحفوظ")).toBeVisible();
   await page.getByRole("button", { name: "ابدأ هذا اليوم" }).first().click();
   await expect(page.getByRole("heading", { name: "التمرين الجاري" })).toBeVisible();
-  await page.getByRole("button", { name: "سجّل 10 تكرارات" }).first().click();
+  await page.getByLabel("التكرارات لكل مجموعة").fill("8");
+  await page.getByLabel("الوزن بالكيلو (اختياري)").fill("12.5");
+  await page.getByRole("button", { name: "تسجيل مجموعة" }).first().click();
+  await expect(page.getByText("8 تكرارات، 12.5 كجم")).toBeVisible();
   await expect(page.getByText("المجموعات المسجلة: 1").first()).toBeVisible();
   await page.getByRole("button", { name: "إنهاء التمرين وحفظه" }).click();
   await expect(page.getByRole("heading", { name: "التمرين الجاري" })).toHaveCount(0);
