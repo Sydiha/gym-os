@@ -17,6 +17,13 @@ describe("reviewed exercise photos", () => {
       expect(photo.localPath.startsWith("/exercises/reviewed/")).toBe(true);
       expect(photo.localPath.endsWith(".webp")).toBe(true);
       expect(photo.localPath).not.toMatch(/^https?:/);
+      for (const item of [...(photo.steps ?? []), ...(photo.mistakes ?? [])].filter((item): item is NonNullable<typeof item> => item !== undefined)) {
+        expect(item.localPath).toMatch(/^\/exercises\/reviewed\/[a-z0-9-]+\.webp$/);
+        expect(item.altAr.trim().length).toBeGreaterThan(5);
+        const itemFile = join(process.cwd(), "public", item.localPath.slice(1));
+        expect(existsSync(itemFile), `Missing instructional photo: ${item.localPath}`).toBe(true);
+        if (existsSync(itemFile)) expect(statSync(itemFile).size).toBeGreaterThan(1000);
+      }
       const file = join(process.cwd(), "public", photo.localPath.slice(1));
       expect(existsSync(file), `Missing local photo: ${photo.localPath}`).toBe(true);
       if (existsSync(file)) expect(statSync(file).size).toBeGreaterThan(1000);
