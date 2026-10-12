@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDemo } from "../state/DemoContext";
 import { EXERCISES, EXERCISE_SAFETY_NOTE_AR, getExercise } from "../domain/exerciseCatalog";
 import { generateTrainingPlan } from "../domain/trainingPlan";
+import { getReviewedExerciseMedia } from "../domain/reviewedExerciseMedia";
 import type { TrainingPreferences, TrainingSession } from "../domain/types";
 
 export function Training() {
@@ -111,6 +112,7 @@ export function Training() {
     <h2>مكتبة التمارين ({EXERCISES.length})</h2>
     {EXERCISES.filter(e => place === "both" || e.place === place).map(e =>
       <article key={e.id} className="training-exercise">
+        {getReviewedExerciseMedia(e.id) && <img className="training-reviewed-photo" src={getReviewedExerciseMedia(e.id)!.localPath} alt={getReviewedExerciseMedia(e.id)!.altAr} loading="lazy" decoding="async" />}
         <h3>{e.nameAr}</h3>
         <p className="training-meta">{e.place === "gym" ? "النادي" : "المنزل"} · {e.equipmentAr}</p>
         <p className="training-meta">العضلات: {e.primaryMusclesAr.join("، ")}</p>
