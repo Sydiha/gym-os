@@ -125,10 +125,10 @@ export function Training() {
             {getReviewedExerciseMedia(e.id)?.steps?.[i] && <img className="training-detail-photo" src={getReviewedExerciseMedia(e.id)!.steps![i].localPath} alt={getReviewedExerciseMedia(e.id)!.steps![i].altAr} loading="lazy" decoding="async" />}
             <span>{s}</span>
           </li>)}</ol>
-          <h4>أخطاء شائعة</h4><ul className="training-visual-list">{e.mistakesAr.map((s,i) => <li key={i}>
-            {getReviewedExerciseMedia(e.id)?.mistakes?.[i] && <img className="training-detail-photo" src={getReviewedExerciseMedia(e.id)!.mistakes![i].localPath} alt={getReviewedExerciseMedia(e.id)!.mistakes![i].altAr} loading="lazy" decoding="async" />}
+          <h4>أخطاء شائعة</h4><ul className="training-visual-list">{e.mistakesAr.map((s,i) => { const photo = getReviewedExerciseMedia(e.id)?.mistakes?.[i]; return <li key={i}>
+            {photo && <img className="training-detail-photo" src={photo.localPath} alt={photo.altAr} loading="lazy" decoding="async" />}
             <span>{s}</span>
-          </li>)}</ul>
+          </li>; })}</ul>
         </div>}
       </article>)}
   </section>;
