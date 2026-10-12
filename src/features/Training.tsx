@@ -121,8 +121,14 @@ export function Training() {
           {selected === e.id ? "إخفاء الشرح" : "طريقة الأداء والأخطاء"}
         </button>
         {selected === e.id && <div className="training-details">
-          <h4>طريقة الأداء</h4><ol>{e.stepsAr.map((s,i) => <li key={i}>{s}</li>)}</ol>
-          <h4>أخطاء شائعة</h4><ul>{e.mistakesAr.map((s,i) => <li key={i}>{s}</li>)}</ul>
+          <h4>طريقة الأداء</h4><ol className="training-visual-list">{e.stepsAr.map((s,i) => <li key={i}>
+            {getReviewedExerciseMedia(e.id)?.steps?.[i] && <img className="training-detail-photo" src={getReviewedExerciseMedia(e.id)!.steps![i].localPath} alt={getReviewedExerciseMedia(e.id)!.steps![i].altAr} loading="lazy" decoding="async" />}
+            <span>{s}</span>
+          </li>)}</ol>
+          <h4>أخطاء شائعة</h4><ul className="training-visual-list">{e.mistakesAr.map((s,i) => <li key={i}>
+            {getReviewedExerciseMedia(e.id)?.mistakes?.[i] && <img className="training-detail-photo" src={getReviewedExerciseMedia(e.id)!.mistakes![i].localPath} alt={getReviewedExerciseMedia(e.id)!.mistakes![i].altAr} loading="lazy" decoding="async" />}
+            <span>{s}</span>
+          </li>)}</ul>
         </div>}
       </article>)}
   </section>;
