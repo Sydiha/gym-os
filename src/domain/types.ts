@@ -83,7 +83,7 @@ export interface DemoData {
   /** Optional only for legacy v1 snapshots; upgraded snapshots always contain training. */
   training?: TrainingData;
 }
-export type Page = "الرئيسية" | "التغذية" | "النشاط" | "التقدم";
+export type Page = "الرئيسية" | "التغذية" | "النشاط" | "التقدم" | "التمارين";
 export type Sheet =
   | "meal"
   | "restaurant"
