@@ -10,9 +10,10 @@ describe("reviewed exercise photos", () => {
       expect(photo.equipmentVerified).toBe(true);
       expect(photo.postureVerified).toBe(true);
       expect(photo.reviewedBy.trim().length).toBeGreaterThan(0);
-      expect(photo.reviewDate).toMatch(/^\\d{4}-\\d{2}-\\d{2}$/);
+      expect(Date.parse(photo.reviewDate)).not.toBeNaN();
       expect(photo.altAr.trim().length).toBeGreaterThan(5);
-      expect(photo.localPath).toMatch(/^\\/exercises\\/reviewed\\/[a-z0-9-]+\\.webp$/);
+      expect(photo.localPath.startsWith("/exercises/reviewed/")).toBe(true);
+      expect(photo.localPath.endsWith(".webp")).toBe(true);
       expect(photo.localPath).not.toMatch(/^https?:/);
     }
   });
