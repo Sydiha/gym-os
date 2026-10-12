@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { existsSync, statSync } from "node:fs";
+import { join } from "node:path";
 import { EXERCISES } from "./exerciseCatalog";
 import { REVIEWED_EXERCISE_MEDIA, getReviewedExerciseMedia } from "./reviewedExerciseMedia";
 
@@ -15,6 +17,9 @@ describe("reviewed exercise photos", () => {
       expect(photo.localPath.startsWith("/exercises/reviewed/")).toBe(true);
       expect(photo.localPath.endsWith(".webp")).toBe(true);
       expect(photo.localPath).not.toMatch(/^https?:/);
+      const file = join(process.cwd(), "public", photo.localPath.slice(1));
+      expect(existsSync(file), `Missing local photo: ${photo.localPath}`).toBe(true);
+      if (existsSync(file)) expect(statSync(file).size).toBeGreaterThan(1000);
     }
   });
   it("prevents unknown IDs, duplicate IDs and duplicate media paths", () => {
