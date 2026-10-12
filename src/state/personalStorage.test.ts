@@ -20,6 +20,30 @@ function adapter(initial = emptyPersonal()) {
 }
 
 describe("Personal Mode data and backup format", () => {
+  it("upgrades legacy personal snapshots without changing existing records", async () => {
+    const source = emptyPersonal();
+    source.meals.push({ id: "m", name: "meal", calories: 10, protein: 1, carbs: 1, fat: 1, source: "user", date: "2026-10-10" });
+    const legacy = structuredClone(source);
+    delete legacy.training;
+    const state = adapter(legacy);
+    const repo = createPersonalRepository(state.storage);
+    const loaded = await repo.load();
+    expect(loaded.meals).toEqual(legacy.meals);
+    expect(loaded.training).toEqual({ preferences: null, plans: [], sessions: [] });
+    expect(state.read()).toEqual(legacy);
+    expect(await repo.load()).toEqual(loaded);
+    const exported = await repo.exportBackup();
+    expect(exported.schemaVersion).toBe(2);
+    expect(parseBackup({ schemaVersion: 1, exportedAt: exported.exportedAt, data: legacy }).data).toEqual(loaded);
+  });
+  it("rejects malformed training in backups without modifying the source", () => {
+    const source = emptyPersonal();
+    const backup = makeBackup(source);
+    expect(() => parseBackup({ ...backup, data: { ...source, training: { preferences: null, plans: [], sessions: [{ id: "bad" }] } } })).toThrow();
+    expect(source.training?.sessions).toEqual([]);
+    expect(() => parseBackup({ ...backup, data: { ...source, training: undefined } })).toThrow();
+  });
+
   it("starts with no personal records", () => {
     const data = emptyPersonal();
     expect(data.meals).toEqual([]);
@@ -55,7 +79,7 @@ describe("Personal Mode data and backup format", () => {
   });
   it("rejects unsupported versions and malformed records", () => {
     const backup = makeBackup(emptyPersonal());
-    expect(() => parseBackup({ ...backup, schemaVersion: 2 })).toThrow();
+    expect(() => parseBackup({ ...backup, schemaVersion: 3 })).toThrow();
     expect(() => parseBackup({ ...backup, data: { ...backup.data, meals: null } })).toThrow();
     expect(() => parseBackup(null)).toThrow();
   });
