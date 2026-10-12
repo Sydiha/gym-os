@@ -35,3 +35,14 @@ export const EXERCISE_SAFETY_NOTE_AR = "إذا سبّب التمرين ألمً�
 export const getExercise = (id: string): ExerciseDefinition | undefined => EXERCISES.find(exercise => exercise.id === id);
 export const listExercises = (place?: ExercisePlace): ExerciseDefinition[] =>
   EXERCISES.filter(exercise => place === undefined || exercise.place === place);
+
+/** For plan generation in Task 3: conservatively omit exercises flagged for a joint. */
+export function listExercisesForPreferences(
+  place: ExercisePlace,
+  caution: { knee: boolean; shoulder: boolean },
+): ExerciseDefinition[] {
+  return listExercises(place).filter(exercise =>
+    !(caution.knee && exercise.restrictions.includes("knee")) &&
+    !(caution.shoulder && exercise.restrictions.includes("shoulder"))
+  );
+}
