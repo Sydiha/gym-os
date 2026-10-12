@@ -86,6 +86,7 @@ export function Dialog({
           layer!.style.removeProperty("bottom");
           layer!.style.removeProperty("width");
           layer!.style.removeProperty("height");
+          layer!.style.removeProperty("min-height");
           return;
         }
         // iOS standalone PWAs can pan or zoom the visual viewport when typing.
@@ -96,6 +97,7 @@ export function Dialog({
         layer!.style.bottom = "auto";
         layer!.style.width = `${viewport.width}px`;
         layer!.style.height = `${viewport.height}px`;
+        layer!.style.minHeight = `${viewport.height}px`;
       });
     }
     viewport.addEventListener("resize", sync);
