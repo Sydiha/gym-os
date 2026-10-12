@@ -27,6 +27,11 @@ export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
     reviewedBy: "Owner visual approval (not professional technique certification)",
     reviewDate: "2026-10-12",
     altAr: "صورة توضيحية لشخص يستخدم جهاز ضغط الأرجل في وضعية الجلوس مع القدمين على المنصة",
+    steps: [{ localPath: "/exercises/reviewed/gym-leg-press.webp", altAr: "وضعية الجلوس على جهاز ضغط الأرجل والقدمين على المنصة" }],
+    mistakes: [
+      { localPath: "/exercises/reviewed/gym-leg-press.webp", altAr: "صورة مرجعية للجهاز، لا توضح رفع الحوض كخطأ" },
+      { localPath: "/exercises/reviewed/gym-leg-press-knee-lock.webp", altAr: "مثال توضيحي للتحذير من مد الركبتين حتى القفل" },
+    ],
   },
 ];
 
