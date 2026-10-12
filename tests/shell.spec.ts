@@ -68,8 +68,9 @@ test("legacy JSON backup imports and exports in an isolated browser profile", as
   await page.getByRole("button", { name: "تصدير نسخة احتياطية" }).click();
   const download = await downloadPromise;
   const exported = JSON.parse(await readFile((await download.path())!, "utf8"));
-  expect(exported.schemaVersion).toBe(1);
+  expect(exported.schemaVersion).toBe(2);
   expect(exported.data.activities[0]).toEqual(backup.data.activities[0]);
+  expect(exported.data.training).toEqual({ preferences: null, plans: [], sessions: [] });
 });
 
 for (const width of [320, 375, 390, 430, 1280]) {
