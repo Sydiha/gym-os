@@ -32,6 +32,7 @@ export const seed = (): DemoData => ({
     dayType: "activity",
   },
   declinedDate: null,
+  training: { preferences: null, plans: [], sessions: [] },
 });
 
 export function emptyDemo(): DemoData {

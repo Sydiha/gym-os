@@ -1,3 +1,4 @@
+import { isTrainingData, upgradePersonalData } from "./trainingMigration";
 import type { DemoData } from "../domain/types";
 import { seed } from "../domain/fixtures";
 // Keep the V1.2 demo key. This is deliberately not the V1.6 production data layer.
@@ -57,13 +58,14 @@ export function isDemoData(v: unknown): v is DemoData {
     ["مبتدئ", "متوسط", "متقدم"].includes(String(s.level)) &&
     ["18:00", "none"].includes(String(s.expected)) &&
     ["activity", "rest"].includes(String(s.dayType)) &&
-    (v.declinedDate === null || date(v.declinedDate))
+    (v.declinedDate === null || date(v.declinedDate)) &&
+    (v.training === undefined || isTrainingData(v.training))
   );
 }
 export function loadDemo(): DemoData {
   try {
     const data: unknown = JSON.parse(localStorage.getItem(STORE) ?? "null");
-    if (isDemoData(data)) return data;
+    if (isDemoData(data)) return upgradePersonalData(data);
   } catch {
     /* Storage may be disabled; keep demo usable. */
   }

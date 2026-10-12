@@ -1,3 +1,4 @@
+import { upgradePersonalData } from "./trainingMigration";
 import type { DemoData } from "../domain/types";
 import { emptyPersonal } from "../domain/fixtures";
 import { isDemoData } from "./persistence";
@@ -37,7 +38,7 @@ export async function loadPersonal(): Promise<DemoData> {
     const value = await request(db.transaction(STORE, "readonly").objectStore(STORE).get("data"));
     if (value === undefined) return emptyPersonal();
     if (!isPersonalData(value)) throw new Error("Stored personal data is malformed");
-    return value;
+    return upgradePersonalData(value);
   } finally { db.close(); }
 }
 export async function savePersonal(value: DemoData): Promise<void> {
@@ -54,17 +55,18 @@ export async function savePersonal(value: DemoData): Promise<void> {
   } finally { db.close(); }
 }
 
-export interface PersonalBackup { schemaVersion: 1; exportedAt: string; data: DemoData }
+export interface PersonalBackup { schemaVersion: 1 | 2; exportedAt: string; data: DemoData }
 export function makeBackup(data: DemoData): PersonalBackup {
-  return { schemaVersion: 1, exportedAt: new Date().toISOString(), data: structuredClone(data) };
+  return { schemaVersion: 2, exportedAt: new Date().toISOString(), data: upgradePersonalData(data) };
 }
 export function parseBackup(value: unknown): PersonalBackup {
   if (!value || typeof value !== "object") throw new Error("الملف ليس نسخة احتياطية صالحة.");
   const b = value as Partial<PersonalBackup>;
-  if (b.schemaVersion !== 1) throw new Error("إصدار النسخة الاحتياطية غير مدعوم.");
+  if (b.schemaVersion !== 1 && b.schemaVersion !== 2) throw new Error("إصدار النسخة الاحتياطية غير مدعوم.");
   if (typeof b.exportedAt !== "string" || !Number.isFinite(Date.parse(b.exportedAt)) || !isPersonalData(b.data))
     throw new Error("تعذر التحقق من بيانات الملف؛ لم تُستبدل بياناتك.");
-  return b as PersonalBackup;
+  if (b.schemaVersion === 2 && !b.data.training) throw new Error("Missing training data");
+  return { schemaVersion: 2, exportedAt: b.exportedAt, data: upgradePersonalData(b.data) };
 }
 
 export interface PersonalAdapter {
@@ -85,7 +87,7 @@ export function createPersonalRepository(adapter: PersonalAdapter = { load: load
   async function readCommitted() {
     const value = await adapter.load();
     if (!isPersonalData(value)) throw new Error("Stored personal data is malformed");
-    committed = structuredClone(value);
+    committed = upgradePersonalData(value);
     blocked = false;
     return structuredClone(committed);
   }
@@ -99,7 +101,7 @@ export function createPersonalRepository(adapter: PersonalAdapter = { load: load
       let base: DemoData;
       try { base = committed ?? await readCommitted(); }
       catch (error) { blocked = true; throw error; }
-      const next = structuredClone(base);
+      const next = upgradePersonalData(base);
       change(next);
       if (!isPersonalData(next)) throw new Error("Invalid personal data");
       try { await adapter.save(next); }
@@ -109,6 +111,7 @@ export function createPersonalRepository(adapter: PersonalAdapter = { load: load
     }),
     restore: (next: DemoData) => enqueue(async () => {
       if (!isPersonalData(next)) throw new Error("Invalid backup data");
+      next = upgradePersonalData(next);
       try {
         await adapter.save(next);
         committed = structuredClone(next);
