@@ -17,7 +17,7 @@ export function isTrainingData(v: unknown): v is TrainingData {
   const validPlan = (plan: unknown) => obj(plan) && str(plan.id) && num(plan.catalogVersion) &&
     Number.isInteger(plan.catalogVersion) && str(plan.templateId) && timestamp(plan.createdAt) &&
     Array.isArray(plan.days) && plan.days.every((d: unknown) => obj(d) && str(d.id) &&
-      Array.isArray(d.exerciseIds) && d.exerciseIds.every(str)) &&
+      Array.isArray(d.exerciseIds) && d.exerciseIds.every(str) && new Set(d.exerciseIds).size === d.exerciseIds.length) &&
     ids(plan.days as { id: string }[]);
   const validSession = (s: unknown) => obj(s) && str(s.id) &&
     (s.planId === null || str(s.planId)) && date(s.date) &&
@@ -27,7 +27,8 @@ export function isTrainingData(v: unknown): v is TrainingData {
     Array.isArray(s.exercises) && s.exercises.every((e: unknown) => obj(e) &&
       str(e.exerciseId) && typeof e.skipped === "boolean" && Array.isArray(e.sets) &&
       e.sets.every((set: unknown) => obj(set) && num(set.reps) &&
-        Number.isInteger(set.reps) && (set.loadKg === null || num(set.loadKg))));
+        Number.isInteger(set.reps) && (set.loadKg === null || num(set.loadKg)))) &&
+    new Set(s.exercises.map((e: { exerciseId: string }) => e.exerciseId)).size === s.exercises.length;
   return v.plans.every(validPlan) && v.sessions.every(validSession) &&
     ids(v.plans as { id: string }[]) && ids(v.sessions as { id: string }[]);
 }
