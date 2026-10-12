@@ -44,6 +44,19 @@ describe("Personal Mode data and backup format", () => {
     expect(() => parseBackup({ ...backup, data: { ...source, training: undefined } })).toThrow();
   });
 
+  it("rejects duplicate exercise IDs and preserves prior committed data", async () => {
+    const state = adapter();
+    const repo = createPersonalRepository(state.storage);
+    const before = await repo.load();
+    await expect(repo.commit((draft) => {
+      draft.training!.plans.push({
+        id: "p1", catalogVersion: 1, templateId: "basic",
+        createdAt: "2026-10-12T09:00:00Z",
+        days: [{ id: "d1", exerciseIds: ["squat", "squat"] }],
+      });
+    })).rejects.toThrow("Invalid personal data");
+    expect(state.read()).toEqual(before);
+  });
   it("starts with no personal records", () => {
     const data = emptyPersonal();
     expect(data.meals).toEqual([]);
