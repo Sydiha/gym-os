@@ -20,3 +20,20 @@ test("training library is visible and workout survives reload", async ({ page })
   await page.getByRole("navigation").getByRole("button", { name: "التمارين" }).click();
   await expect(page.getByText("الجدول المحفوظ")).toBeVisible();
 });
+
+test("all exercise illustrations are local and load offline", async ({ page, context }) => {
+  await page.goto("/");
+  await page.getByRole("navigation").getByRole("button", { name: "التمارين" }).click();
+  await page.getByLabel("مكان التمرين").selectOption("both");
+  const images = page.locator(".training-illustration");
+  await expect(images).toHaveCount(12);
+  for (let i = 0; i < 12; i++) {
+    const src = await images.nth(i).getAttribute("src");
+    expect(src).toMatch(/^\/exercises\/[a-z-]+\.svg$/);
+    const response = await page.request.get(src!);
+    expect(response.ok()).toBeTruthy();
+    expect(response.headers()["content-type"]).toContain("image/svg+xml");
+  }
+  await context.setOffline(true);
+  await expect(images.first()).toHaveAttribute("src", /\/exercises\//);
+});
