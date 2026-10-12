@@ -423,3 +423,32 @@ for (const [width, height] of [
     ).toBeFocused();
     expect(errors).toEqual([]);
   });
+
+
+test("320px RTL meal sheet keeps inputs readable and within viewport on focus", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 640 });
+  await page.getByRole("button", { name: "سجّل وجبة", exact: true }).click();
+  const sheet = page.locator(".sheet");
+  const input = sheet.locator('[name="name"]');
+  await expect(sheet).toBeVisible();
+  await expect(input).toHaveCSS("font-size", "16px");
+  await expect(sheet).toHaveCSS("direction", "rtl");
+  const assertNoOverflow = async () => {
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    const bounds = await sheet.boundingBox();
+    expect(bounds).not.toBeNull();
+    expect(bounds!.x).toBeGreaterThanOrEqual(-1);
+    expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(321);
+  };
+  await assertNoOverflow();
+  await input.focus();
+  await expect(input).toBeFocused();
+  await assertNoOverflow();
+  await sheet.locator('[name="calories"]').scrollIntoViewIfNeeded();
+  await expect(sheet.locator('[name="calories"]')).toBeInViewport();
+  await sheet.getByRole("button", { name: "حفظ الوجبة" }).scrollIntoViewIfNeeded();
+  await expect(sheet.getByRole("button", { name: "حفظ الوجبة" })).toBeInViewport();
+  await page.keyboard.press("Escape");
+  await expect(sheet).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
