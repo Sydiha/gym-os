@@ -17,7 +17,7 @@ describe("reviewed exercise photos", () => {
       expect(photo.localPath.startsWith("/exercises/reviewed/")).toBe(true);
       expect(photo.localPath.endsWith(".webp")).toBe(true);
       expect(photo.localPath).not.toMatch(/^https?:/);
-      for (const item of [...(photo.steps ?? []), ...(photo.mistakes ?? [])]) {
+      for (const item of [...(photo.steps ?? []), ...(photo.mistakes ?? [])].filter((item): item is NonNullable<typeof item> => item !== undefined)) {
         expect(item.localPath).toMatch(/^\/exercises\/reviewed\/[a-z0-9-]+\.webp$/);
         expect(item.altAr.trim().length).toBeGreaterThan(5);
         const itemFile = join(process.cwd(), "public", item.localPath.slice(1));
