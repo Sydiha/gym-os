@@ -14,7 +14,7 @@ export type ReviewedExerciseMedia = {
   reviewDate: string;
   altAr: string;
   steps?: readonly { localPath: `/exercises/reviewed/${string}.webp`; altAr: string }[];
-  mistakes?: readonly { localPath: `/exercises/reviewed/${string}.webp`; altAr: string }[];
+  mistakes?: readonly ({ localPath: `/exercises/reviewed/${string}.webp`; altAr: string } | undefined)[];
 };
 
 /** Keep empty until each image passes manual technique and visual review. */
@@ -29,7 +29,7 @@ export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
     altAr: "صورة توضيحية لشخص يستخدم جهاز ضغط الأرجل في وضعية الجلوس مع القدمين على المنصة",
     steps: [{ localPath: "/exercises/reviewed/gym-leg-press.webp", altAr: "وضعية الجلوس على جهاز ضغط الأرجل والقدمين على المنصة" }],
     mistakes: [
-      { localPath: "/exercises/reviewed/gym-leg-press.webp", altAr: "صورة مرجعية للجهاز، لا توضح رفع الحوض كخطأ" },
+      undefined,
       { localPath: "/exercises/reviewed/gym-leg-press-knee-lock.webp", altAr: "مثال توضيحي للتحذير من مد الركبتين حتى القفل" },
     ],
   },
