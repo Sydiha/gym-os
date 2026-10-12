@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { EXERCISES, EXERCISE_CATALOG_VERSION, getExercise, listExercises } from "./exerciseCatalog";
+import { EXERCISES, EXERCISE_CATALOG_VERSION, getExercise, listExercises, listExercisesForPreferences } from "./exerciseCatalog";
 
 describe("offline Arabic exercise catalog", () => {
   it("uses stable unique IDs and a positive catalog version", () => {
@@ -19,6 +19,14 @@ describe("offline Arabic exercise catalog", () => {
         expect(e.easierAlternativeId).not.toBe(e.id);
         expect(getExercise(e.easierAlternativeId)).toBeDefined();
       }
+    }
+  });
+  it("conservatively excludes joint-caution exercises", () => {
+    for (const place of ["gym", "home"] as const) {
+      const safe = listExercisesForPreferences(place, { knee: true, shoulder: true });
+      expect(safe.length).toBeGreaterThan(0);
+      expect(safe.every(e => e.restrictions.length === 0)).toBe(true);
+      expect(listExercisesForPreferences(place, { knee: false, shoulder: false })).toEqual(listExercises(place));
     }
   });
   it("covers gym machines and home exercises without modifying records", () => {
