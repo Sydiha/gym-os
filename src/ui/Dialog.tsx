@@ -75,6 +75,7 @@ export function Dialog({
     function sync() {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
+        if (!viewport) return;
         const active = document.activeElement;
         const editing = active instanceof HTMLElement &&
           root.current?.contains(active) &&
