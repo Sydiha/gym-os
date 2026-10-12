@@ -1,0 +1,30 @@
+import { describe, expect, it } from "vitest";
+import { existsSync, statSync } from "node:fs";
+import { join } from "node:path";
+import { EXERCISES } from "./exerciseCatalog";
+import { REVIEWED_EXERCISE_MEDIA, getReviewedExerciseMedia } from "./reviewedExerciseMedia";
+
+describe("reviewed exercise photos", () => {
+  it("does not display unapproved images", () => {
+    for (const exercise of EXERCISES) {
+      const photo = getReviewedExerciseMedia(exercise.id);
+      if (!photo) continue;
+      expect(photo.equipmentVerified).toBe(true);
+      expect(photo.postureVerified).toBe(true);
+      expect(photo.reviewedBy.trim().length).toBeGreaterThan(0);
+      expect(Date.parse(photo.reviewDate)).not.toBeNaN();
+      expect(photo.altAr.trim().length).toBeGreaterThan(5);
+      expect(photo.localPath.startsWith("/exercises/reviewed/")).toBe(true);
+      expect(photo.localPath.endsWith(".webp")).toBe(true);
+      expect(photo.localPath).not.toMatch(/^https?:/);
+      const file = join(process.cwd(), "public", photo.localPath.slice(1));
+      expect(existsSync(file), `Missing local photo: ${photo.localPath}`).toBe(true);
+      if (existsSync(file)) expect(statSync(file).size).toBeGreaterThan(1000);
+    }
+  });
+  it("prevents unknown IDs, duplicate IDs and duplicate media paths", () => {
+    expect(new Set(REVIEWED_EXERCISE_MEDIA.map(m => m.exerciseId)).size).toBe(REVIEWED_EXERCISE_MEDIA.length);
+    expect(new Set(REVIEWED_EXERCISE_MEDIA.map(m => m.localPath)).size).toBe(REVIEWED_EXERCISE_MEDIA.length);
+    for (const m of REVIEWED_EXERCISE_MEDIA) expect(EXERCISES.some(e => e.id === m.exerciseId)).toBe(true);
+  });
+});
