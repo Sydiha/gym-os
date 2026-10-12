@@ -13,6 +13,8 @@ export type ReviewedExerciseMedia = {
   reviewedBy: string;
   reviewDate: string;
   altAr: string;
+  steps?: readonly { localPath: `/exercises/reviewed/${string}.webp`; altAr: string }[];
+  mistakes?: readonly { localPath: `/exercises/reviewed/${string}.webp`; altAr: string }[];
 };
 
 /** Keep empty until each image passes manual technique and visual review. */
