@@ -12,7 +12,8 @@ export function Dialog({
   opener: RefObject<HTMLElement | null>;
   stage: string;
 }) {
-  const root = useRef<HTMLElement>(null),
+  const overlay = useRef<HTMLDivElement>(null),
+    root = useRef<HTMLElement>(null),
     closeButton = useRef<HTMLButtonElement>(null),
     onClose = useRef(close);
   onClose.current = close;
@@ -66,11 +67,56 @@ export function Dialog({
     };
   }, [opener]);
   useLayoutEffect(() => {
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+    const layer = overlay.current;
+    if (!layer) return;
+    let frame = 0;
+    function sync() {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const active = document.activeElement;
+        const editing = active instanceof HTMLElement &&
+          root.current?.contains(active) &&
+          active.matches("input, textarea, select, [contenteditable=true]");
+        if (!editing) {
+          layer!.style.removeProperty("left");
+          layer!.style.removeProperty("top");
+          layer!.style.removeProperty("right");
+          layer!.style.removeProperty("bottom");
+          layer!.style.removeProperty("width");
+          layer!.style.removeProperty("height");
+          return;
+        }
+        // iOS standalone PWAs can pan or zoom the visual viewport when typing.
+        // Keep the dialog inside the actually visible area, without disabling zoom.
+        layer!.style.left = `${viewport.offsetLeft}px`;
+        layer!.style.top = `${viewport.offsetTop}px`;
+        layer!.style.right = "auto";
+        layer!.style.bottom = "auto";
+        layer!.style.width = `${viewport.width}px`;
+        layer!.style.height = `${viewport.height}px`;
+      });
+    }
+    viewport.addEventListener("resize", sync);
+    viewport.addEventListener("scroll", sync);
+    document.addEventListener("focusin", sync);
+    document.addEventListener("focusout", sync);
+    return () => {
+      cancelAnimationFrame(frame);
+      viewport.removeEventListener("resize", sync);
+      viewport.removeEventListener("scroll", sync);
+      document.removeEventListener("focusin", sync);
+      document.removeEventListener("focusout", sync);
+    };
+  }, []);
+  useLayoutEffect(() => {
     closeButton.current?.focus({ preventScroll: true });
     root.current?.scrollTo?.(0, 0);
   }, [stage]);
   return (
     <div
+      ref={overlay}
       className="overlay"
       onClick={(e) => {
         if (e.target === e.currentTarget) close();
