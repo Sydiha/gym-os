@@ -50,3 +50,5 @@
 .training-page button:focus-visible,.training-page input:focus-visible,.training-page select:focus-visible{outline:2px solid #ffb47c;outline-offset:2px}
 @media(max-width:375px){.training-panel,.training-exercise{padding:13px}.training-page h1{font-size:32px}}
 @media(prefers-reduced-motion:reduce){.training-page *{scroll-behavior:auto!important}}
+
+.training-reviewed-photo{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:12px;margin-bottom:12px;background:#211b25}
