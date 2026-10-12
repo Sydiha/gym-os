@@ -4,6 +4,7 @@ import { Dashboard } from "./features/Dashboard";
 import { Nutrition } from "./features/Nutrition";
 import { Activity } from "./features/Activity";
 import { Progress } from "./features/Progress";
+import { Training } from "./features/Training";
 import { Dialogs } from "./features/Dialogs";
 import { Icon, type IconName } from "./ui/Icon";
 import { PwaStatus } from "./ui/PwaStatus";
@@ -13,6 +14,7 @@ const pages: { page: Page; icon: IconName }[] = [
   { page: "التغذية", icon: "meal" },
   { page: "النشاط", icon: "walk" },
   { page: "التقدم", icon: "progress" },
+  { page: "التمارين", icon: "walk" },
 ];
 function Interface() {
   const { page, navigate, sheet, open, notice, mode, ready, readBlocked } = useDemo();
@@ -58,6 +60,8 @@ function Interface() {
           <Nutrition />
         ) : page === "النشاط" ? (
           <Activity />
+        ) : page === "التمارين" ? (
+          <Training />
         ) : page === "التقدم" ? (
           <Progress />
         ) : (
