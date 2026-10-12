@@ -452,3 +452,25 @@ test("320px RTL meal sheet keeps inputs readable and within viewport on focus", 
   await expect(sheet).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+
+test("meal dialog follows visual viewport while editing without locking user zoom", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.getByRole("button", { name: "سجّل وجبة", exact: true }).click();
+  const overlay = page.locator(".overlay");
+  const name = page.locator('.sheet [name="name"]');
+  await name.focus();
+  await expect(name).toBeFocused();
+  await expect.poll(() => overlay.evaluate((el) => el.style.width)).not.toBe("");
+  const dimensions = await page.evaluate(() => ({
+    visual: visualViewport?.width,
+    overlay: document.querySelector<HTMLElement>(".overlay")?.getBoundingClientRect().width,
+    viewportMeta: document.querySelector('meta[name="viewport"]')?.getAttribute("content"),
+  }));
+  expect(dimensions.overlay).toBeCloseTo(dimensions.visual!, 0);
+  expect(dimensions.viewportMeta).not.toMatch(/user-scalable\s*=\s*no|maximum-scale\s*=\s*1/);
+  await page.locator(".sheet [name=calories]").focus();
+  await expect.poll(() => overlay.evaluate((el) => el.style.height)).not.toBe("");
+  await page.getByRole("button", { name: "إغلاق" }).click();
+  await expect(overlay).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
