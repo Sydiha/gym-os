@@ -10,6 +10,8 @@ export function Training() {
   const [days, setDays] = useState<3 | 4 | 5>(data.training?.preferences?.daysPerWeek ?? 3);
   const [level, setLevel] = useState<TrainingPreferences["level"]>(data.training?.preferences?.level ?? "مبتدئ");
   const [selected, setSelected] = useState<string | null>(null);
+  const [reps, setReps] = useState("10");
+  const [load, setLoad] = useState("");
   const training = data.training;
   const plan = training?.plans.at(-1);
   const active = training?.sessions.find(s => s.status === "in_progress");
@@ -37,11 +39,21 @@ export function Training() {
     update(d => { d.training?.sessions.push(session); }, "بدأ التمرين. سجّل مجموعاتك الفعلية.");
   };
   const addSet = (exerciseId: string) => {
+    const count = Number(reps);
+    const kg = load.trim() === "" ? null : Number(load);
+    if (!Number.isInteger(count) || count < 1 || count > 1000 || (kg !== null && (!Number.isFinite(kg) || kg < 0 || kg > 1000))) return;
     if (!active) return;
     update(d => {
       const exercise = d.training?.sessions.find(s => s.id === active.id)?.exercises.find(e => e.exerciseId === exerciseId);
-      exercise?.sets.push({ reps: 10, loadKg: null });
-    }, "تم تسجيل مجموعة من 10 تكرارات بدون وزن إضافي.");
+      exercise?.sets.push({ reps: count, loadKg: kg });
+    }, "تم تسجيل المجموعة.");
+  };
+  const skip = (exerciseId: string) => {
+    if (!active) return;
+    update(d => {
+      const exercise = d.training?.sessions.find(s => s.id === active.id)?.exercises.find(e => e.exerciseId === exerciseId);
+      if (exercise) exercise.skipped = true;
+    }, "تم تخطي التمرين.");
   };
   const finish = () => {
     if (!active) return;
@@ -83,10 +95,16 @@ export function Training() {
     </div>
     {active && <div className="card" style={{ padding: 16, marginBottom: 16 }}>
       <h2>التمرين الجاري</h2>
+      <label htmlFor="training-reps">التكرارات لكل مجموعة</label>
+      <input id="training-reps" type="number" min="1" max="1000" value={reps} onChange={e => setReps(e.target.value)} />
+      <label htmlFor="training-load">الوزن بالكيلو (اختياري)</label>
+      <input id="training-load" type="number" min="0" max="1000" step="0.5" value={load} onChange={e => setLoad(e.target.value)} />
       {active.exercises.map(e => <div key={e.exerciseId} style={{ marginBottom: 12 }}>
         <strong>{getExercise(e.exerciseId)?.nameAr ?? e.exerciseId}</strong>
-        <p>المجموعات المسجلة: {e.sets.length}</p>
-        <button disabled={disabled} onClick={() => addSet(e.exerciseId)}>سجّل 10 تكرارات</button>
+        <p>المجموعات المسجلة: {e.sets.length}{e.skipped ? " (تم التخطي)" : ""}</p>
+        <ul>{e.sets.map((set, i) => <li key={i}>{set.reps} تكرارات، {set.loadKg === null ? "وزن الجسم / غير محدد" : `${set.loadKg} كجم`}</li>)}</ul>
+        <button disabled={disabled || e.skipped} onClick={() => addSet(e.exerciseId)}>تسجيل مجموعة</button>{" "}
+        <button disabled={disabled || e.skipped} onClick={() => skip(e.exerciseId)}>تخطي التمرين</button>
       </div>)}
       <button disabled={disabled} onClick={finish}>إنهاء التمرين وحفظه</button>
     </div>}
