@@ -16,7 +16,17 @@ export type ReviewedExerciseMedia = {
 };
 
 /** Keep empty until each image passes manual technique and visual review. */
-export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [];
+export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
+  {
+    exerciseId: "gym-leg-press",
+    localPath: "/exercises/reviewed/gym-leg-press.webp",
+    equipmentVerified: true,
+    postureVerified: true,
+    reviewedBy: "Owner visual approval (not professional technique certification)",
+    reviewDate: "2026-10-12",
+    altAr: "صورة توضيحية لشخص يستخدم جهاز ضغط الأرجل في وضعية الجلوس مع القدمين على المنصة",
+  },
+];
 
 export function getReviewedExerciseMedia(exerciseId: string): ReviewedExerciseMedia | undefined {
   return REVIEWED_EXERCISE_MEDIA.find(
