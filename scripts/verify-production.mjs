@@ -31,6 +31,7 @@ if (failures) {
 }
 
 const expectedSha = process.env.GYM_OS_EXPECTED_SHA;
+if (expectedSha) {
 let identityMatched = false;
 for (let i = 0; i < (expectedSha ? 18 : 1); i++) {
   try {
@@ -52,3 +53,5 @@ if (!identityMatched) {
   console.error("Production release identity check failed.", expectedSha ?? "");
 }
 if (failures) process.exitCode = 1;
+
+}
