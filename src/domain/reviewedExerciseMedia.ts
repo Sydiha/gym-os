@@ -97,26 +97,6 @@ export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
     ],
   },
   {
-    exerciseId: "gym-leg-curl",
-    localPath: "/exercises/reviewed/gym-leg-curl-main.webp",
-    equipmentVerified: true,
-    postureVerified: true,
-    reviewedBy: "Visual review of AI-generated illustration; not trainer-certified",
-    reviewDate: "2026-10-13",
-    altAr: "رجل يؤدي ثني الرجل على الجهاز",
-    correct: { localPath: "/exercises/reviewed/gym-leg-curl-correct.webp", altAr: "الفخذان مثبتان والظهر مدعوم ومحور دوران الجهاز بمحاذاة مفصل الركبة." },
-    comparisons: [{"angleAr":"من الجانب","localPath":"/exercises/reviewed/gym-leg-curl-comparison.webp","altAr":"من الجانب: الصحيح الحوض والفخذان ثابتان؛ الخطأ رفع الحوض وتقويس الظهر."}],
-    steps: [
-      { localPath: "/exercises/reviewed/gym-leg-curl-step-01-setup.webp", altAr: "ضبط جهاز ثني الرجل بحيث يتوافق محور الجهاز مع الركبة" },
-      { localPath: "/exercises/reviewed/gym-leg-curl-step-02-curl.webp", altAr: "ثني الركبتين لسحب وسادة الجهاز إلى الأسفل والخلف" },
-      { localPath: "/exercises/reviewed/gym-leg-curl-step-03-return.webp", altAr: "مد الركبتين تدريجيًا لإعادة وسادة جهاز الثني" },
-    ],
-    mistakes: [
-      { localPath: "/exercises/reviewed/gym-leg-curl-mistake-hips.webp", altAr: "خطأ: رفع الحوض وتقويس الظهر لتحريك وزن جهاز الثني" },
-      { localPath: "/exercises/reviewed/gym-leg-curl-mistake-fast.webp", altAr: "خطأ: ترك الساقين والوزن يعودان بسرعة" },
-    ],
-  },
-  {
     exerciseId: "gym-calf-raise",
     localPath: "/exercises/reviewed/gym-calf-raise-main.webp",
     equipmentVerified: true,
