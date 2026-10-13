@@ -10,6 +10,7 @@ export type ReviewedExerciseMedia = {
   reviewDate: string;
   altAr: string;
   correct: { localPath: `/exercises/reviewed/${string}.webp`; altAr: string };
+  correctExamples?: readonly { localPath: `/exercises/reviewed/${string}.webp`; altAr: string; labelAr: string }[];
   steps: readonly { localPath: `/exercises/reviewed/${string}.webp`; altAr: string }[];
   mistakes: readonly { localPath: `/exercises/reviewed/${string}.webp`; altAr: string }[];
   comparisons?: readonly { angleAr: "من الأمام" | "من الخلف" | "من الجانب"; localPath: `/exercises/reviewed/${string}.webp`; altAr: string }[];
@@ -105,9 +106,15 @@ export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
     reviewDate: "2026-10-13",
     altAr: "من الجانب: أداء ثني الساق مستلقيًا مع بقاء الحوض على المقعد وثني الركبتين",
     correct: { localPath: "/exercises/reviewed/gym-leg-curl-correct.webp", altAr: "وضعية صحيحة: ثني الركبتين على جهاز الساق المستلقي مع ثبات الحوض والفخذين على المسند." },
-    comparisons: [{ angleAr: "من الجانب", localPath: "/exercises/reviewed/gym-leg-curl-comparison.webp", altAr: "من الجانب: الصحيح ثبات الحوض على المقعد؛ الخطأ رفع الحوض وتقويس أسفل الظهر." }],
+    correctExamples: [
+      { localPath: "/exercises/reviewed/gym-leg-curl-main.webp", labelAr: "البداية: مد الساقين مع بقاء الحوض والفخذين على المسند", altAr: "وضعية صحيحة منفصلة: بداية التكرار مع الساقين ممدودتين وتحكم كامل." },
+      { localPath: "/exercises/reviewed/gym-leg-curl-correct.webp", labelAr: "الثني: تقريب الكعبين نحو الخلف دون رفع الحوض", altAr: "وضعية صحيحة منفصلة: ثني الركبتين مع ثبات الحوض والفخذين على المسند." },
+    ],
     steps: [],
-    mistakes: [],
+    mistakes: [
+      { localPath: "/exercises/reviewed/gym-leg-curl-mistake-hips.webp", altAr: "خطأ: رفع الحوض وتقويس أسفل الظهر أثناء ثني الساقين." },
+      { localPath: "/exercises/reviewed/gym-leg-curl-mistake-back-arch.webp", altAr: "خطأ: رفع الصدر والمبالغة في تقويس أسفل الظهر بدل تثبيت الجذع." },
+    ],
   },
   {
     exerciseId: "gym-calf-raise",
