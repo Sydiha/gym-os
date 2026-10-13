@@ -16,7 +16,7 @@ export default defineConfig({
         this.emitFile({
           type: 'asset',
           fileName: 'version.json',
-          source: JSON.stringify({ commit }) + '\\n',
+          source: JSON.stringify({ commit }),
         });
       },
     },
