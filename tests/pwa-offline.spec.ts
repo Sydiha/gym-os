@@ -23,7 +23,7 @@ test("exercise technique images remain available after a cached PWA goes offline
     const entries = await Promise.all(names.map(name => caches.open(name)));
     return Promise.all(paths.map(async path => {
       for (const cache of entries) {
-        if (await cache.match(new URL(path, location.origin))) return true;
+        if (await cache.match(new URL(path, location.origin), { ignoreSearch: true })) return true;
       }
       return false;
     }));
