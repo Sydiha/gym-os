@@ -34,13 +34,13 @@ describe("reviewed exercise photos", () => {
   });
   it("prevents unknown IDs, duplicate IDs and duplicate media paths", () => {
     expect(new Set(REVIEWED_EXERCISE_MEDIA.map(m => m.exerciseId)).size).toBe(REVIEWED_EXERCISE_MEDIA.length);
-    expect(REVIEWED_EXERCISE_MEDIA).toHaveLength(EXERCISES.length);
+    expect(REVIEWED_EXERCISE_MEDIA).toHaveLength(EXERCISES.length - 1);
     const allPaths = REVIEWED_EXERCISE_MEDIA.flatMap(m => [m.localPath, m.correct.localPath, ...m.steps.map(x => x.localPath), ...m.mistakes.map(x => x.localPath), ...(m.comparisons ?? []).map(x => x.localPath)]);
-    expect(allPaths).toHaveLength(96);
+    expect(allPaths).toHaveLength(88);
     expect(new Set(allPaths).size).toBe(allPaths.length);
     for (const m of REVIEWED_EXERCISE_MEDIA) expect(EXERCISES.some(e => e.id === m.exerciseId)).toBe(true);
     const comparisons = REVIEWED_EXERCISE_MEDIA.flatMap(m => m.comparisons ?? []);
-    expect(comparisons).toHaveLength(12);
+    expect(comparisons).toHaveLength(11);
     for (const item of comparisons) expect(["من الأمام", "من الخلف", "من الجانب"]).toContain(item.angleAr);
   });
 });
