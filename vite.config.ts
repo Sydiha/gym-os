@@ -1,9 +1,25 @@
 import { defineConfig } from 'vite';
+import { execFileSync } from 'node:child_process';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
+// The file is public build metadata, never user data or runtime configuration.
+const commit = process.env.CF_PAGES_COMMIT_SHA ||
+  process.env.GITHUB_SHA ||
+  execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+
 export default defineConfig({
   plugins: [
+    {
+      name: 'release-identity',
+      generateBundle() {
+        this.emitFile({
+          type: 'asset',
+          fileName: 'version.json',
+          source: JSON.stringify({ commit }) + '\\n',
+        });
+      },
+    },
     react(),
     VitePWA({
       registerType: 'prompt',
