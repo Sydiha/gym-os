@@ -3,15 +3,16 @@ import { day, fmt, hasDuplicateMeal, nutrient, todayMeals, uid } from "../domain
 import { Calories } from "../ui/Summaries";
 import { restaurantOptions } from "../domain/fixtures";
 export function Nutrition() {
-  const { data, open, openEdit, update } = useDemo();
+  const { data, open, openEdit, update, busy, readBlocked } = useDemo();
+  const actionsDisabled = busy || readBlocked;
   const meals = todayMeals(data);
   const previousMeals = data.meals.filter((meal) => meal.date !== day()).sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
   function removeMeal(id: string) {
-    if (!window.confirm("هل تريد حذف هذه الوجبة؟ ستُحدّث السعرات والماكروز بعد الحذف.")) return;
+    if (actionsDisabled || !window.confirm("هل تريد حذف هذه الوجبة؟ ستُحدّث السعرات والماكروز بعد الحذف.")) return;
     update((draft) => { draft.meals = draft.meals.filter((meal) => meal.id !== id); }, "حُذفت الوجبة وأُعيد حساب المغذيات.");
   }
   function removeFavorite(id: string) {
-    if (!window.confirm("هل تريد إزالة هذه الوجبة من المفضلة؟ سيبقى أي سجل وجبة كما هو.")) return;
+    if (actionsDisabled || !window.confirm("هل تريد إزالة هذه الوجبة من المفضلة؟ سيبقى أي سجل وجبة كما هو.")) return;
     update((draft) => { draft.favorites = draft.favorites.filter((meal) => meal.id !== id); }, "أُزيلت الوجبة من المفضلة.");
   }
   const mealRow = (m: typeof data.meals[number], favorite = false) => (
@@ -22,15 +23,15 @@ export function Nutrition() {
       </span>
       <div className="record-actions">
         {favorite ? <>
-          <button className="small-btn" onClick={() => {
+          <button className="small-btn" disabled={actionsDisabled} onClick={() => {
             if (hasDuplicateMeal(data, m.name, day()) && !window.confirm("توجد وجبة بالاسم نفسه اليوم. هل تريد تسجيلها مرة أخرى؟")) return;
             update((d) => { d.meals.push({ ...m, id: uid(), date: day() }); }, "أُضيفت الوجبة المفضلة إلى اليوم.");
           }}>إضافة لليوم</button>
-          <button className="small-btn" aria-label={`إزالة ${m.name} من المفضلة`} onClick={() => removeFavorite(m.id)}>إزالة</button>
+          <button className="small-btn" disabled={actionsDisabled} aria-label={`إزالة ${m.name} من المفضلة`} onClick={() => removeFavorite(m.id)}>إزالة</button>
         </> : <>
-          <button className="small-btn" aria-label={`تعديل ${m.name}`} onClick={() => openEdit({ kind: "meal", record: m })}>تعديل</button>
-          <button className="small-btn" aria-label={`حذف ${m.name}`} onClick={() => removeMeal(m.id)}>حذف</button>
-          <button className="small-btn" aria-label={data.favorites.some((f) => f.name === m.name && f.calories === m.calories && f.protein === m.protein && f.carbs === m.carbs && f.fat === m.fat) ? "محفوظة" : "حفظ"} onClick={() => {
+          <button className="small-btn" disabled={actionsDisabled} aria-label={`تعديل ${m.name}`} onClick={() => openEdit({ kind: "meal", record: m })}>تعديل</button>
+          <button className="small-btn" disabled={actionsDisabled} aria-label={`حذف ${m.name}`} onClick={() => removeMeal(m.id)}>حذف</button>
+          <button className="small-btn" disabled={actionsDisabled} aria-label={data.favorites.some((f) => f.name === m.name && f.calories === m.calories && f.protein === m.protein && f.carbs === m.carbs && f.fat === m.fat) ? "محفوظة" : "حفظ"} onClick={() => {
             if (data.favorites.some((f) => f.name === m.name && f.calories === m.calories && f.protein === m.protein && f.carbs === m.carbs && f.fat === m.fat)) return;
             update((d) => { d.favorites.push({ ...m, id: uid() }); }, "حُفظت الوجبة في المفضلة.");
           }}>{data.favorites.some((f) => f.name === m.name && f.calories === m.calories && f.protein === m.protein && f.carbs === m.carbs && f.fat === m.fat) ? "محفوظة" : "حفظ"}</button>
@@ -60,10 +61,10 @@ export function Nutrition() {
         ))}
       </div>
       <div className="section-actions">
-        <button className="wide" onClick={() => open("meal")}>
+        <button className="wide" disabled={actionsDisabled} onClick={() => open("meal")}>
           سجّل وجبة
         </button>
-        <button className="outline" onClick={() => open("restaurant")}>
+        <button className="outline" disabled={actionsDisabled} onClick={() => open("restaurant")}>
           ماذا أطلب اليوم؟
         </button>
       </div>
@@ -87,7 +88,8 @@ export function Nutrition() {
   );
 }
 export function Restaurant() {
-  const { data, update, setSheet, navigate } = useDemo();
+  const { data, update, setSheet, navigate, busy, readBlocked } = useDemo();
+  const actionsDisabled = busy || readBlocked;
   return (
     <>
       <h2>ماذا أطلب اليوم؟</h2>
@@ -106,7 +108,7 @@ export function Restaurant() {
             <small>المصدر: تقدير تقريبي غير موثق</small>
           </span>
           <button
-            className="small-btn"
+            className="small-btn" disabled={actionsDisabled}
             onClick={() => {
               if (hasDuplicateMeal(data, m.name, day()) && !window.confirm("سُجّلت وجبة بهذا الاسم اليوم. هل تريد إضافتها مرة أخرى؟")) return;
               navigate("التغذية");
