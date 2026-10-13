@@ -30,5 +30,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Verify live Cloudflare site and leg curl images
+      - name: Verify live Cloudflare site, assets, and deployed commit
+        env:
+          GYM_OS_EXPECTED_SHA: ${{ github.event_name == 'push' && github.sha || '' }}
         run: node scripts/verify-production.mjs
