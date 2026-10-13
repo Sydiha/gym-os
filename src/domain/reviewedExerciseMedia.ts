@@ -12,6 +12,7 @@ export type ReviewedExerciseMedia = {
   correct: { localPath: `/exercises/reviewed/${string}.webp`; altAr: string };
   steps: readonly { localPath: `/exercises/reviewed/${string}.webp`; altAr: string }[];
   mistakes: readonly { localPath: `/exercises/reviewed/${string}.webp`; altAr: string }[];
+  comparisons?: readonly { angleAr: "من الأمام" | "من الخلف" | "من الجانب"; localPath: `/exercises/reviewed/${string}.webp`; altAr: string }[];
 };
 
 export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
@@ -24,6 +25,7 @@ export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
     reviewDate: "2026-10-13",
     altAr: "رجل يؤدي ضغط الأرجل على الجهاز بوضعية جلوس مدعومة",
     correct: { localPath: "/exercises/reviewed/gym-leg-press-correct.webp", altAr: "الظهر والحوض مسنودان والركبتان تتبعان اتجاه أصابع القدمين مع عدم قفل الركبة." },
+    comparisons: [{"angleAr":"من الخلف","localPath":"/exercises/reviewed/gym-leg-press-comparison.webp","altAr":"من الخلف: الصحيح الركبتان بمحاذاة أصابع القدمين؛ الخطأ انهيار الركبتين للداخل."}],
     steps: [
       { localPath: "/exercises/reviewed/gym-leg-press-step-01-setup.webp", altAr: "الجلوس على جهاز ضغط الأرجل مع تثبيت الظهر والقدمين" },
       { localPath: "/exercises/reviewed/gym-leg-press-step-02-drive.webp", altAr: "دفع منصة جهاز ضغط الأرجل بالقدمين مع تتبع الركبتين لاتجاه أصابع القدمين" },
@@ -43,6 +45,7 @@ export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
     reviewDate: "2026-10-13",
     altAr: "رجل يؤدي ضغط الصدر على جهاز المقاومة",
     correct: { localPath: "/exercises/reviewed/gym-chest-press-correct.webp", altAr: "الظهر مدعوم والكتفان منخفضان والرسغان مستقيمان والمرفقان دون قفل." },
+    comparisons: [{"angleAr":"من الأمام","localPath":"/exercises/reviewed/gym-chest-press-comparison.webp","altAr":"من الأمام: الصحيح الكتفان منخفضان والرسغان مستقيمان؛ الخطأ رفع الكتفين وفتح المرفقين."}],
     steps: [
       { localPath: "/exercises/reviewed/gym-chest-press-step-01-setup.webp", altAr: "رجل جالس على جهاز ضغط الصدر ومرفقاه مثنيان عند مستوى الصدر" },
       { localPath: "/exercises/reviewed/gym-chest-press-step-02-press.webp", altAr: "دفع مقابض جهاز ضغط الصدر للأمام مع رسغين مستقيمين" },
@@ -62,6 +65,7 @@ export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
     reviewDate: "2026-10-13",
     altAr: "رجل يؤدي السحب العلوي على الجهاز",
     correct: { localPath: "/exercises/reviewed/gym-lat-pulldown-correct.webp", altAr: "البار أمام الجسم، الجذع شبه ثابت، والكتفان منخفضان أثناء السحب." },
+    comparisons: [{"angleAr":"من الخلف","localPath":"/exercises/reviewed/gym-lat-pulldown-comparison.webp","altAr":"من الخلف: الصحيح الجذع ثابت والكتفان منخفضان؛ الخطأ التأرجح للخلف وإمالة الجذع."}],
     steps: [
       { localPath: "/exercises/reviewed/gym-lat-pulldown-step-01-setup.webp", altAr: "الجلوس في جهاز السحب العلوي مع تثبيت الفخذين والإمساك بالبار" },
       { localPath: "/exercises/reviewed/gym-lat-pulldown-step-02-pull.webp", altAr: "سحب البار أمام الجسم باتجاه أعلى الصدر" },
@@ -81,6 +85,7 @@ export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
     reviewDate: "2026-10-13",
     altAr: "رجل يؤدي التجديف جالسًا على جهاز الكابل",
     correct: { localPath: "/exercises/reviewed/gym-seated-row-correct.webp", altAr: "الظهر محايد والصدر مرفوع والكتفان منخفضان مع سحب المرفقين قرب الجسم." },
+    comparisons: [{"angleAr":"من الجانب","localPath":"/exercises/reviewed/gym-seated-row-comparison.webp","altAr":"من الجانب: الصحيح الجذع ثابت والظهر محايد؛ الخطأ الميل للخلف واستخدام الزخم."}],
     steps: [
       { localPath: "/exercises/reviewed/gym-seated-row-step-01-setup.webp", altAr: "الجلوس أمام جهاز التجديف مع تثبيت القدمين ومد الذراعين" },
       { localPath: "/exercises/reviewed/gym-seated-row-step-02-pull.webp", altAr: "سحب مقبض الكابل نحو أسفل الأضلاع مع قرب المرفقين من الجسم" },
@@ -100,6 +105,7 @@ export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
     reviewDate: "2026-10-13",
     altAr: "رجل يؤدي ثني الرجل على الجهاز",
     correct: { localPath: "/exercises/reviewed/gym-leg-curl-correct.webp", altAr: "الفخذان مثبتان والظهر مدعوم ومحور دوران الجهاز بمحاذاة مفصل الركبة." },
+    comparisons: [{"angleAr":"من الجانب","localPath":"/exercises/reviewed/gym-leg-curl-comparison.webp","altAr":"من الجانب: الصحيح الحوض والفخذان ثابتان؛ الخطأ رفع الحوض وتقويس الظهر."}],
     steps: [
       { localPath: "/exercises/reviewed/gym-leg-curl-step-01-setup.webp", altAr: "ضبط جهاز ثني الرجل بحيث يتوافق محور الجهاز مع الركبة" },
       { localPath: "/exercises/reviewed/gym-leg-curl-step-02-curl.webp", altAr: "ثني الركبتين لسحب وسادة الجهاز إلى الأسفل والخلف" },
@@ -119,6 +125,7 @@ export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
     reviewDate: "2026-10-13",
     altAr: "رجل يؤدي رفع السمانة على الجهاز",
     correct: { localPath: "/exercises/reviewed/gym-calf-raise-correct.webp", altAr: "الوزن موزع على مقدمة القدم والكعبان يرتفعان بالتساوي والكاحلان مستقيمان." },
+    comparisons: [{"angleAr":"من الخلف","localPath":"/exercises/reviewed/gym-calf-raise-comparison.webp","altAr":"من الخلف: الصحيح رفع الكعبين بالتساوي والكاحلان مستقيمان؛ الخطأ ميل الكاحلين للخارج."}],
     steps: [
       { localPath: "/exercises/reviewed/gym-calf-raise-step-01-setup.webp", altAr: "الوقوف على منصة جهاز السمانة مع وضع مقدمة القدم على الحافة" },
       { localPath: "/exercises/reviewed/gym-calf-raise-step-02-rise.webp", altAr: "رفع الكعبين بالضغط على مقدمة القدم" },
@@ -138,6 +145,7 @@ export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
     reviewDate: "2026-10-13",
     altAr: "رجل يؤدي القرفصاء بمساعدة كرسي",
     correct: { localPath: "/exercises/reviewed/home-chair-squat-correct.webp", altAr: "القدمان ثابتتان والركبتان بمحاذاة القدمين والجلوس يتم بتحكم على كرسي ثابت." },
+    comparisons: [{"angleAr":"من الأمام","localPath":"/exercises/reviewed/home-chair-squat-comparison.webp","altAr":"من الأمام: الصحيح الركبتان فوق اتجاه أصابع القدمين؛ الخطأ انهيار الركبتين للداخل."}],
     steps: [
       { localPath: "/exercises/reviewed/home-chair-squat-step-01-setup.webp", altAr: "رجل واقف باستقامة أمام كرسي ثابت وقدماه بعرض الكتفين" },
       { localPath: "/exercises/reviewed/home-chair-squat-step-02-rise.webp", altAr: "النهوض من القرفصاء بمساعدة كرسي مع توجيه الركبتين فوق القدمين" },
@@ -157,6 +165,7 @@ export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
     reviewDate: "2026-10-13",
     altAr: "رجل يؤدي تمرين الضغط على الحائط",
     correct: { localPath: "/exercises/reviewed/home-wall-pushup-correct.webp", altAr: "الرأس والجذع والحوض على خط واحد والكتفان مستقران والمرفقان بزاوية مريحة." },
+    comparisons: [{"angleAr":"من الجانب","localPath":"/exercises/reviewed/home-wall-pushup-comparison.webp","altAr":"من الجانب: الصحيح الرأس والجذع والحوض على خط واحد؛ الخطأ هبوط الحوض وتقوس أسفل الظهر."}],
     steps: [
       { localPath: "/exercises/reviewed/home-wall-pushup-step-01-setup.webp", altAr: "رجل يقف مقابل حائط ثابت ويداه عند مستوى الصدر" },
       { localPath: "/exercises/reviewed/home-wall-pushup-step-02-press.webp", altAr: "دفع الجسم بعيدًا عن الحائط مع بقاء الجسم مستقيمًا" },
@@ -176,6 +185,7 @@ export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
     reviewDate: "2026-10-13",
     altAr: "رجل يؤدي تمرين الجسر الأرضي",
     correct: { localPath: "/exercises/reviewed/home-glute-bridge-correct.webp", altAr: "الكتفان والقدمان ثابتان والحوض مرتفع دون تقويس مفرط لأسفل الظهر." },
+    comparisons: [{"angleAr":"من الجانب","localPath":"/exercises/reviewed/home-glute-bridge-comparison.webp","altAr":"من الجانب: الصحيح رفع الحوض دون تقويس الظهر؛ الخطأ المبالغة في رفع الحوض وتقويس الظهر."}],
     steps: [
       { localPath: "/exercises/reviewed/home-glute-bridge-step-01-setup.webp", altAr: "رجل مستلقٍ على بساط مع ثني الركبتين والقدمين على الأرض" },
       { localPath: "/exercises/reviewed/home-glute-bridge-step-02-lift.webp", altAr: "رفع الحوض حتى يصبح الجذع والفخذان على خط مائل واحد" },
@@ -195,6 +205,7 @@ export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
     reviewDate: "2026-10-13",
     altAr: "رجل يؤدي تمرين bird dog على بساط",
     correct: { localPath: "/exercises/reviewed/home-bird-dog-correct.webp", altAr: "الظهر محايد والحوض مستوٍ والذراع والساق الممدودتان بارتفاع الجذع." },
+    comparisons: [{"angleAr":"من الخلف","localPath":"/exercises/reviewed/home-bird-dog-comparison.webp","altAr":"من الخلف: الصحيح الحوض مستوٍ؛ الخطأ تدوير الحوض ورفع أحد جانبيه."}],
     steps: [
       { localPath: "/exercises/reviewed/home-bird-dog-step-01-setup.webp", altAr: "رجل على اليدين والركبتين مع الرسغين تحت الكتفين" },
       { localPath: "/exercises/reviewed/home-bird-dog-step-02-extend.webp", altAr: "مد ذراع وساق متعاكستين مع بقاء الجذع والحوض ثابتين" },
