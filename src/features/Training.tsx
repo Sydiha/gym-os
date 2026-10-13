@@ -69,6 +69,7 @@ export function Training() {
   return <section className="training-page" aria-label="مكتبة التمارين">
     <h1>تمارينك</h1>
     <p className="training-lead">دليل عربي مبسّط لأجهزة النادي وتمارين المنزل، يعمل دون اتصال.</p>
+    <p className="training-safety" role="note">الصور التوضيحية مولدة بالذكاء الاصطناعي ومراجعة بصريًا فقط؛ ليست اعتمادًا من مدرب، وقد تختلف الأجهزة.</p>
     <p className="training-safety" role="note">{EXERCISE_SAFETY_NOTE_AR}</p>
     <div className="training-panel">
       <h2>جدولك الأسبوعي</h2>
@@ -121,6 +122,8 @@ export function Training() {
           {selected === e.id ? "إخفاء الشرح" : "طريقة الأداء والأخطاء"}
         </button>
         {selected === e.id && <div className="training-details">
+          <h4>الوضعية الصحيحة</h4>
+          <img className="training-detail-photo" src={getReviewedExerciseMedia(e.id)!.correct.localPath} alt={getReviewedExerciseMedia(e.id)!.correct.altAr} loading="lazy" decoding="async" />
           <h4>طريقة الأداء</h4><ol className="training-visual-list">{e.stepsAr.map((s,i) => <li key={i}>
             {getReviewedExerciseMedia(e.id)?.steps?.[i] && <img className="training-detail-photo" src={getReviewedExerciseMedia(e.id)!.steps![i].localPath} alt={getReviewedExerciseMedia(e.id)!.steps![i].altAr} loading="lazy" decoding="async" />}
             <span>{s}</span>

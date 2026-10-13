@@ -17,7 +17,10 @@ describe("reviewed exercise photos", () => {
       expect(photo.localPath.startsWith("/exercises/reviewed/")).toBe(true);
       expect(photo.localPath.endsWith(".webp")).toBe(true);
       expect(photo.localPath).not.toMatch(/^https?:/);
-      for (const item of [...(photo.steps ?? []), ...(photo.mistakes ?? [])].filter((item): item is NonNullable<typeof item> => item !== undefined)) {
+      expect(photo.correct).toBeDefined();
+      expect(photo.steps).toHaveLength(3);
+      expect(photo.mistakes).toHaveLength(2);
+      for (const item of [photo.correct, ...photo.steps, ...photo.mistakes]) {
         expect(item.localPath).toMatch(/^\/exercises\/reviewed\/[a-z0-9-]+\.webp$/);
         expect(item.altAr.trim().length).toBeGreaterThan(5);
         const itemFile = join(process.cwd(), "public", item.localPath.slice(1));
@@ -31,7 +34,10 @@ describe("reviewed exercise photos", () => {
   });
   it("prevents unknown IDs, duplicate IDs and duplicate media paths", () => {
     expect(new Set(REVIEWED_EXERCISE_MEDIA.map(m => m.exerciseId)).size).toBe(REVIEWED_EXERCISE_MEDIA.length);
-    expect(new Set(REVIEWED_EXERCISE_MEDIA.map(m => m.localPath)).size).toBe(REVIEWED_EXERCISE_MEDIA.length);
+    expect(REVIEWED_EXERCISE_MEDIA).toHaveLength(EXERCISES.length);
+    const allPaths = REVIEWED_EXERCISE_MEDIA.flatMap(m => [m.localPath, m.correct.localPath, ...m.steps.map(x => x.localPath), ...m.mistakes.map(x => x.localPath)]);
+    expect(allPaths).toHaveLength(84);
+    expect(new Set(allPaths).size).toBe(allPaths.length);
     for (const m of REVIEWED_EXERCISE_MEDIA) expect(EXERCISES.some(e => e.id === m.exerciseId)).toBe(true);
   });
 });
