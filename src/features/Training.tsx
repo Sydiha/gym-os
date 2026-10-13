@@ -75,6 +75,7 @@ export function Training() {
   const training = data.training;
   const plan = training?.plans.at(-1);
   const active = training?.sessions.find(s => s.status === "in_progress");
+  const completedSessions = (training?.sessions ?? []).filter(s => s.status === "completed").slice().sort((a, b) => (b.endedAt ?? b.startedAt).localeCompare(a.endedAt ?? a.startedAt));
   const caution = { knee: data.settings.knee, shoulder: data.settings.shoulder };
   const disabled = busy || readBlocked;
   const recordedSets = active?.exercises.reduce((count, exercise) => count + exercise.sets.length, 0) ?? 0;
@@ -178,6 +179,18 @@ export function Training() {
       {recordedSets === 0 && <p role="note">سجّل مجموعة واحدة على الأقل قبل إنهاء التمرين، حتى لا تُغلق الجلسة دون أي نشاط مسجّل.</p>}
       <button disabled={disabled || recordedSets === 0} onClick={finish}>إنهاء التمرين وحفظه</button>
     </div>}
+    <section className="training-panel" aria-label="سجل التمارين المكتملة">
+      <h2>سجل التمارين المكتملة ({completedSessions.length})</h2>
+      {completedSessions.length === 0 ? <p className="training-meta">لا توجد جلسات مكتملة بعد. تظهر هنا الجلسات التي تنهيها وتحفظها.</p> :
+        completedSessions.map(session => <details key={session.id} className="training-day">
+          <summary>جلسة {session.date} · {session.confirmedMinutes ?? "غير محددة"} دقيقة · {session.exercises.reduce((n, e) => n + e.sets.length, 0)} مجموعات</summary>
+          {session.exercises.map(exercise => <div key={exercise.exerciseId}>
+            <strong>{getExercise(exercise.exerciseId)?.nameAr ?? exercise.exerciseId}</strong>
+            {exercise.skipped && <p>تم تخطي التمرين</p>}
+            {exercise.sets.length ? <ol>{exercise.sets.map((set, index) => <li key={index}>{set.reps} تكرارات، {set.loadKg === null ? "الوزن غير محدد" : `${set.loadKg} كجم`}</li>)}</ol> : <p>لا توجد مجموعات مسجلة</p>}
+          </div>)}
+        </details>)}
+    </section>
     <h2>مكتبة التمارين ({EXERCISES.length})</h2>
     {EXERCISES.filter(e => place === "both" || e.place === place).map(e =>
       <article key={e.id} className="training-exercise">
