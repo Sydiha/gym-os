@@ -54,3 +54,10 @@
 .training-reviewed-photo{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:12px;margin-bottom:12px;background:#211b25}
 
 .training-visual-list li{margin-bottom:12px}.training-detail-photo{display:block;width:100%;max-width:420px;aspect-ratio:16/10;object-fit:cover;border-radius:10px;margin:0 0 8px;background:#211b25}.training-visual-list li span{display:block}
+
+/* Prevent long exercise labels and history summaries from widening narrow iPhone layouts. */
+.training-panel,.training-exercise,.training-day{min-width:0;overflow-wrap:anywhere}
+.training-day summary{cursor:pointer;min-height:44px;line-height:1.65;overflow-wrap:anywhere}
+.training-day li{overflow-wrap:anywhere}
+.training-day button{white-space:normal;overflow-wrap:anywhere}
+.training-set-entry,.training-set-edit{min-width:0;max-width:100%}
