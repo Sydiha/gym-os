@@ -36,3 +36,21 @@ test("saved training preferences are restored after page reload", async ({ page 
   await expect(page.getByLabel("عدد الأيام")).toHaveValue("4");
   await expect(page.getByLabel("المستوى")).toHaveValue("متوسط");
 });
+
+test("an unfinished workout retains its sets after reload and cannot finish empty", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByText("جارٍ تحميل بياناتك…")).toHaveCount(0);
+  await page.getByRole("navigation").getByRole("button", { name: "التمارين" }).click();
+  await page.getByRole("button", { name: "إنشاء جدول وحفظه" }).click();
+  await page.getByRole("button", { name: "ابدأ هذا اليوم" }).first().click();
+  await expect(page.getByRole("button", { name: "إنهاء التمرين وحفظه" })).toBeDisabled();
+  await page.getByLabel("التكرارات لكل مجموعة").fill("9");
+  await page.getByRole("button", { name: "تسجيل مجموعة" }).first().click();
+  await expect(page.getByText("9 تكرارات، وزن الجسم / غير محدد")).toBeVisible();
+  await expect(page.getByRole("button", { name: "إنهاء التمرين وحفظه" })).toBeEnabled();
+  await page.reload();
+  await page.getByRole("navigation").getByRole("button", { name: "التمارين" }).click();
+  await expect(page.getByRole("heading", { name: "التمرين الجاري" })).toBeVisible();
+  await expect(page.getByText("9 تكرارات، وزن الجسم / غير محدد")).toBeVisible();
+  await expect(page.getByRole("button", { name: "إنهاء التمرين وحفظه" })).toBeEnabled();
+});
