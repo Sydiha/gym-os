@@ -29,3 +29,29 @@ if (failures) {
   console.error(`Production verification failed for ${failures} of ${paths.length} paths.`);
   process.exitCode = 1;
 }
+
+const expectedSha = process.env.GYM_OS_EXPECTED_SHA;
+if (expectedSha) {
+let identityMatched = false;
+for (let i = 0; i < (expectedSha ? 18 : 1); i++) {
+  try {
+    const url = new URL("/version.json", origin);
+    url.searchParams.set("nocache", String(Date.now()));
+    const response = await fetch(url, { headers: { "Cache-Control": "no-cache" }, signal: AbortSignal.timeout(15000) });
+    const manifest = await response.json();
+    if (!response.ok || !/^[a-f0-9]{40}$/.test(manifest.commit)) throw new Error("Invalid release manifest");
+    console.log("Production commit:", manifest.commit);
+    identityMatched = !expectedSha || manifest.commit === expectedSha;
+    if (identityMatched) break;
+  } catch (e) {
+    console.error("Release identity unavailable:", e.message);
+  }
+  if (expectedSha && i < 17) await new Promise(resolve => setTimeout(resolve, 15000));
+}
+if (!identityMatched) {
+  failures++;
+  console.error("Production release identity check failed.", expectedSha ?? "");
+}
+if (failures) process.exitCode = 1;
+
+}
