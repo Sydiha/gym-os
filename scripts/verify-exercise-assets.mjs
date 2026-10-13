@@ -8,7 +8,8 @@ const buildRoot = 'dist/exercises/reviewed';
 const required = [
   'gym-leg-curl-main.webp',
   'gym-leg-curl-correct.webp',
-  'gym-leg-curl-comparison.webp',
+  'gym-leg-curl-mistake-hips.webp',
+  'gym-leg-curl-mistake-back-arch.webp',
 ];
 
 const mediaSource = await readFile('src/domain/reviewedExerciseMedia.ts', 'utf8');
