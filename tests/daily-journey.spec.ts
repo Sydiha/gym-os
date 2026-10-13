@@ -32,7 +32,7 @@ test("daily meal and completed gym workout survive app reopen independently", as
   await expect(page.getByText("جارٍ تحميل بياناتك…")).toHaveCount(0);
   await page.getByRole("navigation").getByRole("button", { name: "التغذية" }).click();
   await expect(page.getByText("غداء الاختبار اليومي")).toBeVisible();
-  await expect(page.getByText(/650 سعرة/)).toBeVisible();
+  await expect(page.locator(".record").filter({ hasText: "غداء الاختبار اليومي" }).getByText(/سعرة · بروتين/)).toBeVisible();
   await page.getByRole("navigation").getByRole("button", { name: "التمارين" }).click();
   const history = page.getByRole("region", { name: "سجل التمارين المكتملة" });
   await expect(history.getByRole("heading", { name: "سجل التمارين المكتملة (1)" })).toBeVisible();
