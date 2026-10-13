@@ -77,6 +77,7 @@ export function Training() {
   const plan = training?.plans.at(-1);
   const active = training?.sessions.find(s => s.status === "in_progress");
   const completedSessions = (training?.sessions ?? []).filter(s => s.status === "completed").slice().sort((a, b) => (b.endedAt ?? b.startedAt).localeCompare(a.endedAt ?? a.startedAt));
+  const hasComparableExercise = EXERCISES.some(exercise => recentExerciseComparison(completedSessions, exercise.id) !== null);
   const caution = { knee: data.settings.knee, shoulder: data.settings.shoulder };
   const disabled = busy || readBlocked;
   const recordedSets = active?.exercises.reduce((count, exercise) => count + exercise.sets.length, 0) ?? 0;
@@ -205,7 +206,7 @@ export function Training() {
           <p>السابقة ({previous.date}): {previous.setCount} مجموعات، أقصى تكرارات {previous.maxReps}، أقصى وزن {previous.maxLoadKg === null ? "غير مسجل" : `${previous.maxLoadKg} كجم`}</p>
         </div>;
       })}
-      {completedSessions.length < 2 && <p className="training-meta">تظهر المقارنة بعد تسجيل جلستين مكتملتين للتمرين نفسه.</p>}
+      {!hasComparableExercise && <p className="training-meta">لا توجد مقارنة متاحة بعد. سجّل جلستين مكتملتين تحتويان على مجموعات للتمرين نفسه.</p>}
     </section>
     <h2>مكتبة التمارين ({EXERCISES.length})</h2>
     {EXERCISES.filter(e => place === "both" || e.place === place).map(e =>
