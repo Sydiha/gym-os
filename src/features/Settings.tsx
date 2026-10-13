@@ -104,6 +104,7 @@ export function Profile() {
   async function importFile(file?: File) {
     if (!file) return;
     try {
+      if (file.size > 10 * 1024 * 1024) throw new Error("حجم ملف النسخة الاحتياطية كبير جدًا (الحد 10 ميجابايت).");
       const backup = parseBackup(JSON.parse(await file.text()));
       const count = backup.data.meals.length + backup.data.activities.length + backup.data.weights.length + backup.data.homeSessions.length;
       if (!window.confirm(`ستُستبدل السجلات الشخصية الحالية. تحتوي النسخة على ${count} سجلًا و${backup.data.favorites.length} وجبة مفضلة. هل تريد المتابعة؟`)) return;
@@ -149,7 +150,7 @@ export function Profile() {
         <h3>النسخ الاحتياطي والاستعادة</h3>
         <p className="note">قد تُمسح مساحة تخزين المتصفح عند حذف بياناته أو تغيير الجهاز. احتفظ بنسخة احتياطية في مكان آمن؛ لا يرسلها التطبيق إلى أي جهة.</p>
         <button className="outline" disabled={!ready || readBlocked} onClick={exportFile}>تصدير نسخة احتياطية</button>
-        <label lang="ar" dir="rtl">استعادة نسخة JSON احتياطية<input lang="ar" dir="rtl" type="file" accept="application/json,.json" disabled={!ready} onChange={(e) => void importFile(e.target.files?.[0])} /></label>
+        <label lang="ar" dir="rtl">استعادة نسخة JSON احتياطية<input lang="ar" dir="rtl" type="file" accept="application/json,.json" disabled={!ready} onChange={(e) => { const file = e.currentTarget.files?.[0]; e.currentTarget.value = ""; void importFile(file); }} /></label>
       </>}
       <p className="note">لا توجد حسابات حقيقية أو تسجيل دخول في هذه النسخة.</p>
     </>
