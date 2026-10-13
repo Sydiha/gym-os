@@ -27,6 +27,7 @@ export function Training() {
   const active = training?.sessions.find(s => s.status === "in_progress");
   const caution = { knee: data.settings.knee, shoulder: data.settings.shoulder };
   const disabled = busy || readBlocked;
+  const recordedSets = active?.exercises.reduce((count, exercise) => count + exercise.sets.length, 0) ?? 0;
   const choosePlan = () => {
     const preferences: TrainingPreferences = { place, daysPerWeek: days, level, ...caution };
     const next = generateTrainingPlan(preferences, crypto.randomUUID(), new Date().toISOString());
@@ -117,7 +118,8 @@ export function Training() {
         <button disabled={disabled || e.skipped} onClick={() => addSet(e.exerciseId)}>تسجيل مجموعة</button>{" "}
         <button disabled={disabled || e.skipped} onClick={() => skip(e.exerciseId)}>تخطي التمرين</button>
       </div>)}
-      <button disabled={disabled} onClick={finish}>إنهاء التمرين وحفظه</button>
+      {recordedSets === 0 && <p role="note">سجّل مجموعة واحدة على الأقل قبل إنهاء التمرين، حتى لا تُغلق الجلسة دون أي نشاط مسجّل.</p>}
+      <button disabled={disabled || recordedSets === 0} onClick={finish}>إنهاء التمرين وحفظه</button>
     </div>}
     <h2>مكتبة التمارين ({EXERCISES.length})</h2>
     {EXERCISES.filter(e => place === "both" || e.place === place).map(e =>
