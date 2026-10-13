@@ -225,6 +225,7 @@ export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
     reviewDate: "2026-10-13",
     altAr: "رجل يؤدي رفع السمانة مستندًا إلى كرسي",
     correct: { localPath: "/exercises/reviewed/home-calf-raise-correct.webp", altAr: "الجذع مستقيم والكاحلان بمحاذاة القدمين والرفع متساوٍ على الجانبين." },
+    comparisons: [{"angleAr":"من الخلف","localPath":"/exercises/reviewed/home-calf-raise-comparison.webp","altAr":"من الخلف: الصحيح رفع الكعبين بالتساوي مع ثبات الكاحلين؛ الخطأ ميل الكاحلين للخارج."}],
     steps: [
       { localPath: "/exercises/reviewed/home-calf-raise-step-01-setup.webp", altAr: "رجل واقف بجانب كرسي ثابت وقدماه على الأرض" },
       { localPath: "/exercises/reviewed/home-calf-raise-step-02-rise.webp", altAr: "رفع الكعبين مع الاتزان على مقدمة القدمين" },
@@ -244,6 +245,7 @@ export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
     reviewDate: "2026-10-13",
     altAr: "رجل يمشي في المكان مع رفع الركبة بالتبادل",
     correct: { localPath: "/exercises/reviewed/home-march-correct.webp", altAr: "الجذع مستقيم والخطوات هادئة والقدم تهبط بلطف مع تحريك الذراع المقابلة." },
+    comparisons: [{"angleAr":"من الأمام","localPath":"/exercises/reviewed/home-march-comparison.webp","altAr":"من الأمام: الصحيح جذع مستقيم وخطوة هادئة؛ الخطأ الميل للخلف وضرب الأرض بالقدم."}],
     steps: [
       { localPath: "/exercises/reviewed/home-march-step-01-setup.webp", altAr: "رجل واقف باستقامة وقدماه بعرض الحوض استعدادًا للمشي في المكان" },
       { localPath: "/exercises/reviewed/home-march-step-02-lift.webp", altAr: "رفع ركبة واحدة مع تحريك الذراع المقابلة للأمام" },
