@@ -118,3 +118,25 @@ test("recorded sets can be edited and deleted without affecting another exercise
   await expect(page.getByText("10 تكرارات، وزن الجسم / غير محدد")).toBeVisible();
   await expect(page.getByText("8 تكرارات، 20 كجم")).toHaveCount(0);
 });
+
+test("completed workout history shows recorded sets and survives reload", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByText("جارٍ تحميل بياناتك…")).toHaveCount(0);
+  await page.getByRole("navigation").getByRole("button", { name: "التمارين" }).click();
+  await expect(page.getByRole("heading", { name: "سجل التمارين المكتملة (0)" })).toBeVisible();
+  await page.getByRole("button", { name: "إنشاء جدول وحفظه" }).click();
+  await page.getByRole("button", { name: "ابدأ هذا اليوم" }).first().click();
+  await page.getByLabel(/التكرارات —/).first().fill("7");
+  await page.getByLabel(/الوزن بالكيلو \(اختياري\) —/).first().fill("22.5");
+  await page.getByRole("button", { name: "تسجيل مجموعة" }).first().click();
+  await page.getByRole("button", { name: "إنهاء التمرين وحفظه" }).click();
+  const history = page.getByRole("region", { name: "سجل التمارين المكتملة" });
+  await expect(history.getByRole("heading", { name: "سجل التمارين المكتملة (1)" })).toBeVisible();
+  await history.locator("summary").first().click();
+  await expect(history.getByText("7 تكرارات، 22.5 كجم")).toBeVisible();
+  await page.reload();
+  await page.getByRole("navigation").getByRole("button", { name: "التمارين" }).click();
+  const restored = page.getByRole("region", { name: "سجل التمارين المكتملة" });
+  await restored.locator("summary").first().click();
+  await expect(restored.getByText("7 تكرارات، 22.5 كجم")).toBeVisible();
+});
