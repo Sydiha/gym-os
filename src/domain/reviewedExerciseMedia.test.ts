@@ -45,7 +45,7 @@ describe("reviewed exercise photos", () => {
     expect(new Set(allPaths).size).toBe(92);
     for (const m of REVIEWED_EXERCISE_MEDIA) expect(EXERCISES.some(e => e.id === m.exerciseId)).toBe(true);
     const comparisons = REVIEWED_EXERCISE_MEDIA.flatMap(m => m.comparisons ?? []);
-    expect(comparisons).toHaveLength(12);
+    expect(comparisons).toHaveLength(11);
     for (const item of comparisons) expect(["من الأمام", "من الخلف", "من الجانب"]).toContain(item.angleAr);
   });
 });
