@@ -24,7 +24,7 @@ describe("reviewed exercise photos", () => {
         expect(photo.comparisons ?? []).toHaveLength(0);
       }
       expect(photo.steps).toHaveLength(exercise.id === "gym-leg-curl" ? 0 : 3);
-      expect(photo.mistakes).toHaveLength(exercise.id === "gym-leg-curl" ? 0 : 2);
+      expect(photo.mistakes).toHaveLength(2);
       for (const item of [...(photo.correctExamples ?? [photo.correct]), ...photo.steps, ...photo.mistakes, ...(photo.comparisons ?? [])]) {
         expect(item.localPath).toMatch(/^\/exercises\/reviewed\/[a-z0-9-]+\.webp$/);
         expect(item.altAr.trim().length).toBeGreaterThan(5);
