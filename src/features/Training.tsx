@@ -123,7 +123,10 @@ export function Training() {
         </button>
         {selected === e.id && <div className="training-details">
           <h4>الوضعية الصحيحة</h4>
-          <img className="training-detail-photo" src={getReviewedExerciseMedia(e.id)!.correct.localPath} alt={getReviewedExerciseMedia(e.id)!.correct.altAr} loading="lazy" decoding="async" />
+          {(getReviewedExerciseMedia(e.id)?.correctExamples ?? [{ ...getReviewedExerciseMedia(e.id)!.correct, labelAr: "" }]).map((example, i) => <div key={i} className="training-technique-example">
+            <img className="training-detail-photo" src={example.localPath} alt={example.altAr} loading="lazy" decoding="async" />
+            {example.labelAr && <p>{example.labelAr}</p>}
+          </div>)}
           {getReviewedExerciseMedia(e.id)?.comparisons?.map((comparison, i) => <div key={i} className="training-angle-comparison">
             <h4>مقارنة {comparison.angleAr}</h4>
             <img className="training-detail-photo" src={comparison.localPath} alt={comparison.altAr} loading="lazy" decoding="async" />
