@@ -140,3 +140,11 @@ test("completed workout history shows recorded sets and survives reload", async 
   await restored.locator("summary").first().click();
   await expect(restored.getByText("7 تكرارات، 22.5 كجم")).toBeVisible();
 });
+
+test("comparison section explains when no exercise has two comparable sessions", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByText("جارٍ تحميل بياناتك…")).toHaveCount(0);
+  await page.getByRole("navigation").getByRole("button", { name: "التمارين" }).click();
+  await expect(page.getByRole("region", { name: "مقارنة الأداء السابق" })
+    .getByText("لا توجد مقارنة متاحة بعد. سجّل جلستين مكتملتين تحتويان على مجموعات للتمرين نفسه.")).toBeVisible();
+});
