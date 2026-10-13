@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDemo } from "../state/DemoContext";
 import { EXERCISES, EXERCISE_SAFETY_NOTE_AR, getExercise } from "../domain/exerciseCatalog";
 import { generateTrainingPlan } from "../domain/trainingPlan";
@@ -13,6 +13,15 @@ export function Training() {
   const [selected, setSelected] = useState<string | null>(null);
   const [reps, setReps] = useState("10");
   const [load, setLoad] = useState("");
+  // Restore persisted preferences after IndexedDB hydration, not only on the first render.
+  const storedPlace = data.training?.preferences?.place;
+  const storedDays = data.training?.preferences?.daysPerWeek;
+  const storedLevel = data.training?.preferences?.level;
+  useEffect(() => {
+    if (storedPlace) setPlace(storedPlace);
+    if (storedDays) setDays(storedDays);
+    if (storedLevel) setLevel(storedLevel);
+  }, [storedPlace, storedDays, storedLevel]);
   const training = data.training;
   const plan = training?.plans.at(-1);
   const active = training?.sessions.find(s => s.status === "in_progress");

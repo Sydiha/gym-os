@@ -20,3 +20,19 @@ test("training library is visible and workout survives reload", async ({ page })
   await page.getByRole("navigation").getByRole("button", { name: "التمارين" }).click();
   await expect(page.getByText("الجدول المحفوظ")).toBeVisible();
 });
+
+test("saved training preferences are restored after page reload", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByText("جارٍ تحميل بياناتك…")).toHaveCount(0);
+  await page.getByRole("navigation").getByRole("button", { name: "التمارين" }).click();
+  await page.getByLabel("مكان التمرين").selectOption("home");
+  await page.getByLabel("عدد الأيام").selectOption("4");
+  await page.getByLabel("المستوى").selectOption({ label: "متوسط" });
+  await page.getByRole("button", { name: "إنشاء جدول وحفظه" }).click();
+  await expect(page.getByText("الجدول المحفوظ")).toBeVisible();
+  await page.reload();
+  await page.getByRole("navigation").getByRole("button", { name: "التمارين" }).click();
+  await expect(page.getByLabel("مكان التمرين")).toHaveValue("home");
+  await expect(page.getByLabel("عدد الأيام")).toHaveValue("4");
+  await expect(page.getByLabel("المستوى")).toHaveValue("متوسط");
+});
