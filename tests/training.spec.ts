@@ -54,3 +54,23 @@ test("an unfinished workout retains its sets after reload and cannot finish empt
   await expect(page.getByText("9 تكرارات، وزن الجسم / غير محدد")).toBeVisible();
   await expect(page.getByRole("button", { name: "إنهاء التمرين وحفظه" })).toBeEnabled();
 });
+
+test("invalid repetitions and load show feedback and cannot record a set", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByText("جارٍ تحميل بياناتك…")).toHaveCount(0);
+  await page.getByRole("navigation").getByRole("button", { name: "التمارين" }).click();
+  await page.getByRole("button", { name: "إنشاء جدول وحفظه" }).click();
+  await page.getByRole("button", { name: "ابدأ هذا اليوم" }).first().click();
+  const record = page.getByRole("button", { name: "تسجيل مجموعة" }).first();
+  await page.getByLabel("التكرارات لكل مجموعة").fill("");
+  await expect(page.getByText("أدخل عدد تكرارات صحيحًا بين 1 و1000.")).toBeVisible();
+  await expect(record).toBeDisabled();
+  await page.getByLabel("التكرارات لكل مجموعة").fill("10");
+  await page.getByLabel("الوزن بالكيلو (اختياري)").fill("-5");
+  await expect(page.getByText("أدخل وزنًا بين 0 و1000 كجم، أو اتركه فارغًا.")).toBeVisible();
+  await expect(record).toBeDisabled();
+  await page.getByLabel("الوزن بالكيلو (اختياري)").fill("12.5");
+  await expect(record).toBeEnabled();
+  await record.click();
+  await expect(page.getByText("10 تكرارات، 12.5 كجم")).toBeVisible();
+});
