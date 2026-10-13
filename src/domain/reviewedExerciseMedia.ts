@@ -98,7 +98,107 @@ export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
   },
   {
     exerciseId: "gym-leg-curl",
-    localPath: "/exercises/reviewed/gym-leg-curl-correct.webp",
+    import { EXERCISES } from "./exerciseCatalog";
+
+/** Locally bundled, visually checked exercise images. Generated images are illustrative, not trainer-certified. */
+export type ReviewedExerciseMedia = {
+  exerciseId: string;
+  localPath: `/exercises/reviewed/${string}.webp`;
+  equipmentVerified: true;
+  postureVerified: true;
+  reviewedBy: string;
+  reviewDate: string;
+  altAr: string;
+  correct: { localPath: `/exercises/reviewed/${string}.webp`; altAr: string };
+  steps: readonly { localPath: `/exercises/reviewed/${string}.webp`; altAr: string }[];
+  mistakes: readonly { localPath: `/exercises/reviewed/${string}.webp`; altAr: string }[];
+  comparisons?: readonly { angleAr: "من الأمام" | "من الخلف" | "من الجانب"; localPath: `/exercises/reviewed/${string}.webp`; altAr: string }[];
+};
+
+export const REVIEWED_EXERCISE_MEDIA: readonly ReviewedExerciseMedia[] = [
+  {
+    exerciseId: "gym-leg-press",
+    localPath: "/exercises/reviewed/gym-leg-press-main.webp",
+    equipmentVerified: true,
+    postureVerified: true,
+    reviewedBy: "Visual review of AI-generated illustration; not trainer-certified",
+    reviewDate: "2026-10-13",
+    altAr: "رجل يؤدي ضغط الأرجل على الجهاز بوضعية جلوس مدعومة",
+    correct: { localPath: "/exercises/reviewed/gym-leg-press-correct.webp", altAr: "الظهر والحوض مسنودان والركبتان تتبعان اتجاه أصابع القدمين مع عدم قفل الركبة." },
+    comparisons: [{"angleAr":"من الخلف","localPath":"/exercises/reviewed/gym-leg-press-comparison.webp","altAr":"من الخلف: الصحيح الركبتان بمحاذاة أصابع القدمين؛ الخطأ انهيار الركبتين للداخل."}],
+    steps: [
+      { localPath: "/exercises/reviewed/gym-leg-press-step-01-setup.webp", altAr: "الجلوس على جهاز ضغط الأرجل مع تثبيت الظهر والقدمين" },
+      { localPath: "/exercises/reviewed/gym-leg-press-step-02-drive.webp", altAr: "دفع منصة جهاز ضغط الأرجل بالقدمين مع تتبع الركبتين لاتجاه أصابع القدمين" },
+      { localPath: "/exercises/reviewed/gym-leg-press-step-03-return.webp", altAr: "إرجاع منصة ضغط الأرجل ببطء مع بقاء الظهر على المسند" },
+    ],
+    mistakes: [
+      { localPath: "/exercises/reviewed/gym-leg-press-mistake-knee-collapse.webp", altAr: "خطأ: انهيار الركبتين للداخل أثناء ضغط الأرجل" },
+      { localPath: "/exercises/reviewed/gym-leg-press-mistake-pelvic-rounding.webp", altAr: "خطأ: تقوس أسفل الظهر وانفصال الحوض عن مسند الجهاز" },
+    ],
+  },
+  {
+    exerciseId: "gym-chest-press",
+    localPath: "/exercises/reviewed/gym-chest-press-main.webp",
+    equipmentVerified: true,
+    postureVerified: true,
+    reviewedBy: "Visual review of AI-generated illustration; not trainer-certified",
+    reviewDate: "2026-10-13",
+    altAr: "رجل يؤدي ضغط الصدر على جهاز المقاومة",
+    correct: { localPath: "/exercises/reviewed/gym-chest-press-correct.webp", altAr: "الظهر مدعوم والكتفان منخفضان والرسغان مستقيمان والمرفقان دون قفل." },
+    comparisons: [{"angleAr":"من الأمام","localPath":"/exercises/reviewed/gym-chest-press-comparison.webp","altAr":"من الأمام: الصحيح الكتفان منخفضان والرسغان مستقيمان؛ الخطأ رفع الكتفين وفتح المرفقين."}],
+    steps: [
+      { localPath: "/exercises/reviewed/gym-chest-press-step-01-setup.webp", altAr: "رجل جالس على جهاز ضغط الصدر ومرفقاه مثنيان عند مستوى الصدر" },
+      { localPath: "/exercises/reviewed/gym-chest-press-step-02-press.webp", altAr: "دفع مقابض جهاز ضغط الصدر للأمام مع رسغين مستقيمين" },
+      { localPath: "/exercises/reviewed/gym-chest-press-step-03-return.webp", altAr: "إرجاع مقابض ضغط الصدر ببطء إلى مستوى منتصف الصدر" },
+    ],
+    mistakes: [
+      { localPath: "/exercises/reviewed/gym-chest-press-mistake-shoulders.webp", altAr: "خطأ: رفع الكتفين وفتح المرفقين عاليًا في ضغط الصدر" },
+      { localPath: "/exercises/reviewed/gym-chest-press-mistake-lockout.webp", altAr: "خطأ: رفع الكتفين وقفل المرفقين بعنف عند نهاية الدفع" },
+    ],
+  },
+  {
+    exerciseId: "gym-lat-pulldown",
+    localPath: "/exercises/reviewed/gym-lat-pulldown-main.webp",
+    equipmentVerified: true,
+    postureVerified: true,
+    reviewedBy: "Visual review of AI-generated illustration; not trainer-certified",
+    reviewDate: "2026-10-13",
+    altAr: "رجل يؤدي السحب العلوي على الجهاز",
+    correct: { localPath: "/exercises/reviewed/gym-lat-pulldown-correct.webp", altAr: "البار أمام الجسم، الجذع شبه ثابت، والكتفان منخفضان أثناء السحب." },
+    comparisons: [{"angleAr":"من الخلف","localPath":"/exercises/reviewed/gym-lat-pulldown-comparison.webp","altAr":"من الخلف: الصحيح الجذع ثابت والكتفان منخفضان؛ الخطأ التأرجح للخلف وإمالة الجذع."}],
+    steps: [
+      { localPath: "/exercises/reviewed/gym-lat-pulldown-step-01-setup.webp", altAr: "الجلوس في جهاز السحب العلوي مع تثبيت الفخذين والإمساك بالبار" },
+      { localPath: "/exercises/reviewed/gym-lat-pulldown-step-02-pull.webp", altAr: "سحب البار أمام الجسم باتجاه أعلى الصدر" },
+      { localPath: "/exercises/reviewed/gym-lat-pulldown-step-03-return.webp", altAr: "إعادة البار إلى الأعلى ببطء مع ثبات الجذع" },
+    ],
+    mistakes: [
+      { localPath: "/exercises/reviewed/gym-lat-pulldown-mistake-behind-neck.webp", altAr: "خطأ: سحب بار الجهاز خلف الرقبة" },
+      { localPath: "/exercises/reviewed/gym-lat-pulldown-mistake-swing.webp", altAr: "خطأ: التأرجح للخلف لسحب البار بالزخم" },
+    ],
+  },
+  {
+    exerciseId: "gym-seated-row",
+    localPath: "/exercises/reviewed/gym-seated-row-main.webp",
+    equipmentVerified: true,
+    postureVerified: true,
+    reviewedBy: "Visual review of AI-generated illustration; not trainer-certified",
+    reviewDate: "2026-10-13",
+    altAr: "رجل يؤدي التجديف جالسًا على جهاز الكابل",
+    correct: { localPath: "/exercises/reviewed/gym-seated-row-correct.webp", altAr: "الظهر محايد والصدر مرفوع والكتفان منخفضان مع سحب المرفقين قرب الجسم." },
+    comparisons: [{"angleAr":"من الجانب","localPath":"/exercises/reviewed/gym-seated-row-comparison.webp","altAr":"من الجانب: الصحيح الجذع ثابت والظهر محايد؛ الخطأ الميل للخلف واستخدام الزخم."}],
+    steps: [
+      { localPath: "/exercises/reviewed/gym-seated-row-step-01-setup.webp", altAr: "الجلوس أمام جهاز التجديف مع تثبيت القدمين ومد الذراعين" },
+      { localPath: "/exercises/reviewed/gym-seated-row-step-02-pull.webp", altAr: "سحب مقبض الكابل نحو أسفل الأضلاع مع قرب المرفقين من الجسم" },
+      { localPath: "/exercises/reviewed/gym-seated-row-step-03-return.webp", altAr: "مد الذراعين ببطء مع بقاء الظهر محايدًا" },
+    ],
+    mistakes: [
+      { localPath: "/exercises/reviewed/gym-seated-row-mistake-rocking.webp", altAr: "خطأ: التأرجح للخلف واستخدام الزخم في التجديف" },
+      { localPath: "/exercises/reviewed/gym-seated-row-mistake-roundback.webp", altAr: "خطأ: تدوير الظهر وتقريب الكتفين عند مد الذراعين" },
+    ],
+  },
+  {
+    exerciseId: "gym-leg-curl",
+    localPath: "/exercises/reviewed/gym-leg-curl-main.webp",
     equipmentVerified: true,
     postureVerified: true,
     reviewedBy: "Visual review of AI-generated prone leg-curl illustrations; not trainer-certified",
