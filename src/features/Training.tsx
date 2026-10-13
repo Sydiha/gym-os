@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useDemo } from "../state/DemoContext";
 import { EXERCISES, EXERCISE_SAFETY_NOTE_AR, getExercise } from "../domain/exerciseCatalog";
 import { generateTrainingPlan } from "../domain/trainingPlan";
+import { recentExerciseComparison } from "../domain/exerciseComparison";
 import { getReviewedExerciseMedia } from "../domain/reviewedExerciseMedia";
 import type { TrainingPreferences, TrainingSession } from "../domain/types";
 
@@ -190,6 +191,21 @@ export function Training() {
             {exercise.sets.length ? <ol>{exercise.sets.map((set, index) => <li key={index}>{set.reps} تكرارات، {set.loadKg === null ? "الوزن غير محدد" : `${set.loadKg} كجم`}</li>)}</ol> : <p>لا توجد مجموعات مسجلة</p>}
           </div>)}
         </details>)}
+    </section>
+    <section className="training-panel" aria-label="مقارنة الأداء السابق">
+      <h2>مقارنة آخر جلستين لكل تمرين</h2>
+      <p className="training-meta">أعلى وزن وأكبر عدد تكرارات مسجلة في كل جلسة، وليسا بالضرورة في المجموعة نفسها. المقارنة وصفية ولا تقيس التحسن في القوة وحدها.</p>
+      {EXERCISES.map(exercise => {
+        const comparison = recentExerciseComparison(completedSessions, exercise.id);
+        if (!comparison) return null;
+        const { latest, previous } = comparison;
+        return <div key={exercise.id} className="training-day">
+          <strong>{exercise.nameAr}</strong>
+          <p>الأحدث ({latest.date}): {latest.setCount} مجموعات، أقصى تكرارات {latest.maxReps}، أقصى وزن {latest.maxLoadKg === null ? "غير مسجل" : `${latest.maxLoadKg} كجم`}</p>
+          <p>السابقة ({previous.date}): {previous.setCount} مجموعات، أقصى تكرارات {previous.maxReps}، أقصى وزن {previous.maxLoadKg === null ? "غير مسجل" : `${previous.maxLoadKg} كجم`}</p>
+        </div>;
+      })}
+      {completedSessions.length < 2 && <p className="training-meta">تظهر المقارنة بعد تسجيل جلستين مكتملتين للتمرين نفسه.</p>}
     </section>
     <h2>مكتبة التمارين ({EXERCISES.length})</h2>
     {EXERCISES.filter(e => place === "both" || e.place === place).map(e =>
