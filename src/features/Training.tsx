@@ -25,6 +25,38 @@ function SetEntry({ exerciseId, name, disabled, skipped, onRecord }: { exerciseI
   </div>;
 }
 
+function RecordedSet({ exerciseId, index, reps, loadKg, disabled, onSave, onDelete }: {
+  exerciseId: string; index: number; reps: number; loadKg: number | null; disabled: boolean;
+  onSave: (exerciseId: string, index: number, reps: number, loadKg: number | null) => void;
+  onDelete: (exerciseId: string, index: number) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draftReps, setDraftReps] = useState(String(reps));
+  const [draftLoad, setDraftLoad] = useState(loadKg === null ? "" : String(loadKg));
+  const count = Number(draftReps);
+  const kg = draftLoad.trim() === "" ? null : Number(draftLoad);
+  const valid = draftReps.trim() !== "" && Number.isInteger(count) && count >= 1 && count <= 1000 &&
+    (kg === null || (Number.isFinite(kg) && kg >= 0 && kg <= 1000));
+  const label = `المجموعة ${index + 1}`;
+  return <li>
+    {!editing ? <>
+      <span>{reps} تكرارات، {loadKg === null ? "وزن الجسم / غير محدد" : `${loadKg} كجم`}</span>{" "}
+      <button disabled={disabled} aria-label={`تعديل ${label} للتمرين ${exerciseId}`} onClick={() => {
+        setDraftReps(String(reps)); setDraftLoad(loadKg === null ? "" : String(loadKg)); setEditing(true);
+      }}>تعديل</button>{" "}
+      <button disabled={disabled} aria-label={`حذف ${label} للتمرين ${exerciseId}`} onClick={() => {
+        if (window.confirm(`هل تريد حذف ${label}؟`)) onDelete(exerciseId, index);
+      }}>حذف</button>
+    </> : <div className="training-set-edit">
+      <label>تعديل التكرارات — {label}<input type="number" inputMode="numeric" min="1" max="1000" value={draftReps} onChange={e => setDraftReps(e.target.value)} /></label>
+      <label>تعديل الوزن — {label}<input type="number" inputMode="decimal" min="0" max="1000" step="0.5" value={draftLoad} onChange={e => setDraftLoad(e.target.value)} /></label>
+      {!valid && <p role="alert">أدخل تكرارات صحيحة ووزنًا بين 0 و1000 كجم، أو اترك الوزن فارغًا.</p>}
+      <button disabled={disabled || !valid} onClick={() => { onSave(exerciseId, index, count, kg); setEditing(false); }}>حفظ التعديل</button>{" "}
+      <button onClick={() => setEditing(false)}>إلغاء</button>
+    </div>}
+  </li>;
+}
+
 export function Training() {
   const { data, update, busy, readBlocked } = useDemo();
   const [place, setPlace] = useState<TrainingPreferences["place"]>(data.training?.preferences?.place ?? "gym");
@@ -73,6 +105,20 @@ export function Training() {
       const exercise = d.training?.sessions.find(s => s.id === active.id)?.exercises.find(e => e.exerciseId === exerciseId);
       if (exercise && !exercise.skipped) exercise.sets.push({ reps, loadKg });
     }, "تم تسجيل المجموعة.");
+  };
+  const editSet = (exerciseId: string, index: number, reps: number, loadKg: number | null) => {
+    if (!active || busy || readBlocked) return;
+    update(d => {
+      const sets = d.training?.sessions.find(s => s.id === active.id)?.exercises.find(e => e.exerciseId === exerciseId)?.sets;
+      if (sets?.[index]) sets[index] = { reps, loadKg };
+    }, "تم تعديل المجموعة وحفظها.");
+  };
+  const deleteSet = (exerciseId: string, index: number) => {
+    if (!active || busy || readBlocked) return;
+    update(d => {
+      const sets = d.training?.sessions.find(s => s.id === active.id)?.exercises.find(e => e.exerciseId === exerciseId)?.sets;
+      if (sets && index >= 0 && index < sets.length) sets.splice(index, 1);
+    }, "تم حذف المجموعة وحفظ التغيير.");
   };
   const skip = (exerciseId: string) => {
     if (!active) return;
@@ -125,7 +171,7 @@ export function Training() {
       {active.exercises.map(e => <div key={e.exerciseId} className="training-day">
         <strong>{getExercise(e.exerciseId)?.nameAr ?? e.exerciseId}</strong>
         <p>المجموعات المسجلة: {e.sets.length}{e.skipped ? " (تم التخطي)" : ""}</p>
-        <ul>{e.sets.map((set, i) => <li key={i}>{set.reps} تكرارات، {set.loadKg === null ? "وزن الجسم / غير محدد" : `${set.loadKg} كجم`}</li>)}</ul>
+        <ul>{e.sets.map((set, i) => <RecordedSet key={`${e.exerciseId}-${i}`} exerciseId={e.exerciseId} index={i} reps={set.reps} loadKg={set.loadKg} disabled={disabled} onSave={editSet} onDelete={deleteSet} />)}</ul>
         <SetEntry exerciseId={e.exerciseId} name={getExercise(e.exerciseId)?.nameAr ?? e.exerciseId} disabled={disabled} skipped={e.skipped} onRecord={addSet} />{" "}
         <button disabled={disabled || e.skipped} onClick={() => skip(e.exerciseId)}>تخطي التمرين</button>
       </div>)}

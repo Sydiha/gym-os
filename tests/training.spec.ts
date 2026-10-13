@@ -93,3 +93,28 @@ test("each exercise keeps independent set inputs", async ({ page }) => {
   await entries.nth(0).getByRole("button", { name: "تسجيل مجموعة" }).click();
   await expect(page.getByText("8 تكرارات، 30 كجم")).toBeVisible();
 });
+
+test("recorded sets can be edited and deleted without affecting another exercise", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByText("جارٍ تحميل بياناتك…")).toHaveCount(0);
+  await page.getByRole("navigation").getByRole("button", { name: "التمارين" }).click();
+  await page.getByRole("button", { name: "إنشاء جدول وحفظه" }).click();
+  await page.getByRole("button", { name: "ابدأ هذا اليوم" }).first().click();
+  const entries = page.locator(".training-set-entry");
+  await entries.first().getByRole("button", { name: "تسجيل مجموعة" }).click();
+  await entries.nth(1).getByRole("button", { name: "تسجيل مجموعة" }).click();
+  await page.getByRole("button", { name: /تعديل المجموعة 1 للتمرين/ }).first().click();
+  await page.getByLabel("تعديل التكرارات — المجموعة 1").fill("8");
+  await page.getByLabel("تعديل الوزن — المجموعة 1").fill("20");
+  await page.getByRole("button", { name: "حفظ التعديل" }).click();
+  await expect(page.getByText("8 تكرارات، 20 كجم")).toBeVisible();
+  await expect(page.getByText("10 تكرارات، وزن الجسم / غير محدد")).toBeVisible();
+  page.once("dialog", dialog => dialog.accept());
+  await page.getByRole("button", { name: /حذف المجموعة 1 للتمرين/ }).first().click();
+  await expect(page.getByText("8 تكرارات، 20 كجم")).toHaveCount(0);
+  await expect(page.getByText("10 تكرارات، وزن الجسم / غير محدد")).toBeVisible();
+  await page.reload();
+  await page.getByRole("navigation").getByRole("button", { name: "التمارين" }).click();
+  await expect(page.getByText("10 تكرارات، وزن الجسم / غير محدد")).toBeVisible();
+  await expect(page.getByText("8 تكرارات، 20 كجم")).toHaveCount(0);
+});
