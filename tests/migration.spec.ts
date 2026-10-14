@@ -18,7 +18,7 @@ test("meal, macros, favorites, estimates, water, weight and reload", async ({
   page,
 }) => {
   await page.getByRole("button", { name: "+ كوب", exact: true }).click();
-  await expect(page.locator(".water")).toContainText("٤");
+  await expect(page.locator(".water")).toContainText("١");
   await page.getByRole("button", { name: "سجّل وجبة", exact: true }).click();
   await expect(page.locator(".sheet form>.wide")).toHaveCSS("position", "sticky");
   for (const [name, value] of [
@@ -54,7 +54,8 @@ test("meal, macros, favorites, estimates, water, weight and reload", async ({
   await expect(page.locator(".real-weight")).toContainText("٩٩٫٤");
   await page.reload();
   const saved = await records(page);
-  expect(saved.water).toBe(4);
+  expect(saved.water).toBe(1);
+  expect(saved.waterDate).toMatch(/^\\d{4}-\\d{2}-\\d{2}$/);
   expect(saved.meals).toHaveLength(4);
   expect(saved.favorites).toHaveLength(1);
   expect(saved.weights.at(-1).kg).toBe(99.4);
