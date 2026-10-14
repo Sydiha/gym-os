@@ -1,23 +1,12 @@
-import { useEffect, useState } from "react";
 import { useDemo } from "../state/DemoContext";
 import { day, eligible, fmt, latestWeight, weeklyDays } from "../domain/rules";
 import { Calories, ActivityBars, WeightVisual } from "../ui/Summaries";
 import { Icon } from "../ui/Icon";
 import { DemoControls } from "./Settings";
+import { useCurrentDay } from "../ui/useCurrentDay";
 export function Dashboard() {
   const { data, time, open, update, water, mode } = useDemo();
-  const [today, setToday] = useState(day);
-  useEffect(() => {
-    const refresh = () => setToday(day());
-    const interval = window.setInterval(refresh, 30_000);
-    document.addEventListener("visibilitychange", refresh);
-    window.addEventListener("focus", refresh);
-    return () => {
-      window.clearInterval(interval);
-      document.removeEventListener("visibilitychange", refresh);
-      window.removeEventListener("focus", refresh);
-    };
-  }, []);
+  const today = useCurrentDay();
   const rest = data.settings.dayType === "rest",
     done = data.homeSessions.some((s) => s.date === day()),
     weight = latestWeight(data);
