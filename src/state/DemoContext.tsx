@@ -11,6 +11,7 @@ import type { Activity, Meal, Weight } from "../domain/types";
 import { loadDemo, saveDemo } from "./persistence";
 import { createPersonalRepository, type PersonalBackup } from "./personalStorage";
 import { emptyPersonal } from "../domain/fixtures";
+import { day } from "../domain/rules";
 type Mode = "personal" | "demo";
 const MODE_KEY = "gym-os-mode";
 const personalRepository = createPersonalRepository();
@@ -193,8 +194,7 @@ function useDemoState(repository: PersonalRepository) {
   }
   function water() {
     update((d) => {
-      const today = new Date();
-      const localDay = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+      const localDay = day();
       d.water = d.waterDate === localDay ? d.water + 1 : 1;
       d.waterDate = localDay;
     }, "أُضيف كوب ماء.");
