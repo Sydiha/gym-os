@@ -39,7 +39,7 @@ function Interface() {
         <header className="topline">
           <div>
             <div className="brand">
-              GYM <span>OS</span>
+              OS <span>SYLVAR</span>
             </div>
             <div className="tagline">
               صحتك... بأسلوب حياتك{" "}
