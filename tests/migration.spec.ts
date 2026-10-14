@@ -55,7 +55,7 @@ test("meal, macros, favorites, estimates, water, weight and reload", async ({
   await page.reload();
   const saved = await records(page);
   expect(saved.water).toBe(1);
-  expect(saved.waterDate).toMatch(/^\\d{4}-\\d{2}-\\d{2}$/);
+  expect(saved.waterDate).toBe(await page.evaluate(() => { const d = new Date(); return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join("-"); }));
   expect(saved.meals).toHaveLength(4);
   expect(saved.favorites).toHaveLength(1);
   expect(saved.weights.at(-1).kg).toBe(99.4);
