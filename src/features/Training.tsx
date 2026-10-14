@@ -167,7 +167,7 @@ export function Training() {
       <p className="training-meta">{prescription.instruction}</p>
       <p>قيود الركبة والكتف تُقرأ من إعدادات الملف الشخصي. المقترحات ليست إلزامية، ويُراعى التعافي والقدرة الشخصية.</p>
       <button disabled={disabled || !!active} onClick={choosePlan}>إنشاء جدول وحفظه</button>
-      {plan && <div><h3>الجدول المحفوظ</h3><p className="training-meta">المستوى عند إنشاء الجدول: {savedLevel} · {savedPrescription.setsPerExercise} مجموعات مقترحة · {savedPrescription.repsMin}–{savedPrescription.repsMax} تكرارات. تغيير المستوى أعلاه لا يغيّر الجدول المحفوظ حتى تنشئ جدولًا جديدًا.</p>{plan.days.map((day, index) =>
+      {plan && <div><h3>الجدول المحفوظ</h3><p className="training-meta">المستوى عند إنشاء الجدول: {savedLevel} · {savedPrescription.setsPerExercise} مجموعات مقترحة · {savedPrescription.repsMin}–{savedPrescription.repsMax} تكرارات. تغيير المستوى أعلاه لا يغيّر هذه الخطة حتى تنشئ خطة جديدة.</p>{plan.days.map((day, index) =>
         <div key={day.id} className="training-day">
           <strong>اليوم {index + 1}: {day.id.split("-").slice(2).join("-")}</strong>
           <p>{day.exerciseIds.map(id => getExercise(id)?.nameAr ?? "تمرين غير متوفر").join("، ")}</p>
