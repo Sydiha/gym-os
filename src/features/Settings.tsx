@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDemo } from "../state/DemoContext";
 import { emptyDemo, seed } from "../domain/fixtures";
 import type { DemoData, Settings } from "../domain/types";
@@ -160,6 +160,7 @@ export function Profile() {
 
 function CalorieGoal({ value, update }: { value: number; update: (change: (draft: DemoData) => void, message?: string) => void }) {
   const [input, setInput] = useState(String(value || ""));
+  useEffect(() => { setInput(String(value || "")); }, [value]);
   function save() {
     const goal = input.trim() === "" ? 0 : Number(input);
     if (Number.isInteger(goal) && goal >= 0 && goal <= 10000) {
