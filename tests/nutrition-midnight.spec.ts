@@ -16,7 +16,7 @@ test("meal and calories move to history after midnight while nutrition stays ope
   await expect(page.getByText("وجبة قبل منتصف الليل")).toBeVisible();
 
   await page.clock.fastForward("00:00:50");
-  await expect(page.locator(".cal-used")).toContainText("٠");
+  await expect(page.locator(".cal-head")).toContainText("٠");
   await expect(page.getByText("لم تسجّل وجبة اليوم.")).toBeVisible();
   await expect(page.getByRole("heading", { name: "سجل الوجبات السابقة" })).toBeVisible();
   await expect(page.getByText("وجبة قبل منتصف الليل")).toBeVisible();
