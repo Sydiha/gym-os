@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useDemo } from "../state/DemoContext";
 import { day, eligible, fmt, latestWeight, weeklyDays } from "../domain/rules";
 import { Calories, ActivityBars, WeightVisual } from "../ui/Summaries";
@@ -5,6 +6,18 @@ import { Icon } from "../ui/Icon";
 import { DemoControls } from "./Settings";
 export function Dashboard() {
   const { data, time, open, update, water, mode } = useDemo();
+  const [today, setToday] = useState(day);
+  useEffect(() => {
+    const refresh = () => setToday(day());
+    const interval = window.setInterval(refresh, 30_000);
+    document.addEventListener("visibilitychange", refresh);
+    window.addEventListener("focus", refresh);
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", refresh);
+      window.removeEventListener("focus", refresh);
+    };
+  }, []);
   const rest = data.settings.dayType === "rest",
     done = data.homeSessions.some((s) => s.date === day()),
     weight = latestWeight(data);
@@ -16,7 +29,7 @@ export function Dashboard() {
       <p className="level">مستواك: {data.settings.level}</p>
       <Calories />
       <div className="water">
-        <span>الماء {fmt(data.waterDate === day() ? data.water : 0)} أكواب</span>
+        <span>الماء {fmt(data.waterDate === today ? data.water : 0)} أكواب</span>
         <button className="pill" onClick={water}>
           + كوب
         </button>
