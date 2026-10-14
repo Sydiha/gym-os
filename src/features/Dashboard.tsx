@@ -16,7 +16,7 @@ export function Dashboard() {
       <p className="level">مستواك: {data.settings.level}</p>
       <Calories />
       <div className="water">
-        <span>الماء {fmt(data.water)} أكواب</span>
+        <span>الماء {fmt(data.waterDate === day() ? data.water : 0)} أكواب</span>
         <button className="pill" onClick={water}>
           + كوب
         </button>
