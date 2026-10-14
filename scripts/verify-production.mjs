@@ -42,7 +42,40 @@ for (let i = 0; i < (expectedSha ? 18 : 1); i++) {
     if (!response.ok || !/^[a-f0-9]{40}$/.test(manifest.commit)) throw new Error("Invalid release manifest");
     console.log("Production commit:", manifest.commit);
     identityMatched = !expectedSha || manifest.commit === expectedSha;
-    if (identityMatched) break;
+    if (identityMatched) {
+      const home = await fetch(new URL("/?header-check=" + Date.now(), origin), {
+        headers: { "Cache-Control": "no-cache" },
+        signal: AbortSignal.timeout(15000),
+      });
+      const expectedHeaders = {
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=31536000",
+        "permissions-policy": "camera=(), microphone=(), geolocation=(), payment=()",
+      };
+      for (const [name, value] of Object.entries(expectedHeaders)) {
+        const actual = home.headers.get(name);
+        if (actual !== value) {
+          failures++;
+          console.error(`Production header mismatch: ${name} expected "${value}", got "${actual}"`);
+        } else {
+          console.log(`PASS production header ${name}`);
+        }
+      }
+      if (!home.ok) {
+        failures++;
+        console.error("Production header probe HTTP", home.status);
+      }
+      const cache = response.headers.get("cache-control") ?? "";
+      if (!cache.toLowerCase().includes("no-store")) {
+        failures++;
+        console.error("version.json requires no-store Cache-Control; got:", cache);
+      } else {
+        console.log("PASS version.json no-store");
+      }
+      break;
+    }
   } catch (e) {
     console.error("Release identity unavailable:", e.message);
   }
