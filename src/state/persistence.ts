@@ -16,6 +16,7 @@ export function isDemoData(v: unknown): v is DemoData {
     !object(v) ||
     !number(v.goal) ||
     !number(v.water) ||
+    (v.waterDate !== undefined && !date(v.waterDate)) ||
     !object(v.settings)
   )
     return false;
