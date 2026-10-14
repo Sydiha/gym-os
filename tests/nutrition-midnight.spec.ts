@@ -12,7 +12,7 @@ test("meal and calories move to history after midnight while nutrition stays ope
   await page.getByLabel("كربوهيدرات (غ)").fill("30");
   await page.getByLabel("دهون (غ)").fill("15");
   await page.getByRole("button", { name: "حفظ الوجبة" }).click();
-  await expect(page.locator(".cal-used")).toContainText("٤٢٠");
+  await expect(page.locator(".cal-head")).toContainText("٤٢٠");
   await expect(page.getByText("وجبة قبل منتصف الليل")).toBeVisible();
 
   await page.clock.fastForward("00:00:50");
