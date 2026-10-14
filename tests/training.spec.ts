@@ -79,6 +79,7 @@ test("each exercise keeps independent set inputs", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByText("جارٍ تحميل بياناتك…")).toHaveCount(0);
   await page.getByRole("navigation").getByRole("button", { name: "التمارين" }).click();
+  await page.locator("#training-level").selectOption("متقدم");
   await page.getByRole("button", { name: "إنشاء جدول وحفظه" }).click();
   await page.getByRole("button", { name: "ابدأ هذا اليوم" }).first().click();
   const entries = page.locator(".training-set-entry");

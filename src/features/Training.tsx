@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useDemo } from "../state/DemoContext";
 import { EXERCISES, EXERCISE_SAFETY_NOTE_AR, getExercise } from "../domain/exerciseCatalog";
 import { generateTrainingPlan } from "../domain/trainingPlan";
+import { trainingPrescription, levelFromPlanTemplate } from "../domain/trainingLevels";
 import { recentExerciseComparison } from "../domain/exerciseComparison";
 import { getReviewedExerciseMedia } from "../domain/reviewedExerciseMedia";
 import type { TrainingPreferences, TrainingSession } from "../domain/types";
@@ -75,6 +76,9 @@ export function Training() {
   }, [storedPlace, storedDays, storedLevel]);
   const training = data.training;
   const plan = training?.plans.at(-1);
+  const prescription = trainingPrescription(level);
+  const savedLevel = levelFromPlanTemplate(plan?.templateId, training?.preferences?.level ?? "مبتدئ");
+  const savedPrescription = trainingPrescription(savedLevel);
   const active = training?.sessions.find(s => s.status === "in_progress");
   const completedSessions = (training?.sessions ?? []).filter(s => s.status === "completed").slice().sort((a, b) => (b.endedAt ?? b.startedAt).localeCompare(a.endedAt ?? a.startedAt));
   const hasComparableExercise = EXERCISES.some(exercise => recentExerciseComparison(completedSessions, exercise.id) !== null);
@@ -159,9 +163,11 @@ export function Training() {
       <select id="training-level" value={level} onChange={e => setLevel(e.target.value as TrainingPreferences["level"])}>
         {["مبتدئ","متوسط","متقدم"].map(n => <option key={n}>{n}</option>)}
       </select>
-      <p>قيود الركبة والكتف تُقرأ من إعدادات الملف الشخصي.</p>
+      <p className="training-meta">خطة {level}: حتى {prescription.exercisesPerDay} تمارين في اليوم، {prescription.setsPerExercise} مجموعات مقترحة لكل تمرين، {prescription.repsMin}–{prescription.repsMax} تكرارات، وراحة نحو {prescription.restSeconds} ثانية بين المجموعات.</p>
+      <p className="training-meta">{prescription.instruction}</p>
+      <p>قيود الركبة والكتف تُقرأ من إعدادات الملف الشخصي. المقترحات ليست إلزامية، ويُراعى التعافي والقدرة الشخصية.</p>
       <button disabled={disabled || !!active} onClick={choosePlan}>إنشاء جدول وحفظه</button>
-      {plan && <div><h3>الجدول المحفوظ</h3>{plan.days.map((day, index) =>
+      {plan && <div><h3>الجدول المحفوظ</h3><p className="training-meta">المستوى عند إنشاء الجدول: {savedLevel} · {savedPrescription.setsPerExercise} مجموعات مقترحة · {savedPrescription.repsMin}–{savedPrescription.repsMax} تكرارات. تغيير المستوى أعلاه لا يغيّر هذه الخطة حتى تنشئ خطة جديدة.</p>{plan.days.map((day, index) =>
         <div key={day.id} className="training-day">
           <strong>اليوم {index + 1}: {day.id.split("-").slice(2).join("-")}</strong>
           <p>{day.exerciseIds.map(id => getExercise(id)?.nameAr ?? "تمرين غير متوفر").join("، ")}</p>
@@ -171,6 +177,8 @@ export function Training() {
     </div>
     {active && <div className="training-panel">
       <h2>التمرين الجاري</h2>
+      <p className="training-meta">توجيه خطة {savedLevel}: {savedPrescription.setsPerExercise} مجموعات لكل تمرين، {savedPrescription.repsMin}–{savedPrescription.repsMax} تكرارات، راحة نحو {savedPrescription.restSeconds} ثانية. سجّل ما نفذته فعليًا حتى إن اختلف عن المقترح.</p>
+      <p className="training-meta">{savedPrescription.instruction}</p>
       {active.exercises.map(e => <div key={e.exerciseId} className="training-day">
         <strong>{getExercise(e.exerciseId)?.nameAr ?? e.exerciseId}</strong>
         <p>المجموعات المسجلة: {e.sets.length}{e.skipped ? " (تم التخطي)" : ""}</p>
