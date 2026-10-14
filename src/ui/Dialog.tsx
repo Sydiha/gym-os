@@ -133,7 +133,7 @@ export function Dialog({
         aria-label={stage === "exercise" ? "الحركة الحالية" : "تفاصيل النموذج"}
       >
         <div className="sheet-head">
-          <span className="accent">GYM OS</span>
+          <span className="accent">OS SYLVAR</span>
           <button
             ref={closeButton}
             className="close"

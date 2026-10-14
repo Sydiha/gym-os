@@ -26,8 +26,8 @@ export default defineConfig({
       includeAssets: ['icons/apple-touch-icon.png'],
       manifest: {
         id: '/',
-        name: 'GYM OS — صحتك بأسلوب حياتك',
-        short_name: 'GYM OS',
+        name: 'OS SYLVAR — صحتك بأسلوب حياتك',
+        short_name: 'OS SYLVAR',
         description: 'صحتك... بأسلوب حياتك',
         lang: 'ar',
         dir: 'rtl',
