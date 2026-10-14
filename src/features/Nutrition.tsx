@@ -1,12 +1,14 @@
 import { useDemo } from "../state/DemoContext";
-import { day, fmt, hasDuplicateMeal, nutrient, todayMeals, uid } from "../domain/rules";
+import { day, fmt, hasDuplicateMeal, nutrient, uid } from "../domain/rules";
 import { Calories } from "../ui/Summaries";
 import { restaurantOptions } from "../domain/fixtures";
+import { useCurrentDay } from "../ui/useCurrentDay";
 export function Nutrition() {
   const { data, open, openEdit, update, busy, readBlocked } = useDemo();
   const actionsDisabled = busy || readBlocked;
-  const meals = todayMeals(data);
-  const previousMeals = data.meals.filter((meal) => meal.date !== day()).sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+  const today = useCurrentDay();
+  const meals = data.meals.filter((meal) => meal.date === today);
+  const previousMeals = data.meals.filter((meal) => meal.date !== today).sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
   function removeMeal(id: string) {
     if (actionsDisabled || !window.confirm("هل تريد حذف هذه الوجبة؟ ستُحدّث السعرات والماكروز بعد الحذف.")) return;
     update((draft) => { draft.meals = draft.meals.filter((meal) => meal.id !== id); }, "حُذفت الوجبة وأُعيد حساب المغذيات.");
