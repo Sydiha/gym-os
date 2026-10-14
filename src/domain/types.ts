@@ -73,6 +73,8 @@ export interface TrainingData {
 export interface DemoData {
   goal: number;
   water: number;
+  /** Local date associated with the water counter; absent for legacy snapshots. */
+  waterDate?: string;
   meals: Meal[];
   favorites: Meal[];
   activities: Activity[];
