@@ -21,6 +21,8 @@ test("water tracks current day, keeps counts on reload, and resets next day", as
 test("legacy undated water value is not misrepresented as today's intake", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByText("جارٍ تحميل بياناتك…")).toHaveCount(0);
+  await page.getByRole("button", { name: "+ كوب" }).click();
+  await expect(page.getByText("الماء ١ أكواب")).toBeVisible();
   await page.evaluate(async () => {
     const request = indexedDB.open("gym-os-personal", 1);
     const database = await new Promise<IDBDatabase>((resolve, reject) => {
