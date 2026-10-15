@@ -38,8 +38,9 @@ function Interface() {
       <main id="main" className="shell" tabIndex={-1} inert={!!sheet}>
         <header className="topline">
           <div>
-            <div className="brand">
-              OS <span>SYLVAR</span>
+            <div className="brand-lockup">
+              <img className="brand-logo" src="/icons/icon-192.png" alt="" width="36" height="36" />
+              <div className="brand">OS <span>SYLVAR</span></div>
             </div>
             <div className="tagline">
               صحتك... بأسلوب حياتك{" "}
