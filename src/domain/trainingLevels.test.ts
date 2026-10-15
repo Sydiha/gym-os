@@ -56,3 +56,113 @@ describe("training levels", () => {
     expect(levelFromPlanTemplate("old-template", "متوسط")).toBe("متوسط");
   });
 });
+
+describe("mixed gym and home plans", () => {
+  it.each([3, 4, 5] as const)("uses both places with a balanced %i-day schedule", daysPerWeek => {
+    const plan = build("مبتدئ", { place: "both", daysPerWeek });
+    expect(plan.days).toHaveLength(daysPerWeek);
+    const places = plan.days.map(day => [...new Set(day.exerciseIds.map(id => getExercise(id)?.place))]);
+    expect(places.flat()).toContain("gym");
+    expect(places.flat()).toContain("home");
+    expect(places.every(dayPlaces => dayPlaces.length === 1)).toBe(true);
+    expect(places[0]).toEqual(["gym"]);
+    expect(places[1]).toEqual(["home"]);
+    if (daysPerWeek === 3) {
+      for (const day of plan.days) {
+        expect(day.exerciseIds.some(id => /chest|row|pull|pushup/.test(id))).toBe(true);
+        expect(day.exerciseIds.some(id => /leg|calf|squat|glute|march/.test(id))).toBe(true);
+      }
+    } else {
+      expect(plan.days[0].exerciseIds.every(id => /chest|row|pull|pushup/.test(id))).toBe(true);
+      expect(plan.days[1].exerciseIds.every(id => /leg|calf|squat|glute|march/.test(id))).toBe(true);
+      expect(plan.days[2].exerciseIds.every(id => /chest|row|pull|pushup/.test(id))).toBe(true);
+      expect(plan.days[3].exerciseIds.every(id => /leg|calf|squat|glute|march/.test(id))).toBe(true);
+      if (daysPerWeek === 5) expect(plan.days[4].exerciseIds.every(id => /march|calf/.test(id))).toBe(true);
+    }
+  });
+
+  it.each(["مبتدئ", "متوسط", "متقدم"] as const)("respects exercise limits for %s", level => {
+    for (const daysPerWeek of [3, 4, 5] as const) {
+      const plan = build(level, { place: "both", daysPerWeek });
+      expect(plan.days).toHaveLength(daysPerWeek);
+      for (const day of plan.days) {
+        expect(day.exerciseIds.length).toBeGreaterThan(0);
+        expect(day.exerciseIds.length).toBeLessThanOrEqual(trainingPrescription(level).exercisesPerDay);
+      }
+    }
+  });
+
+  it("preserves joint restrictions and requires equipment appropriate to each location", () => {
+    for (const daysPerWeek of [3, 4, 5] as const) {
+      const plan = build("متوسط", { place: "both", daysPerWeek, knee: true, shoulder: false });
+      for (const day of plan.days) {
+        const exercises = day.exerciseIds.map(id => getExercise(id)!);
+        expect(exercises.every(exercise => !exercise.restrictions.includes("knee"))).toBe(true);
+        expect(exercises.every(exercise => exercise.place === exercises[0].place)).toBe(true);
+        if (exercises[0].place === "home") {
+          expect(exercises.every(exercise => !exercise.equipmentAr.includes("جهاز"))).toBe(true);
+        }
+      }
+    }
+  });
+
+  it("generates safe mixed plans with knee, shoulder, and combined restrictions", () => {
+    for (const daysPerWeek of [3, 4, 5] as const) {
+      for (const level of ["مبتدئ", "متوسط", "متقدم"] as const) {
+        for (const restrictions of [
+          { knee: true, shoulder: false },
+          { knee: false, shoulder: true },
+          { knee: true, shoulder: true },
+        ]) {
+          const plan = build(level, { place: "both", daysPerWeek, ...restrictions });
+          expect(plan.days).toHaveLength(daysPerWeek);
+          expect(plan.templateId).toBe("both-" + daysPerWeek + "d-" + level);
+          const places = new Set<string>();
+          for (const day of plan.days) {
+            expect(day.exerciseIds.length).toBeGreaterThan(0);
+            expect(day.exerciseIds.length).toBeLessThanOrEqual(trainingPrescription(level).exercisesPerDay);
+            const exercises = day.exerciseIds.map(id => getExercise(id)!);
+            expect(exercises.every(exercise => !!exercise)).toBe(true);
+            expect(new Set(exercises.map(exercise => exercise.place)).size).toBe(1);
+            for (const exercise of exercises) {
+              places.add(exercise.place);
+              if (restrictions.knee) expect(exercise.restrictions).not.toContain("knee");
+              if (restrictions.shoulder) expect(exercise.restrictions).not.toContain("shoulder");
+              if (exercise.place === "home") expect(exercise.equipmentAr).not.toContain("جهاز");
+            }
+          }
+          expect(places).toEqual(new Set(["gym", "home"]));
+        }
+      }
+    }
+  });
+
+  it("uses only equipment declared for the selected location", () => {
+    for (const daysPerWeek of [3, 4, 5] as const) {
+      for (const level of ["مبتدئ", "متوسط", "متقدم"] as const) {
+        const plan = build(level, { place: "both" , daysPerWeek });
+        for (const day of plan.days) {
+          const exercises = day.exerciseIds.map(id => getExercise(id)!);
+          const location = exercises[0].place;
+          expect(exercises.every(exercise => exercise.place === location)).toBe(true);
+          if (location === "home") {
+            expect(exercises.every(exercise => !exercise.equipmentAr.includes("جهاز"))).toBe(true);
+          }
+        }
+      }
+    }
+  });
+
+  it("keeps existing single-location gym and home generation unchanged", () => {
+    for (const place of ["gym", "home"] as const) {
+      for (const daysPerWeek of [3, 4, 5] as const) {
+        for (const level of ["مبتدئ", "متوسط", "متقدم"] as const) {
+          const plan = build(level, { place, daysPerWeek });
+          expect(plan.templateId).toBe(place + "-" + daysPerWeek + "d-" + level);
+          expect(plan.days).toHaveLength(daysPerWeek);
+          expect(plan.days.every(day => day.exerciseIds.every(id => getExercise(id)?.place === place))).toBe(true);
+        }
+      }
+    }
+  });
+});

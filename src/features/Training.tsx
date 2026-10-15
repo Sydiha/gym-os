@@ -65,6 +65,7 @@ export function Training() {
   const [days, setDays] = useState<3 | 4 | 5>(data.training?.preferences?.daysPerWeek ?? 3);
   const [level, setLevel] = useState<TrainingPreferences["level"]>(data.training?.preferences?.level ?? "مبتدئ");
   const [selected, setSelected] = useState<string | null>(null);
+  const [planError, setPlanError] = useState<string | null>(null);
   // Restore persisted preferences after IndexedDB hydration, not only on the first render.
   const storedPlace = data.training?.preferences?.place;
   const storedDays = data.training?.preferences?.daysPerWeek;
@@ -87,7 +88,14 @@ export function Training() {
   const recordedSets = active?.exercises.reduce((count, exercise) => count + exercise.sets.length, 0) ?? 0;
   const choosePlan = () => {
     const preferences: TrainingPreferences = { place, daysPerWeek: days, level, ...caution };
-    const next = generateTrainingPlan(preferences, crypto.randomUUID(), new Date().toISOString());
+    let next;
+    try {
+      next = generateTrainingPlan(preferences, crypto.randomUUID(), new Date().toISOString());
+      setPlanError(null);
+    } catch (error) {
+      setPlanError(error instanceof Error ? error.message : "تعذر إنشاء خطة مناسبة. راجع مكان التدريب والقيود المختارة.");
+      return;
+    }
     update(d => {
       if (!d.training) return;
       d.training.preferences = preferences;
@@ -167,6 +175,7 @@ export function Training() {
       <p className="training-meta">{prescription.instruction}</p>
       <p>قيود الركبة والكتف تُقرأ من إعدادات الملف الشخصي. المقترحات ليست إلزامية، ويُراعى التعافي والقدرة الشخصية.</p>
       <button disabled={disabled || !!active} onClick={choosePlan}>إنشاء جدول وحفظه</button>
+      {planError && <p role="alert" className="training-safety">{planError} يمكنك تعديل مكان التدريب أو قيود المفاصل والمحاولة مجددًا. لم تتغير خطتك المحفوظة.</p>}
       {plan && <div><h3>الجدول المحفوظ</h3><p className="training-meta">المستوى عند إنشاء الجدول: {savedLevel} · {savedPrescription.setsPerExercise} مجموعات مقترحة · {savedPrescription.repsMin}–{savedPrescription.repsMax} تكرارات. تغيير المستوى أعلاه لا يغيّر هذه الخطة حتى تنشئ خطة جديدة.</p>{plan.days.map((day, index) =>
         <div key={day.id} className="training-day">
           <strong>اليوم {index + 1}: {day.id.split("-").slice(2).join("-")}</strong>
