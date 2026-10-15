@@ -106,20 +106,32 @@ describe("mixed gym and home plans", () => {
     }
   });
 
-  it("fails explicitly when restrictions eliminate a required muscle group", () => {
-    for (const daysPerWeek of [3, 4, 5] as const) {
-      expect(() => build("مبتدئ", { place: "both", daysPerWeek, shoulder: true }))
-        .toThrow(/لا يمكن إنشاء يوم متوازن|لا توجد تمارين مناسبة/);
-    }
-  });
-
-
-  it("handles shoulder-only and combined restrictions explicitly", () => {
+  it("generates safe mixed plans with knee, shoulder, and combined restrictions", () => {
     for (const daysPerWeek of [3, 4, 5] as const) {
       for (const level of ["مبتدئ", "متوسط", "متقدم"] as const) {
-        for (const restrictions of [{ knee: false, shoulder: true }, { knee: true, shoulder: true }]) {
-          expect(() => build(level, { place: "both", daysPerWeek, ...restrictions }))
-            .toThrow(/لا يمكن إنشاء يوم متوازن|لا توجد تمارين مناسبة/);
+        for (const restrictions of [
+          { knee: true, shoulder: false },
+          { knee: false, shoulder: true },
+          { knee: true, shoulder: true },
+        ]) {
+          const plan = build(level, { place: "both", daysPerWeek, ...restrictions });
+          expect(plan.days).toHaveLength(daysPerWeek);
+          expect(plan.templateId).toBe("both-" + daysPerWeek + "d-" + level);
+          const places = new Set<string>();
+          for (const day of plan.days) {
+            expect(day.exerciseIds.length).toBeGreaterThan(0);
+            expect(day.exerciseIds.length).toBeLessThanOrEqual(trainingPrescription(level).exercisesPerDay);
+            const exercises = day.exerciseIds.map(id => getExercise(id)!);
+            expect(exercises.every(exercise => !!exercise)).toBe(true);
+            expect(new Set(exercises.map(exercise => exercise.place)).size).toBe(1);
+            for (const exercise of exercises) {
+              places.add(exercise.place);
+              if (restrictions.knee) expect(exercise.restrictions).not.toContain("knee");
+              if (restrictions.shoulder) expect(exercise.restrictions).not.toContain("shoulder");
+              if (exercise.place === "home") expect(exercise.equipmentAr).not.toContain("جهاز");
+            }
+          }
+          expect(places).toEqual(new Set(["gym", "home"]));
         }
       }
     }
