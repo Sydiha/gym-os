@@ -3,54 +3,43 @@ import { trainingPrescription } from "./trainingLevels";
 import { EXERCISE_CATALOG_VERSION, listExercisesForPreferences, type ExercisePlace } from "./exerciseCatalog";
 
 export function generateTrainingPlan(preferences: TrainingPreferences, id: string, createdAt: string): TrainingPlan {
-  // Mixed plans use location-specific days; single-location plans retain their existing behavior.
+  // Each mixed day uses one location; prefer muscle-group variety but never bypass restrictions.
   if (preferences.place === "both") {
-    const schedule: Record<3 | 4 | 5, { label: string; place: ExercisePlace; focus: "full" | "upper" | "lower" | "light" }[]> = {
-      3: [
-        { label: "A", place: "gym", focus: "full" },
-        { label: "B", place: "home", focus: "full" },
-        { label: "A", place: "gym", focus: "full" },
-      ],
-      4: [
-        { label: "علوي A", place: "gym", focus: "upper" },
-        { label: "سفلي A", place: "home", focus: "lower" },
-        { label: "علوي B", place: "gym", focus: "upper" },
-        { label: "سفلي B", place: "home", focus: "lower" },
-      ],
-      5: [
-        { label: "علوي A", place: "gym", focus: "upper" },
-        { label: "سفلي A", place: "home", focus: "lower" },
-        { label: "علوي B", place: "gym", focus: "upper" },
-        { label: "سفلي B", place: "home", focus: "lower" },
-        { label: "نشاط خفيف", place: "home", focus: "light" },
-      ],
-    };
     const prescription = trainingPrescription(preferences.level);
-    const days = schedule[preferences.daysPerWeek].map(({ label, place: dayPlace, focus }, index) => {
+    const locations: Record<3 | 4 | 5, ExercisePlace[]> = {
+      3: ["gym", "home", "gym"],
+      4: ["gym", "home", "gym", "home"],
+      5: ["gym", "home", "gym", "home", "home"],
+    };
+    const focusByDay: Record<3 | 4 | 5, ("full" | "upper" | "lower" | "light")[]> = {
+      3: ["full", "full", "full"],
+      4: ["upper", "lower", "upper", "lower"],
+      5: ["upper", "lower", "upper", "lower", "light"],
+    };
+    const days = locations[preferences.daysPerWeek].map((dayPlace, index) => {
       const available = listExercisesForPreferences(dayPlace, preferences).map(exercise => exercise.id);
-      const lower = available.filter(id => /leg|calf|squat|glute|march/.test(id));
       const upper = available.filter(id => /chest|row|pull|pushup/.test(id));
+      const lower = available.filter(id => /leg|calf|squat|glute|march/.test(id));
       const light = available.filter(id => /march|calf/.test(id));
-      let candidates: string[];
-      if (focus === "full") {
-        if (!upper.length || !lower.length) {
-          throw new Error("لا يمكن إنشاء يوم متوازن في " + (dayPlace === "gym" ? "النادي" : "المنزل") + " مع القيود المحددة.");
-        }
-        const pair = index % 2 ? [lower[0], upper[0]] : [upper[0], lower[0]];
-        const remaining = available.filter(id => !pair.includes(id));
-        const offset = (preferences.level === "متقدم" ? 2 : preferences.level === "متوسط" ? 1 : 0);
-        candidates = [...pair, ...remaining.slice(offset % Math.max(1, remaining.length)), ...remaining.slice(0, offset % Math.max(1, remaining.length))];
-      } else {
-        candidates = focus === "upper" ? upper : focus === "lower" ? lower : light;
-        if (candidates.length) {
-          const offset = (label.endsWith("B") ? 1 : 0) + (preferences.level === "متقدم" ? 2 : preferences.level === "متوسط" ? 1 : 0);
-          candidates = [...candidates.slice(offset % candidates.length), ...candidates.slice(0, offset % candidates.length)];
-        }
-      }
+      const focus = focusByDay[preferences.daysPerWeek][index];
+      // When a joint restriction removes a movement group, use only remaining safe movements.
+      // This is a reduced-volume day, not a claim that missing muscle groups were trained.
+      const preferred = focus === "upper" ? upper : focus === "lower" ? lower : focus === "light" ? light : available;
+      const candidates = preferred.length ? preferred : available;
       if (!candidates.length) {
-        throw new Error("لا توجد تمارين مناسبة ليوم " + label + " في " + (dayPlace === "gym" ? "النادي" : "المنزل") + " مع القيود المحددة.");
+        throw new Error("لا توجد تمارين آمنة متاحة في " + (dayPlace === "gym" ? "النادي" : "المنزل") + " للقيود المختارة.");
       }
-      return { id: "day-" + (index + 1) + "-" + label, exerciseIds: candidates.slice(0, prescription.exercisesPerDay) };
+      const offset = (index >= 2 ? 1 : 0) + (preferences.level === "متقدم" ? 2 : preferences.level === "متوسط" ? 1 : 0);
+      let ordered = [...candidates.slice(offset % candidates.length), ...candidates.slice(0, offset % candidates.length)];
+      if (focus === "full" && upper.length && lower.length) {
+        const firstUpper = upper[index % upper.length];
+        const firstLower = lower[index % lower.length];
+        ordered = [firstUpper, firstLower, ...ordered.filter(id => id !== firstUpper && id !== firstLower)];
+      }
+      const label = focus === "upper" && preferred.length ? "علوي" :
+        focus === "lower" && preferred.length ? "سفلي" :
+        focus === "light" && preferred.length ? "نشاط خفيف" : "تمارين آمنة";
+      return { id: "day-" + (index + 1) + "-" + (focus === "full" ? "شامل" : label), exerciseIds: ordered.slice(0, prescription.exercisesPerDay) };
     });
     return { id, catalogVersion: EXERCISE_CATALOG_VERSION, templateId: "both-" + preferences.daysPerWeek + "d-" + preferences.level, createdAt, days };
   }
