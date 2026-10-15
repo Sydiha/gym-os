@@ -113,6 +113,34 @@ describe("mixed gym and home plans", () => {
     }
   });
 
+
+  it("handles shoulder-only and combined restrictions explicitly", () => {
+    for (const daysPerWeek of [3, 4, 5] as const) {
+      for (const level of ["مبتدئ", "متوسط", "متقدم"] as const) {
+        for (const restrictions of [{ knee: false, shoulder: true }, { knee: true, shoulder: true }]) {
+          expect(() => build(level, { place: "both", daysPerWeek, ...restrictions }))
+            .toThrow(/لا يمكن إنشاء يوم متوازن|لا توجد تمارين مناسبة/);
+        }
+      }
+    }
+  });
+
+  it("uses only equipment declared for the selected location", () => {
+    for (const daysPerWeek of [3, 4, 5] as const) {
+      for (const level of ["مبتدئ", "متوسط", "متقدم"] as const) {
+        const plan = build(level, { place: "both" , daysPerWeek });
+        for (const day of plan.days) {
+          const exercises = day.exerciseIds.map(id => getExercise(id)!);
+          const location = exercises[0].place;
+          expect(exercises.every(exercise => exercise.place === location)).toBe(true);
+          if (location === "home") {
+            expect(exercises.every(exercise => !exercise.equipmentAr.includes("جهاز"))).toBe(true);
+          }
+        }
+      }
+    }
+  });
+
   it("keeps existing single-location gym and home generation unchanged", () => {
     for (const place of ["gym", "home"] as const) {
       for (const daysPerWeek of [3, 4, 5] as const) {
