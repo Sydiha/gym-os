@@ -1,0 +1,33 @@
+name: VECTOR Validation
+
+on:
+  push:
+    branches:
+      - design/vector-refinement-v1-implementation
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout VECTOR branch
+        uses: actions/checkout@v4
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: TypeScript check
+        run: npm run typecheck
+      - name: Unit tests
+        run: npm test
+      - name: Production build (no deployment)
+        run: npm run build
+      - name: Install Chromium for existing Playwright smoke tests
+        run: npx playwright install --with-deps chromium
+      - name: Existing Playwright smoke tests
+        run: npm run test:smoke
