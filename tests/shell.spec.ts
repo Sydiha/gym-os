@@ -143,11 +143,11 @@ for (const width of [320, 375, 390, 430, 1280]) {
     );
     await expect(page.locator("body")).toHaveCSS(
       "background-color",
-      "rgb(21, 18, 25)",
+      "rgb(16, 18, 18)",
     );
     await expect(page.locator("html")).toHaveCSS(
       "background-color",
-      "rgb(21, 18, 25)",
+      "rgb(16, 18, 18)",
     );
     expect(
       await page.evaluate(
