@@ -71,7 +71,7 @@
   --vector-line:#39413F;--vector-lime:#B9FF39;--vector-ivory:#F4F5F0;
   --vector-muted:#A9B2AC;--vector-focus:#D9FF9B;
 }
-html,body,#root,#app{background:var(--vector-bg);color:var(--vector-ivory)}
+:root, body, #root, #app{background:var(--vector-bg);color:var(--vector-ivory)}
 body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;font-variant-numeric:tabular-nums}
 .shell{width:min(100%,1440px);padding:calc(28px + env(safe-area-inset-top)) clamp(18px,4vw,76px) calc(112px + env(safe-area-inset-bottom));background:linear-gradient(165deg,#151A18,#101212 55%);overflow:visible}
 .topline{align-items:center;min-height:76px;padding-bottom:16px;border-bottom:1px solid var(--vector-line)}
