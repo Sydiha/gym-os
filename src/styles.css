@@ -61,3 +61,61 @@
 .training-day li{overflow-wrap:anywhere}
 .training-day button{white-space:normal;overflow-wrap:anywhere}
 .training-set-entry,.training-set-edit{min-width:0;max-width:100%}
+
+
+/* OS SYLVAR / VECTOR Refinement V1 — applied to existing functional screens.
+   Original component markup, state, storage, backup and exercise logic remain intact. */
+:root {
+  color-scheme:dark;
+  --vector-bg:#101212;--vector-surface:#202424;--vector-raised:#252B29;
+  --vector-line:#39413F;--vector-lime:#B9FF39;--vector-ivory:#F4F5F0;
+  --vector-muted:#A9B2AC;--vector-focus:#D9FF9B;
+}
+html,body,#root,#app{background:var(--vector-bg);color:var(--vector-ivory)}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;font-variant-numeric:tabular-nums}
+.shell{width:min(100%,1440px);padding:calc(28px + env(safe-area-inset-top)) clamp(18px,4vw,76px) calc(112px + env(safe-area-inset-bottom));background:linear-gradient(165deg,#151A18,#101212 55%);overflow:visible}
+.topline{align-items:center;min-height:76px;padding-bottom:16px;border-bottom:1px solid var(--vector-line)}
+.brand{font-weight:800;font-size:20px;letter-spacing:.04em}
+.brand span,.accent,.cal-used,.counter,.stat,.real-weight b{color:var(--vector-lime)}
+.brand-logo{width:43px;height:43px;border-radius:9px}
+.tagline,.muted,.level,.lead,.hint,.chart-title,.chart-foot,.training-lead,.training-meta{color:var(--vector-muted)}
+.avatar{border:1px solid var(--vector-line);background:var(--vector-surface);color:var(--vector-ivory);border-radius:5px}
+h1,.section-title{letter-spacing:-.035em;text-wrap:balance}
+.underline{border-bottom-color:var(--vector-lime)}
+.wide,.planb .primary,.training-page .training-panel>button:first-of-type,.training-panel>button:last-child{background:var(--vector-lime);color:var(--vector-bg);border-radius:4px;box-shadow:none}
+.outline,.pill,.small-btn,.training-page button{color:var(--vector-lime);border-color:var(--vector-line);border-radius:4px}
+.wide:hover,.planb .primary:hover{background:#D1FF85}
+.weather,.demo,.macro-row>div,.empty,.info,.planb,.training-panel,.training-exercise,.nav-message{background:var(--vector-surface);border-color:var(--vector-line);border-radius:5px;box-shadow:none}
+.meter,.bartrack{background:#303936}
+.meter b,.bar,.bar.current{background:var(--vector-lime)}
+.stepno{border-color:var(--vector-lime);color:var(--vector-lime);box-shadow:none}
+.step:not(:last-child):before{border-color:var(--vector-line)}
+.icon{background:var(--vector-raised);color:var(--vector-lime);border-radius:5px}
+.weekly,.water,.record,.training-day,.progress-group{border-color:var(--vector-line)}
+.bottom{width:min(100%,1440px);background:#121515F5;border-color:var(--vector-line)}
+.bottom button.active{color:var(--vector-lime)}
+.bottom .plus{background:var(--vector-lime);color:var(--vector-bg);border-radius:5px;box-shadow:none}
+.sheet{background:var(--vector-surface);border-color:var(--vector-line);border-radius:16px 16px 0 0}
+.sheet input,.sheet select,.demo select,.demo input[type=time],.training-page select,.training-page input{background:var(--vector-raised);border-color:var(--vector-line);color:var(--vector-ivory);border-radius:4px}
+.training-page .training-exercise h3,.training-details h4,.sheet .success h2{color:var(--vector-ivory)}
+.training-safety,.safety{background:#252B29;border-color:var(--vector-lime);color:var(--vector-ivory)}
+.demo-label{color:var(--vector-lime);border-color:var(--vector-line)}
+:focus-visible,.training-page button:focus-visible,.training-page input:focus-visible,.training-page select:focus-visible{outline:2px solid var(--vector-focus);outline-offset:3px}
+@media(min-width:900px){
+  .shell{margin:0 0 0 90px;width:calc(100% - 90px);min-height:100vh;max-width:none;padding-bottom:72px}
+  .bottom{position:fixed;inset:0 auto 0 0;transform:none;width:90px;height:100dvh;padding:98px 10px 20px;display:flex;flex-direction:column;justify-content:flex-start;gap:11px;border-top:0;border-right:1px solid var(--vector-line);box-shadow:none;backdrop-filter:none}
+  .bottom:before{content:"";position:absolute;top:24px;left:23px;width:43px;height:43px;background:url('/icons/icon-192.png') center/contain no-repeat}
+  .bottom button:not(.plus){width:70px;min-height:62px;border-radius:5px;font-size:10px;gap:5px}
+  .bottom button.active{background:#263023}
+  .bottom .plus{width:54px;height:54px;margin:10px 0}
+  .sheet{max-width:560px;border-radius:16px 16px 0 0}
+  .charts{max-width:900px}
+}
+@media(max-width:899px){.shell{max-width:760px;margin-inline:auto}.bottom{max-width:760px}}
+@media(max-width:520px){
+  .shell{padding-inline:18px}
+  .bottom{height:calc(82px + env(safe-area-inset-bottom))}
+  .bottom button:not(.plus){min-width:44px;font-size:10px}
+  .section-title{font-size:clamp(30px,9vw,38px)}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}

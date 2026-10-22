@@ -1,25 +1,25 @@
 /* Extracted from the approved V1.2 index.html; provenance in docs/reference.md. */
 :root {
   --font-body: system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
-  --color-background: #151219;
-  --color-theme: #17131b;
-  --color-text: #f8f4f4;
-  --color-muted: #aaa4b6;
-  --color-brand: #f7ab74;
-  --color-accent: #f4a36e;
-  --color-underline: #f6a36d;
-  --color-focus: #ffb47c;
-  --color-surface: #211c25;
-  --color-border: #3a3340;
-  --color-icon-background: #2c2732;
-  --color-icon: #f3ab76;
-  --color-on-accent: #291d1b;
-  --gradient-shell: radial-gradient(circle at 67% 3%, #29212a 0, #1b171f 25%, #151219 67%);
-  --gradient-primary: linear-gradient(125deg, #e99159, #ffba85);
-  --shadow-primary: 0 9px 26px #df864233;
-  --shell-width: 480px;
+  --color-background: #101212;
+  --color-theme: #101212;
+  --color-text: #F4F5F0;
+  --color-muted: #A9B2AC;
+  --color-brand: #B9FF39;
+  --color-accent: #B9FF39;
+  --color-underline: #B9FF39;
+  --color-focus: #D9FF9B;
+  --color-surface: #202424;
+  --color-border: #39413F;
+  --color-icon-background: #252B29;
+  --color-icon: #B9FF39;
+  --color-on-accent: #101212;
+  --gradient-shell: linear-gradient(160deg, #151A18, #101212 70%);
+  --gradient-primary: linear-gradient(125deg, #B9FF39, #D9FF9B);
+  --shadow-primary: 0 9px 26px #B9FF3920;
+  --shell-width: 1440px;
   --shell-padding: 26px 22px;
-  --radius-card: 12px;
+  --radius-card: 4px;
   --radius-button: 40px;
   --touch-target: 44px;
 
