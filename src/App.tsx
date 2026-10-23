@@ -84,9 +84,9 @@ function Interface() {
           +
         </button>
         {pages.slice(2).map(nav)}
-        <button className="sidebar-profile" onClick={() => open("profile")} aria-label="الملف الشخصي والإعدادات">
+        <button className="sidebar-profile" onClick={() => open("profile")} aria-label="الإعدادات">
           <Icon name="person" />
-          الملف
+          الإعدادات
         </button>
       </nav>
       <Dialogs />
