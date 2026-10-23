@@ -231,7 +231,7 @@ test("installed service worker serves the shell and assets while offline", async
   );
   await expect(page.locator("html")).toHaveCSS(
     "background-color",
-    "rgb(21, 18, 25)",
+    "rgb(16, 18, 18)",
   );
   await expect(page.locator(".icon svg").first()).toBeVisible();
   await page.getByRole("button", { name: "+ كوب", exact: true }).click();
