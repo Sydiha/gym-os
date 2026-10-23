@@ -61,3 +61,74 @@
 .training-day li{overflow-wrap:anywhere}
 .training-day button{white-space:normal;overflow-wrap:anywhere}
 .training-set-entry,.training-set-edit{min-width:0;max-width:100%}
+
+/* VECTOR V1 — approved V3 implementation */
+:root{color:var(--color-text);background:var(--color-background)}
+body{background:var(--color-background)}
+.shell{background:var(--color-background);overflow:visible}
+.brand span,.accent,.cal-used,.weather small,.stat,.real-weight b,.counter{color:var(--color-brand)}
+.brand-logo{border-radius:0}
+.avatar{background:var(--color-surface);color:var(--color-text);border:1px solid var(--color-border)}
+.demo-label{color:#b59afb;border-color:#7c3aed99}
+.vector-hero{margin:36px 0 24px;color:var(--color-text)}
+.vector-eyebrow{display:flex;align-items:center;gap:9px;color:#b59afb;font-size:11px;font-weight:800;letter-spacing:2px;margin:0 0 16px}
+.vector-eyebrow:before{content:"";width:7px;height:7px;background:var(--color-secondary);transform:rotate(45deg)}
+.vector-heading{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(180px,.7fr);align-items:end;gap:24px;margin-bottom:24px}
+.vector-heading h1{font-size:clamp(46px,7vw,82px);line-height:.98;letter-spacing:-3px;margin:0;font-weight:800}
+.vector-heading h1 em{color:var(--color-brand);font-style:normal}
+.vector-heading>p{color:var(--color-muted);font-size:14px;line-height:1.7;margin:0 0 4px}
+.training-spotlight{position:relative;min-height:330px;border:1px solid var(--color-border);background:var(--color-surface);padding:30px;overflow:hidden}
+.training-spotlight:after{content:"";position:absolute;width:300px;height:300px;border:1px solid #4c5552;border-radius:50%;right:-90px;top:16px;opacity:.55;pointer-events:none}
+.training-spotlight>div{display:flex;justify-content:space-between;position:relative;z-index:1;color:var(--color-muted);font-size:10px;font-weight:800;letter-spacing:2px}
+.training-spotlight>div b{color:var(--color-brand)}
+.training-spotlight h2{font-size:clamp(42px,7vw,72px)!important;line-height:.9;letter-spacing:-2px;margin:70px 0 18px!important;position:relative;z-index:1}
+.training-spotlight>p{color:#c2c9c6;max-width:440px;margin:0 0 22px;position:relative;z-index:1}
+.vector-primary{min-height:52px;background:var(--color-brand);color:var(--color-on-accent);border:0;border-radius:2px;padding:0 22px;font-weight:900;position:relative;z-index:1}
+.training-spotlight small{color:var(--color-muted);margin-inline-start:14px;position:relative;z-index:1}
+.level{margin-bottom:20px}
+.wide,.planb .primary,.sheet form>.wide,.training-panel>button:last-child,.training-page .training-panel>button:first-of-type{background:var(--color-brand);color:var(--color-on-accent);box-shadow:none}
+.outline,.pill,.small-btn,.demo button,.training-page button{border-color:#7c3aed99;color:#b59afb}
+.outline:hover,.pill:hover,.small-btn:hover,.training-page button:hover{border-color:var(--color-brand);color:var(--color-brand)}
+.meter{background:#303735}.meter b{background:var(--color-brand)}
+.water,.weekly,.record,.progress-group,.training-day,.training-details{border-color:var(--color-border)}
+.icon{background:var(--color-icon-background);color:var(--color-secondary);border-radius:8px}
+.stepno{border-color:var(--color-secondary);color:#b59afb;box-shadow:none}
+.step:not(:last-child):before,.step:nth-child(1):before{border-color:#4b365f}
+.weather,.macro-row>div,.info,.demo,.sheet,.training-panel,.training-exercise,.planb{background:var(--color-surface);border-color:var(--color-border);box-shadow:none}
+.planb{border-top:2px solid var(--color-secondary)}
+.weekly-head h2:before,.training-page>h2:before,.training-page .training-panel h2:before{content:"";display:inline-block;width:3px;height:16px;background:var(--color-secondary);margin-inline-end:8px;vertical-align:-2px}
+.bar{background:var(--color-secondary)}.bar.current{background:var(--color-brand)}
+.weight-chart{background:linear-gradient(174deg,transparent 47%,#7c3aed 49%,#7c3aed 51%,transparent 53%)}
+.bottom{background:#141717f2;border-color:var(--color-border)}
+.bottom button.active{color:var(--color-brand)}
+.bottom .plus{background:var(--color-brand);color:var(--color-on-accent);box-shadow:none}
+.sidebar-brand,.sidebar-profile{display:none}
+.sheet input,.sheet select,.demo select,.demo input[type=time],.training-page select,.training-page input{background:#222727;border-color:#46504c;color:var(--color-text)}
+.toast{background:#222727;border-color:var(--color-secondary);color:var(--color-text)}
+.training-safety,.safety{background:#201b29;border-color:var(--color-secondary);color:#ddd3f8}
+.training-details h4{color:#b59afb}
+:focus-visible,.training-page button:focus-visible,.training-page input:focus-visible,.training-page select:focus-visible{outline-color:var(--color-focus)}
+
+@media(max-width:699px){
+  .vector-heading{grid-template-columns:1fr;gap:12px}.vector-heading h1{font-size:clamp(42px,12vw,58px)}
+  .training-spotlight{min-height:365px;padding:22px}.training-spotlight h2{font-size:clamp(42px,13vw,58px)!important;margin-top:66px!important}
+  .training-spotlight small{display:block;margin:14px 0 0}.vector-hero{margin-top:30px}
+}
+
+@media(min-width:700px){
+  body{min-width:700px}
+  .shell{width:min(calc(100% - 112px),1280px);min-height:100vh;margin-inline-start:112px;margin-inline-end:auto;padding:42px 54px 70px}
+  .topline{padding-bottom:22px;border-bottom:1px solid var(--color-border)}
+  .bottom{inset-block:0;inset-inline-start:0;left:auto;bottom:auto;transform:none;width:112px;height:100vh;display:flex;flex-direction:column;justify-content:flex-start;gap:8px;padding:24px 12px;background:#121515;border-top:0;border-inline-end:1px solid var(--color-border)}
+  .bottom button{width:88px;min-height:68px;border-radius:8px}
+  .bottom button.active{background:#202823;box-shadow:inset 3px 0 0 var(--color-brand)}
+  [dir="rtl"] .bottom button.active{box-shadow:inset -3px 0 0 var(--color-brand)}
+  .bottom .plus{order:7;width:56px;height:56px;min-height:56px;margin-top:8px}
+  .sidebar-brand{display:grid;place-items:center;gap:8px;margin-bottom:20px;color:var(--color-text);font-size:12px;direction:ltr}
+  .sidebar-brand img{width:46px;height:46px;object-fit:contain}.sidebar-brand span{white-space:nowrap}.sidebar-brand b{color:var(--color-brand)}
+  .sidebar-profile{display:grid!important;margin-top:auto}
+  .vector-heading{grid-template-columns:minmax(0,1.7fr) minmax(240px,.7fr)}
+  .charts{gap:28px}.weekly{margin-top:30px}
+}
+
+@media(min-width:700px) and (max-width:1120px){.shell{padding-inline:32px}.vector-heading{grid-template-columns:1fr;align-items:start}.vector-heading h1{font-size:58px}}

@@ -139,15 +139,15 @@ for (const width of [320, 375, 390, 430, 1280]) {
     await expect(page.locator("html")).toHaveAttribute("lang", "ar");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-      "اليوم يكفي أن تبدأ",
+      "Own your motion",
     );
     await expect(page.locator("body")).toHaveCSS(
       "background-color",
-      "rgb(21, 18, 25)",
+      "rgb(16, 18, 18)",
     );
     await expect(page.locator("html")).toHaveCSS(
       "background-color",
-      "rgb(21, 18, 25)",
+      "rgb(16, 18, 18)",
     );
     expect(
       await page.evaluate(
@@ -188,8 +188,8 @@ test("manifest and local installation icons are valid", async ({
     start_url: "/",
     scope: "/",
     display: "standalone",
-    theme_color: "#17131b",
-    background_color: "#151219",
+    theme_color: "#101212",
+    background_color: "#101212",
   });
   expect(manifest.icons).toHaveLength(3);
   for (const icon of manifest.icons) {
@@ -231,7 +231,7 @@ test("installed service worker serves the shell and assets while offline", async
   );
   await expect(page.locator("html")).toHaveCSS(
     "background-color",
-    "rgb(21, 18, 25)",
+    "rgb(16, 18, 18)",
   );
   await expect(page.locator(".icon svg").first()).toBeVisible();
   await page.getByRole("button", { name: "+ كوب", exact: true }).click();

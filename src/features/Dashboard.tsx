@@ -5,16 +5,30 @@ import { Icon } from "../ui/Icon";
 import { DemoControls } from "./Settings";
 import { useCurrentDay } from "../ui/useCurrentDay";
 export function Dashboard() {
-  const { data, time, open, update, water, mode } = useDemo();
+  const { data, time, open, update, water, mode, navigate } = useDemo();
   const today = useCurrentDay();
   const rest = data.settings.dayType === "rest",
     done = data.homeSessions.some((s) => s.date === day()),
     weight = latestWeight(data);
   return (
     <>
-      <h1>
-        اليوم يكفي أن <span className="underline">تبدأ</span>
-      </h1>
+      <section className="vector-hero" lang="en" dir="ltr" aria-labelledby="vector-title">
+        <p className="vector-eyebrow">PERFORMANCE / OVERVIEW</p>
+        <div className="vector-heading">
+          <h1 id="vector-title">Own your <em>motion</em></h1>
+          <p>Training, activity and nutrition. One connected performance system.</p>
+        </div>
+        <article className="training-spotlight">
+          <div>
+            <span>01 / YOUR NEXT MOVE</span>
+            <b>SYLVAR / 01</b>
+          </div>
+          <h2 aria-label="TRAIN WITH INTENT">TRAIN<br />WITH INTENT</h2>
+          <p>Access your training plans and exercise library.</p>
+          <button className="vector-primary" onClick={() => navigate("التمارين")}>EXPLORE TRAINING</button>
+          <small>Opens the existing training section.</small>
+        </article>
+      </section>
       <p className="level">مستواك: {data.settings.level}</p>
       <Calories />
       <div className="water">
