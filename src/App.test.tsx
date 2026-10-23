@@ -37,11 +37,21 @@ describe("foundation shell", () => {
   it("renders the approved dashboard and navigation", () => {
     render(<App />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "اليوم يكفي أن تبدأ",
+      "Own your motion",
     );
     expect(screen.getByText("نموذج تجريبي")).toBeVisible();
     expect(screen.getByRole("navigation")).toBeVisible();
     expect(screen.getByRole("button", { name: "سجّل وجبة" })).toBeVisible();
+  });
+  it("uses the approved V3 copy and opens the existing training module", () => {
+    render(<App />);
+    expect(screen.getByRole("heading", { name: "Own your motion" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "TRAIN WITH INTENT" })).toBeVisible();
+    expect(screen.getByText("Training, activity and nutrition. One connected performance system.")).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "EXPLORE TRAINING" }));
+    expect(screen.getByRole("heading", { name: "تمارينك" })).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "الرئيسية" }));
+    expect(screen.getByRole("heading", { name: "Own your motion" })).toBeVisible();
   });
   it("announces offline and restored connectivity", () => {
     render(<App />);

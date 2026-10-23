@@ -39,7 +39,7 @@ function Interface() {
         <header className="topline">
           <div>
             <div className="brand-lockup">
-              <img className="brand-logo" src="/icons/icon-192.png" alt="" width="36" height="36" />
+              <img className="brand-logo" src="/icons/approved-logo-source.png" alt="شعار OS SYLVAR الرسمي" width="36" height="36" />
               <div className="brand">OS <span>SYLVAR</span></div>
             </div>
             <div className="tagline">
@@ -71,6 +71,10 @@ function Interface() {
         <PwaStatus />
       </main>
       <nav className="bottom" aria-label="التنقل الرئيسي" inert={!!sheet}>
+        <div className="sidebar-brand" aria-hidden="true">
+          <img src="/icons/approved-logo-source.png" alt="" width="46" height="46" />
+          <span>OS <b>SYLVAR</b></span>
+        </div>
         {pages.slice(0, 2).map(nav)}
         <button
           className="plus"
@@ -80,6 +84,10 @@ function Interface() {
           +
         </button>
         {pages.slice(2).map(nav)}
+        <button className="sidebar-profile" onClick={() => open("profile")} aria-label="الملف الشخصي والإعدادات">
+          <Icon name="person" />
+          الملف
+        </button>
       </nav>
       <Dialogs />
     </>
